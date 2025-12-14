@@ -1,0 +1,195 @@
+pipeline {
+    agent any
+    
+    environment {
+        AWS_REGION = 'us-east-1'
+        ECR_REPOSITORY = 'ncc-training-app'
+        APP_NAME = 'ncc-training-app'
+        DOCKER_IMAGE = "${APP_NAME}:${BUILD_NUMBER}"
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                echo 'Checking out code from GitHub...'
+                checkout scm
+                sh 'git log -1 --oneline'
+            }
+        }
+        
+        stage('Validate Files') {
+            steps {
+                script {
+                    def requiredFiles = [
+                        '03-Docker/application/Dockerfile',
+                        '03-Docker/application/app.py',
+                        '03-Docker/application/requirements.txt'
+                    ]
+                    
+                    requiredFiles.each { file ->
+                        if (!fileExists(file)) {
+                            error("Required file missing: ${file}")
+                        }
+                        echo "✓ ${file} exists"
+                    }
+                }
+            }
+        }
+        
+        stage('Build Docker Image') {
+            steps {
+                echo 'Building Docker image...'
+                dir('03-Docker/application') {
+                    sh """
+                        docker build -t ${DOCKER_IMAGE} .
+                        docker tag ${DOCKER_IMAGE} ${APP_NAME}:latest
+                    """
+                }
+            }
+        }
+        
+        stage('Test Container') {
+            steps {
+                script {
+                    def containerName = "${APP_NAME}-test-${BUILD_NUMBER}"
+                    try {
+                        echo 'Starting container for testing...'
+                        sh """
+                            docker run -d --name ${containerName} -p 5000:5000 ${DOCKER_IMAGE}
+                            sleep 5
+                        """
+                        
+                        echo 'Running health check...'
+                        sh 'curl -f http://localhost:5000/health || exit 1'
+                        
+                        echo 'Testing main endpoint...'
+                        def response = sh(
+                            script: 'curl -s http://localhost:5000/',
+                            returnStdout: true
+                        ).trim()
+                        echo "Response: ${response}"
+                        
+                        echo 'All tests passed!'
+                    } catch (Exception e) {
+                        echo "Test failed: ${e.getMessage()}"
+                        throw e
+                    } finally {
+                        sh "docker stop ${containerName} || true"
+                        sh "docker rm ${containerName} || true"
+                    }
+                }
+            }
+        }
+        
+        stage('Get AWS Account ID') {
+            steps {
+                script {
+                    try {
+                        def accountId = sh(
+                            script: 'aws sts get-caller-identity --query Account --output text',
+                            returnStdout: true
+                        ).trim()
+                        env.AWS_ACCOUNT_ID = accountId
+                        env.ECR_REGISTRY = "${accountId}.dkr.ecr.${AWS_REGION}.amazonaws.com"
+                        echo "Using AWS Account ID: ${accountId}"
+                        echo "ECR Registry: ${env.ECR_REGISTRY}"
+                    } catch (Exception e) {
+                        echo "Warning: Could not get AWS Account ID. Make sure AWS credentials are configured."
+                        echo "Error: ${e.getMessage()}"
+                        // Continue without ECR push if AWS is not configured
+                        env.SKIP_ECR = 'true'
+                    }
+                }
+            }
+        }
+        
+        stage('Login to ECR') {
+            when {
+                expression { return env.SKIP_ECR != 'true' }
+            }
+            steps {
+                script {
+                    echo 'Logging into ECR...'
+                    sh """
+                        aws ecr get-login-password --region ${AWS_REGION} | \
+                        docker login --username AWS --password-stdin ${env.ECR_REGISTRY}
+                    """
+                }
+            }
+        }
+        
+        stage('Tag and Push to ECR') {
+            when {
+                expression { return env.SKIP_ECR != 'true' }
+            }
+            steps {
+                script {
+                    def ecrImage = "${env.ECR_REGISTRY}/${ECR_REPOSITORY}:${BUILD_NUMBER}"
+                    def ecrImageLatest = "${env.ECR_REGISTRY}/${ECR_REPOSITORY}:latest"
+                    
+                    echo "Tagging image as ${ecrImage}..."
+                    sh """
+                        docker tag ${DOCKER_IMAGE} ${ecrImage}
+                        docker tag ${DOCKER_IMAGE} ${ecrImageLatest}
+                    """
+                    
+                    echo "Pushing ${ecrImage} to ECR..."
+                    sh """
+                        docker push ${ecrImage}
+                        docker push ${ecrImageLatest}
+                    """
+                    
+                    env.ECR_IMAGE_URI = ecrImage
+                    echo "Successfully pushed: ${ecrImage}"
+                }
+            }
+        }
+        
+        stage('Verify ECR Push') {
+            when {
+                expression { return env.SKIP_ECR != 'true' }
+            }
+            steps {
+                script {
+                    def images = sh(
+                        script: "aws ecr list-images --repository-name ${ECR_REPOSITORY} --region ${AWS_REGION} --query 'imageIds[*].imageTag' --output text",
+                        returnStdout: true
+                    ).trim()
+                    echo "Images in ECR repository: ${images}"
+                }
+            }
+        }
+    }
+    
+    post {
+        always {
+            echo 'Cleaning up...'
+            script {
+                // Clean up test container if still running
+                sh "docker ps -aq --filter name=${APP_NAME}-test-${BUILD_NUMBER} | xargs -r docker rm -f || true"
+                
+                // Clean up local images (optional - comment out if you want to keep them)
+                // sh "docker rmi ${DOCKER_IMAGE} || true"
+                // sh "docker rmi ${APP_NAME}:latest || true"
+            }
+            cleanWs()
+        }
+        success {
+            echo '========================================'
+            echo 'Pipeline completed successfully!'
+            if (env.ECR_IMAGE_URI) {
+                echo "ECR Image URI: ${env.ECR_IMAGE_URI}"
+            }
+            echo '========================================'
+        }
+        failure {
+            echo '========================================'
+            echo 'Pipeline failed. Check logs above for details.'
+            echo '========================================'
+        }
+        unstable {
+            echo 'Pipeline is unstable.'
+        }
+    }
+}
+

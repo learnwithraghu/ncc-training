@@ -23,17 +23,20 @@ By the end of this course, you will:
 ✅ Use Git for version control and team collaboration  
 ✅ Implement branching strategies for different workflows  
 ✅ Build and deploy containerized applications with Docker  
+✅ Set up CI/CD pipelines with Jenkins  
+✅ Integrate Jenkins with GitHub and AWS ECR  
 ✅ Apply DevOps best practices for security and performance
 
 ## 📚 Course Structure
 
-The course is organized into three progressive modules, each building on the previous:
+The course is organized into four progressive modules, each building on the previous:
 
 ```
 ncc-train/
 ├── 01-Linux/                Linux fundamentals and bash scripting
 ├── 02-Git/                  Version control and collaboration
 ├── 03-Docker/               Containerization and deployment
+├── 04-Jenkins/              CI/CD pipelines and automation
 └── README.md               This file
 ```
 
@@ -164,6 +167,58 @@ ncc-train/
 
 ---
 
+## 📖 Module 4: Jenkins CI/CD Pipelines
+
+**Directory:** [04-Jenkins/](./04-Jenkins/)
+
+**Duration:** 4-6 hours (including setup and practice)
+
+### What You'll Learn
+
+- Jenkins architecture and concepts
+- Setting up Jenkins on AWS EC2
+- Connecting GitHub repositories to Jenkins
+- Building Docker images with Jenkins pipelines
+- Pushing images to AWS ECR
+- Writing Groovy pipeline scripts
+- CI/CD best practices
+
+### Module Contents
+
+| Path | Description |
+|------|-------------|
+| [00-OVERVIEW.md](./04-Jenkins/00-OVERVIEW.md) | Jenkins theory and concepts |
+| [README.md](./04-Jenkins/README.md) | Module guide and learning path |
+| [01-jenkins-setup.md](./04-Jenkins/01-jenkins-setup.md) | Lesson 1: Setup Jenkins on EC2 |
+| [02-first-pipeline.md](./04-Jenkins/02-first-pipeline.md) | Lesson 2: Create your first pipeline |
+| [03-github-integration.md](./04-Jenkins/03-github-integration.md) | Lesson 3: Connect GitHub to Jenkins |
+| [04-docker-build.md](./04-Jenkins/04-docker-build.md) | Lesson 4: Build Docker images |
+| [05-ecr-integration.md](./04-Jenkins/05-ecr-integration.md) | Lesson 5: Push to AWS ECR |
+| [06-groovy-advanced.md](./04-Jenkins/06-groovy-advanced.md) | Lesson 6: Advanced Groovy patterns |
+| [scripts/](./04-Jenkins/scripts/) | Jenkinsfiles and setup scripts |
+| [examples/](./04-Jenkins/examples/) | Additional pipeline examples |
+
+### Learning Path
+
+Follow lessons in progressive order (ladder approach):
+
+1. Read [00-OVERVIEW](./04-Jenkins/00-OVERVIEW.md) for Jenkins concepts
+2. Complete [01-jenkins-setup.md](./04-Jenkins/01-jenkins-setup.md) - Setup Jenkins
+3. Complete [02-first-pipeline.md](./04-Jenkins/02-first-pipeline.md) - First pipeline
+4. Complete [03-github-integration.md](./04-Jenkins/03-github-integration.md) - GitHub connection
+5. Complete [04-docker-build.md](./04-Jenkins/04-docker-build.md) - Docker builds
+6. Complete [05-ecr-integration.md](./04-Jenkins/05-ecr-integration.md) - ECR push
+7. Study [06-groovy-advanced.md](./04-Jenkins/06-groovy-advanced.md) - Advanced patterns
+
+### Prerequisites
+
+- AWS account with EC2 and ECR access
+- GitHub account and repository
+- Completion of Module 3 (Docker) required
+- Basic understanding of CI/CD concepts
+
+---
+
 ## 🎓 Learning Philosophy
 
 ### Hands-On First
@@ -221,7 +276,8 @@ docker run hello-world
 **Sequential (Recommended for Beginners):**
 1. Complete 01-Linux fully
 2. Then 02-Git
-3. Finally 03-Docker
+3. Then 03-Docker
+4. Finally 04-Jenkins
 
 **Selective (For Experienced Users):**
 - Skip to modules where you need practice
@@ -240,6 +296,7 @@ This is a **self-paced course**:
 - **Week 1**: Linux Fundamentals (2-3 sessions)
 - **Week 2**: Git and Version Control (2 sessions)
 - **Week 3**: Docker Containerization (3-4 sessions)
+- **Week 4**: Jenkins CI/CD Pipelines (3-4 sessions)
 
 ---
 
@@ -298,6 +355,15 @@ You've successfully completed this course when you can:
 - [ ] Apply security best practices
 - [ ] Optimize images for production
 
+### Jenkins Skills
+- [ ] Install and configure Jenkins on EC2
+- [ ] Connect Jenkins to GitHub repositories
+- [ ] Create and run Jenkins pipelines
+- [ ] Build Docker images in Jenkins
+- [ ] Push images to AWS ECR
+- [ ] Write Groovy pipeline scripts
+- [ ] Troubleshoot pipeline issues
+
 ---
 
 ## 🔗 Additional Resources
@@ -315,9 +381,10 @@ You've successfully completed this course when you can:
 ### Recommended Next Steps
 - **Infrastructure as Code**: Terraform, Ansible
 - **Container Orchestration**: Kubernetes
-- **CI/CD Platforms**: Jenkins, GitHub Actions, GitLab CI
+- **CI/CD Platforms**: GitHub Actions, GitLab CI, CircleCI
 - **Cloud Platforms**: AWS, Google Cloud, Azure
 - **Monitoring**: Prometheus, Grafana
+- **Advanced Jenkins**: Shared Libraries, Kubernetes integration
 
 ---
 
@@ -379,7 +446,9 @@ Before starting, ensure you have:
 - [ ] Text editor installed
 - [ ] Git installed (for Module 2)
 - [ ] Docker installed (for Module 3)
-- [ ] Dedicated study time (2-3 weeks recommended)
+- [ ] AWS account (for Module 4)
+- [ ] GitHub account (for Module 4)
+- [ ] Dedicated study time (3-4 weeks recommended)
 - [ ] Notebook for taking notes
 - [ ] Willingness to experiment and make mistakes
 

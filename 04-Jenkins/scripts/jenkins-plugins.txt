@@ -1,0 +1,46 @@
+# Jenkins Required Plugins List
+# Install these plugins for the Jenkins CI/CD pipeline module
+
+# Core Plugins
+github
+github-branch-source
+git
+workflow-aggregator
+pipeline-stage-view
+
+# Docker Plugins
+docker-workflow
+docker-plugin
+docker-commons
+
+# AWS Plugins
+pipeline-aws
+aws-credentials
+
+# Pipeline Plugins
+pipeline-github-lib
+pipeline-stage-step
+pipeline-build-step
+pipeline-input-step
+pipeline-milestone-step
+
+# UI Plugins (Optional but recommended)
+blueocean
+blueocean-pipeline-editor
+
+# Utility Plugins
+credentials-binding
+ssh-credentials
+plain-credentials
+timestamper
+build-timeout
+warnings-ng
+
+# Notification Plugins (Optional)
+slack
+email-ext
+
+# Security Plugins (Recommended)
+credentials
+role-strategy
+

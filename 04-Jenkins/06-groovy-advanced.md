@@ -73,7 +73,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                echo 'Checking out code from GitHub...'
+                echo 'Checking out code from Gitea...'
                 checkout scm
             }
         }
@@ -183,7 +183,7 @@ pipeline {
 
 ### Example 3: Complete ECR Pipeline
 
-Full pipeline with GitHub checkout, Docker build, and ECR push.
+Full pipeline with Gitea checkout, Docker build, and ECR push.
 
 ```groovy
 pipeline {
@@ -202,7 +202,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                echo 'Checking out code from GitHub...'
+                echo 'Checking out code from Gitea...'
                 checkout scm
             }
         }

@@ -13,7 +13,7 @@ This lesson covers building Docker images in Jenkins pipelines. You'll learn how
 ## Prerequisites
 
 - Jenkins installed and running (Lesson 1)
-- Jenkins connected to GitHub (Lesson 3)
+- Jenkins connected to Gitea (Lesson 3)
 - Basic Docker knowledge (from Module 3)
 - Understanding of Dockerfiles
 
@@ -86,7 +86,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                echo 'Checking out code from GitHub...'
+                echo 'Checking out code from Gitea...'
                 checkout scm
             }
         }

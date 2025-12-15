@@ -8,7 +8,7 @@ This module provides hands-on experience with:
 
 1. **Jenkins Setup on EC2** - Installing and configuring Jenkins on AWS EC2
 2. **First Pipeline** - Creating and understanding basic pipelines
-3. **GitHub Integration** - Connecting Jenkins to GitHub repositories
+3. **Gitea Integration** - Connecting Jenkins to Gitea repositories
 4. **Docker Build Pipeline** - Building Docker images using Jenkins
 5. **AWS ECR Integration** - Pushing Docker images to Amazon ECR
 6. **Advanced Groovy** - Writing complex pipeline scripts and patterns
@@ -21,7 +21,7 @@ This module provides hands-on experience with:
 ├── README.md                         This file - Module guide
 ├── 01-jenkins-setup.md               Lesson 1: Setup Jenkins on EC2
 ├── 02-first-pipeline.md              Lesson 2: Create your first pipeline
-├── 03-github-integration.md           Lesson 3: Connect GitHub to Jenkins
+├── 03-gitea-integration.md            Lesson 3: Connect Gitea to Jenkins
 ├── 04-docker-build.md                Lesson 4: Build Docker images
 ├── 05-ecr-integration.md             Lesson 5: Push to AWS ECR
 ├── 06-groovy-advanced.md             Lesson 6: Advanced Groovy patterns
@@ -42,7 +42,7 @@ By the end of this module, you will be able to:
 - [ ] **Install** Jenkins on EC2 instance
 - [ ] **Configure** Jenkins with required plugins
 - [ ] **Create** basic Jenkins pipelines
-- [ ] **Connect** Jenkins to GitHub repositories
+- [ ] **Connect** Jenkins to Gitea repositories
 - [ ] **Build** Docker images in Jenkins pipelines
 - [ ] **Push** Docker images to AWS ECR
 - [ ] **Write** advanced Groovy pipeline scripts
@@ -89,11 +89,11 @@ aws configure
 # Default output format: [json]
 ```
 
-### 4. GitHub Account
+### 4. Gitea Account
 
-- GitHub account with a repository
-- Personal Access Token (PAT) for Jenkins integration
-- SSH keys configured (optional but recommended)
+- Gitea account (creds provided)
+- Gitea repository (sample-config)
+- Access Token for Jenkins integration
 
 ### 5. Docker Knowledge
 
@@ -126,12 +126,12 @@ This module follows a **ladder approach** - each lesson builds on the previous o
 
 **Time**: 30-45 minutes
 
-### Lesson 3: GitHub Integration
-**File**: [03-github-integration.md](./03-github-integration.md)
+### Lesson 3: Gitea Integration
+**File**: [03-gitea-integration.md](./03-gitea-integration.md)
 
-- Create GitHub Personal Access Token
-- Configure GitHub credentials
-- Connect Jenkins to GitHub
+- Create Gitea Application Token
+- Configure Gitea credentials
+- Connect Jenkins to Gitea
 - Set up webhooks
 - Use Jenkinsfiles from repository
 
@@ -232,8 +232,8 @@ Each lesson includes a troubleshooting section. Common issues:
 - Check IAM permissions
 - Verify region is correct
 
-### GitHub Webhook Not Working
-- Check webhook delivery in GitHub
+### Gitea Webhook Not Working
+- Check webhook delivery in Gitea
 - Verify Jenkins job has webhook trigger enabled
 - Check network connectivity
 
@@ -243,7 +243,7 @@ Before moving to the next module, ensure you can:
 
 - [ ] Install Jenkins on EC2
 - [ ] Create and run basic pipelines
-- [ ] Connect Jenkins to GitHub
+- [ ] Connect Jenkins to Gitea
 - [ ] Build Docker images in pipelines
 - [ ] Push images to AWS ECR
 - [ ] Write advanced Groovy scripts

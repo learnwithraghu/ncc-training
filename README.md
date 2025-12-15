@@ -25,11 +25,13 @@ By the end of this course, you will:
 ✅ Build and deploy containerized applications with Docker  
 ✅ Set up CI/CD pipelines with Jenkins  
 ✅ Integrate Jenkins with GitHub and AWS ECR  
+✅ Deploy and manage applications with Kubernetes  
+✅ Configure services, storage, and networking in K8s  
 ✅ Apply DevOps best practices for security and performance
 
 ## 📚 Course Structure
 
-The course is organized into four progressive modules, each building on the previous:
+The course is organized into five progressive modules, each building on the previous:
 
 ```
 ncc-train/
@@ -37,6 +39,7 @@ ncc-train/
 ├── 02-Git/                  Version control and collaboration
 ├── 03-Docker/               Containerization and deployment
 ├── 04-Jenkins/              CI/CD pipelines and automation
+├── 05-Kubernetes/           Container orchestration
 └── README.md               This file
 ```
 
@@ -219,6 +222,60 @@ Follow lessons in progressive order (ladder approach):
 
 ---
 
+## 📖 Module 5: Kubernetes Container Orchestration
+
+**Directory:** [05-Kubernetes/](./05-Kubernetes/)
+
+**Duration:** 5-6 hours (including hands-on practice)
+
+### What You'll Learn
+
+- Kubernetes architecture and core concepts
+- Pod and deployment management
+- Services and networking configuration
+- Persistent storage and configuration management
+- StatefulSets, Jobs, and CronJobs
+- Resource management and health checks
+- Helm package management
+- Production best practices
+
+### Module Contents
+
+| Path | Description |
+|------|-------------|
+| [00-OVERVIEW.md](./05-Kubernetes/00-OVERVIEW.md) | Comprehensive K8s theory and architecture |
+| [README.md](./05-Kubernetes/README.md) | Module guide with all commands |
+| [01-basics.md](./05-Kubernetes/01-basics.md) | **Level 1:** Cluster basics and kubectl |
+| [02-pods-deployments.md](./05-Kubernetes/02-pods-deployments.md) | **Level 2:** Pods, deployments, scaling |
+| [03-services-networking.md](./05-Kubernetes/03-services-networking.md) | **Level 3:** Services, ingress, networking |
+| [04-storage-config.md](./05-Kubernetes/04-storage-config.md) | **Level 4:** Volumes, ConfigMaps, Secrets |
+| [05-advanced.md](./05-Kubernetes/05-advanced.md) | **Level 5:** StatefulSets, Jobs, Helm |
+| `level-01-basics/` | Scripts and manifests for Level 1 |
+| `level-02-pods-deployments/` | Scripts and manifests for Level 2 |
+| `level-03-services-networking/` | Scripts and manifests for Level 3 |
+| `level-04-storage-config/` | Scripts and manifests for Level 4 |
+| `level-05-advanced/` | Scripts and manifests for Level 5 |
+
+### Learning Path
+
+Follow the ladder approach (0 to hero):
+
+1. Read [00-OVERVIEW](./05-Kubernetes/00-OVERVIEW.md) for K8s concepts
+2. Complete [01-basics.md](./05-Kubernetes/01-basics.md) - Cluster basics
+3. Complete [02-pods-deployments.md](./05-Kubernetes/02-pods-deployments.md) - Application deployment
+4. Complete [03-services-networking.md](./05-Kubernetes/03-services-networking.md) - Networking
+5. Complete [04-storage-config.md](./05-Kubernetes/04-storage-config.md) - Storage & config
+6. Complete [05-advanced.md](./05-Kubernetes/05-advanced.md) - Advanced patterns
+
+### Prerequisites
+
+- Kubernetes cluster running (Minikube, Kind, or cloud-based)
+- kubectl installed and configured
+- Completion of Module 3 (Docker) required
+- Completion of Module 4 (Jenkins) recommended
+
+---
+
 ## 🎓 Learning Philosophy
 
 ### Hands-On First
@@ -277,7 +334,8 @@ docker run hello-world
 1. Complete 01-Linux fully
 2. Then 02-Git
 3. Then 03-Docker
-4. Finally 04-Jenkins
+4. Then 04-Jenkins
+5. Finally 05-Kubernetes
 
 **Selective (For Experienced Users):**
 - Skip to modules where you need practice
@@ -297,6 +355,7 @@ This is a **self-paced course**:
 - **Week 2**: Git and Version Control (2 sessions)
 - **Week 3**: Docker Containerization (3-4 sessions)
 - **Week 4**: Jenkins CI/CD Pipelines (3-4 sessions)
+- **Week 5**: Kubernetes Container Orchestration (3-4 sessions)
 
 ---
 
@@ -363,6 +422,17 @@ You've successfully completed this course when you can:
 - [ ] Push images to AWS ECR
 - [ ] Write Groovy pipeline scripts
 - [ ] Troubleshoot pipeline issues
+
+### Kubernetes Skills
+- [ ] Verify and manage Kubernetes clusters
+- [ ] Deploy applications with pods and deployments
+- [ ] Scale applications horizontally
+- [ ] Configure services and networking
+- [ ] Manage persistent storage with PVs and PVCs
+- [ ] Use ConfigMaps and Secrets
+- [ ] Implement health checks and resource limits
+- [ ] Deploy stateful applications with StatefulSets
+- [ ] Use Helm for package management
 
 ---
 
@@ -448,7 +518,9 @@ Before starting, ensure you have:
 - [ ] Docker installed (for Module 3)
 - [ ] AWS account (for Module 4)
 - [ ] GitHub account (for Module 4)
-- [ ] Dedicated study time (3-4 weeks recommended)
+- [ ] Kubernetes cluster access (for Module 5)
+- [ ] kubectl installed (for Module 5)
+- [ ] Dedicated study time (4-5 weeks recommended)
 - [ ] Notebook for taking notes
 - [ ] Willingness to experiment and make mistakes
 

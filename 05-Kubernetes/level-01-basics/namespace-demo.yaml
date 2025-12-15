@@ -1,0 +1,41 @@
+---
+# Development namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: dev
+  labels:
+    environment: development
+    team: engineering
+
+---
+# Staging namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: staging
+  labels:
+    environment: staging
+    team: engineering
+
+---
+# Production namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: production
+  labels:
+    environment: production
+    team: engineering
+  annotations:
+    description: "Production environment - handle with care!"
+
+---
+# Testing namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: testing
+  labels:
+    environment: testing
+    team: qa

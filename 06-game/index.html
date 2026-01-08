@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linux Commando: The Game</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts for that premium feel -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <div class="game-wrapper">
+        <header>
+            <h1>Linux Commando</h1>
+            <div class="stats-bar">
+                <span id="question-tracker">Question: 1/10</span>
+                <span id="score-tracker">Score: 0</span>
+            </div>
+        </header>
+
+        <nav class="mode-switcher">
+            <a href="?mode=linux" class="mode-link" id="mode-linux">Linux Commands</a>
+            <a href="?mode=shell" class="mode-link" id="mode-shell">Shell Scripting</a>
+        </nav>
+
+        <section id="intro-screen" class="card intro-card">
+            <h2>Incoming Transmission...</h2>
+            <p class="mission-text">
+                Agent, we have a critical situation. Our Linux servers are acting up, and the team needs an expert to
+                debug them.
+                <br><br>
+                They need to verify your skills before granting you root access.
+                <br><br>
+                <strong>Are you ready to accept this mission?</strong>
+            </p>
+            <button id="start-btn" class="primary-btn pulse-btn">ACCEPT MISSION</button>
+        </section>
+
+        <main id="game-container" class="hidden">
+            <!-- Question Question will be injected here -->
+            <div id="question-card" class="card">
+                <h2 id="question-text">Loading...</h2>
+                <div id="options-container" class="options-grid"></div>
+                <div id="feedback-area" class="hidden">
+                    <p id="feedback-text"></p>
+                    <button id="next-btn" class="primary-btn">Next Mission &rarr;</button>
+                </div>
+            </div>
+        </main>
+
+        <section id="results-screen" class="hidden">
+            <div class="card result-card">
+                <h2>Mission Complete!</h2>
+                <div class="final-score">
+                    <span id="final-score-display">0</span> / 10
+                </div>
+                <p id="rank-display" class="rank">Rank: Unranked</p>
+                <button id="restart-btn" class="primary-btn">Reboot System</button>
+            </div>
+        </section>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>

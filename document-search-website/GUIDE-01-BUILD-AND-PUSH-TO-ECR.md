@@ -73,14 +73,6 @@ If you haven't created an ECR repository yet, create it using AWS CLI:
 # Set your region
 export AWS_REGION=us-east-1
 
-# Create ECR repository
-aws ecr create-repository \
-    --repository-name license-renewal-processor \
-    --region $AWS_REGION \
-    --image-scanning-configuration scanOnPush=true \
-    --encryption-configuration encryptionType=AES256
-```
-
 **Alternative**: Create via AWS Console:
 1. Go to Amazon ECR in AWS Console
 2. Click "Create repository"

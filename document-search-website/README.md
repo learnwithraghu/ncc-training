@@ -107,13 +107,21 @@ cp env.example .env
 Then build and run the image:
 
 ```bash
-# For local testing (use your native platform)
-docker build -t license-renewal-processor .
+# For local testing on Apple Silicon (M1/M2/M3 Macs)
+# Option 1: Build for native platform (faster, recommended for local testing)
+docker build --platform linux/arm64 -t license-renewal-processor .
+docker run -p 8501:8501 license-renewal-processor
+
+# Option 2: Build for linux/amd64 (slower, emulated via QEMU)
+# File watching is automatically disabled to avoid inotify issues
+docker build --platform linux/amd64 -t license-renewal-processor .
 docker run -p 8501:8501 license-renewal-processor
 
 # For ECS deployment (must use linux/amd64 platform)
 docker build --platform linux/amd64 -t license-renewal-processor .
 ```
+
+**Note**: The Dockerfile includes `STREAMLIT_SERVER_FILE_WATCHER_TYPE=none` to prevent file watching issues when running under QEMU emulation (linux/amd64 on ARM64 hosts).
 
 The application will be available at `http://localhost:8501`
 
@@ -250,6 +258,12 @@ To push Docker images to AWS ECR, you need the following permissions:
 - Check that the PDF contains extractable text (not just images)
 - If text extraction is minimal, the PDF might be image-based and require OCR preprocessing
 - The application uses pdfplumber (primary) and PyPDF2 (fallback) for text extraction
+
+### Docker Platform Issues
+- **Error: `OSError: [Errno 38] Function not implemented`**: This occurs when running linux/amd64 images on ARM64 hosts (Apple Silicon). The Dockerfile now disables file watching automatically. If you still encounter issues:
+  - For local testing: Build for your native platform: `docker build --platform linux/arm64 -t license-renewal-processor .`
+  - For production: The linux/amd64 build should work with file watching disabled (already configured)
+- **Platform mismatch warnings**: These are harmless when running linux/amd64 on ARM64, but performance will be slower due to emulation. For better local performance, use `--platform linux/arm64` when building.
 
 ## Development
 

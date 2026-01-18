@@ -210,15 +210,6 @@ ECR_REPOSITORY_NAME=license-renewal-processor
    - **Security groups**: Select `license-renewal-sg` (created in Step 4)
    - **Auto-assign public IP**: `ENABLED` (required for Fargate to pull images)
    
-   **Load balancing** (if using ALB):
-   - **Load balancer type**: `Application Load Balancer`
-   - **Load balancer name**: Select `license-renewal-alb`
-   - **Container to load balance**: 
-     - Click "Add to load balancer"
-     - **Target group name**: Select `license-renewal-tg`
-     - **Container name**: `license-renewal-app:8501`
-     - **Production listener port**: `80:HTTP`
-     - **Health check grace period**: `60` seconds
 
 4. **Service Auto Scaling** (Optional)
    - You can configure auto-scaling based on CPU/memory metrics

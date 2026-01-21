@@ -72,9 +72,6 @@ ehthumbs.db
 Thumbs.db
 Desktop.ini
 
-# Generated PDFs from sample documents
-sample-documents/*.pdf
-
 # Logs
 *.log
 logs/

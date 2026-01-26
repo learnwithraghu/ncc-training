@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Linux Commando: The Game</title>
+    <title>DevOps Quiz Challenge</title>
     <link rel="stylesheet" href="style.css">
     <!-- Google Fonts for that premium feel -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,53 +15,109 @@
 </head>
 
 <body>
+    <!-- Left Sidebar Menu -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>Quiz Sections</h2>
+        </div>
+        <ul class="quiz-menu">
+            <li class="menu-item" data-mode="linux">
+                <span class="lock-icon">🔒</span>
+                <span class="menu-label">Linux Commands</span>
+            </li>
+            <li class="menu-item" data-mode="shell">
+                <span class="lock-icon">🔒</span>
+                <span class="menu-label">Shell Scripting</span>
+            </li>
+            <li class="menu-item" data-mode="github">
+                <span class="lock-icon">🔒</span>
+                <span class="menu-label">GitHub</span>
+            </li>
+            <li class="menu-item" data-mode="aws">
+                <span class="lock-icon">🔒</span>
+                <span class="menu-label">AWS & Cloud</span>
+            </li>
+            <li class="menu-item" data-mode="jenkins">
+                <span class="lock-icon">🔒</span>
+                <span class="menu-label">Jenkins</span>
+            </li>
+            <li class="menu-item" data-mode="docker">
+                <span class="lock-icon">🔒</span>
+                <span class="menu-label">Docker</span>
+            </li>
+            <li class="menu-item" data-mode="k8s">
+                <span class="lock-icon">🔒</span>
+                <span class="menu-label">Kubernetes</span>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Passcode Modal -->
+    <div class="modal-overlay hidden" id="passcode-modal">
+        <div class="modal-content">
+            <h3>🔐 Enter Access Code</h3>
+            <p class="modal-subtitle" id="modal-quiz-name">Linux Commands</p>
+            <input type="password" id="passcode-input" maxlength="4" placeholder="Enter 4-digit code" autocomplete="off">
+            <p class="error-message hidden" id="passcode-error">Incorrect code. Please try again.</p>
+            <div class="modal-buttons">
+                <button class="secondary-btn" id="modal-cancel">Cancel</button>
+                <button class="primary-btn" id="modal-submit">Unlock</button>
+            </div>
+        </div>
+    </div>
+
     <div class="game-wrapper">
         <header>
-            <h1>Linux Commando</h1>
+            <h1 id="game-title">DevOps Quiz Challenge</h1>
             <div class="stats-bar">
-                <span id="question-tracker">Question: 1/10</span>
+                <span id="question-tracker">Question: 1/15</span>
                 <span id="score-tracker">Score: 0</span>
             </div>
         </header>
 
-        <nav class="mode-switcher">
-            <a href="?mode=linux" class="mode-link" id="mode-linux">Linux Commands</a>
-            <a href="?mode=shell" class="mode-link" id="mode-shell">Shell Scripting</a>
-        </nav>
-
         <section id="intro-screen" class="card intro-card">
-            <h2>Incoming Transmission...</h2>
+            <h2>Welcome, DevOps Engineer!</h2>
             <p class="mission-text">
-                Agent, we have a critical situation. Our Linux servers are acting up, and the team needs an expert to
-                debug them.
+                Test your knowledge across the DevOps stack.
                 <br><br>
-                They need to verify your skills before granting you root access.
+                Select a quiz section from the menu on the left. Each section has 15 questions that progress from easy
+                to hard.
                 <br><br>
-                <strong>Are you ready to accept this mission?</strong>
+                <strong>Ready to prove your skills?</strong>
             </p>
-            <button id="start-btn" class="primary-btn pulse-btn">ACCEPT MISSION</button>
+            <p class="hint-text">👈 Click a section to begin</p>
         </section>
 
         <main id="game-container" class="hidden">
-            <!-- Question Question will be injected here -->
+            <!-- Question will be injected here -->
             <div id="question-card" class="card">
                 <h2 id="question-text">Loading...</h2>
+                <pre id="code-block" class="code-block hidden"></pre>
                 <div id="options-container" class="options-grid"></div>
                 <div id="feedback-area" class="hidden">
                     <p id="feedback-text"></p>
-                    <button id="next-btn" class="primary-btn">Next Mission &rarr;</button>
+                    <button id="next-btn" class="primary-btn">Next Question &rarr;</button>
                 </div>
             </div>
         </main>
 
         <section id="results-screen" class="hidden">
             <div class="card result-card">
-                <h2>Mission Complete!</h2>
+                <h2>🎉 Quiz Complete!</h2>
                 <div class="final-score">
-                    <span id="final-score-display">0</span> / 10
+                    <span id="final-score-display">0</span> / <span id="total-questions">15</span>
                 </div>
                 <p id="rank-display" class="rank">Rank: Unranked</p>
-                <button id="restart-btn" class="primary-btn">Reboot System</button>
+                
+                <!-- Detailed Results -->
+                <div class="results-summary">
+                    <h3>Your Answers</h3>
+                    <div id="results-detail" class="results-detail">
+                        <!-- Results will be injected here -->
+                    </div>
+                </div>
+                
+                <button id="restart-btn" class="primary-btn">Try Again</button>
             </div>
         </section>
     </div>

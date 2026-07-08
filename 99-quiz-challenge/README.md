@@ -1,14 +1,14 @@
 # DevOps Quiz Challenge
 
-A comprehensive, interactive MCQ quiz to test your DevOps knowledge across 7 technology stacks!
+A comprehensive, interactive MCQ quiz to test your DevOps knowledge across all 11 bootcamp topics.
 
 ## Features
 
-- 🔐 **PIN-Protected Sections** - Each quiz requires a 4-digit PIN to access
-- 📚 **7 Tech Sections** - Linux, Shell Scripting, GitHub, AWS, Jenkins, Docker, Kubernetes
-- 📈 **Progressive Difficulty** - Questions go from Easy → Medium → Hard
-- 💻 **Code Examples** - Real code snippets in advanced questions
-- 📊 **Detailed Results** - See all answers with right/wrong indicators after completion
+- 🔐 **PIN-Protected Sections** — Each quiz requires a 4-digit PIN to access
+- 📚 **11 Tech Sections** — Linux, Bash Scripting, Python, GitHub, Docker, Docker Compose, Jenkins, GitHub Actions, Kubernetes, Helm, Capstone
+- 📈 **Progressive Difficulty** — Questions go from Easy → Medium → Hard
+- 💻 **Code Examples** — Real code snippets in advanced questions
+- 📊 **Detailed Results** — See all answers with right/wrong indicators after completion
 
 ## 🔑 Quiz PINs
 
@@ -17,12 +17,16 @@ Each section is locked and requires a PIN to access:
 | Section | PIN |
 |---------|-----|
 | Linux Commands | **1847** |
-| Shell Scripting | **2935** |
+| Bash Scripting | **2935** |
+| Python | **3141** |
 | GitHub | **3621** |
-| AWS & Cloud | **4158** |
-| Jenkins | **5274** |
 | Docker | **6389** |
+| Docker Compose | **7294** |
+| Jenkins | **5274** |
+| GitHub Actions | **8462** |
 | Kubernetes | **7046** |
+| Helm | **9153** |
+| Capstone | **1029** |
 
 > ⚠️ **For Instructors:** PINs are stored in `script.js` in the `quizAccessCodes` object. Change them before sharing with students!
 
@@ -81,12 +85,16 @@ Edit `script.js` and modify the `quizAccessCodes` object:
 ```javascript
 const quizAccessCodes = {
     linux: '1847',
-    shell: '2935',
+    bash: '2935',
+    python: '3141',
     github: '3621',
-    aws: '4158',
-    jenkins: '5274',
     docker: '6389',
-    k8s: '7046'
+    compose: '7294',
+    jenkins: '5274',
+    actions: '8462',
+    k8s: '7046',
+    helm: '9153',
+    capstone: '1029'
 };
 ```
 

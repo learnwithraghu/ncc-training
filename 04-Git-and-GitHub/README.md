@@ -1,102 +1,63 @@
-# Git & Version Control Session
+# Day 2: Git and GitHub Basics
+
+This module covers version control with Git and collaboration using GitHub.
+
+## What You Will Learn
+
+By the end of this module, you will be able to:
+
+- Initialize and manage a Git repository
+- Commit changes with meaningful messages
+- Create branches and merge them
+- Push code to GitHub
+- Open and review pull requests
+- Apply `.gitignore` and best practices
+
+## Time Estimate
+
+Approximately **6 hours** (including hands-on exercises).
 
 ## Prerequisites
 
-To participate effectively in this Git workshop, please ensure you have the following:
+- Completion of [Day 1](../00-course-roadmap.md#day-1-linux-bash-scripting-and-python-fundamentals)
+- Git installed (`git --version`)
+- GitHub account
 
-### 1. Git Installation
+## Guide Sequence
 
-**Check if Git is installed:**
+| Guide | File | Topic | Duration |
+|-------|------|-------|----------|
+| Guide 1 | [guide_01_git_basics.md](guide_01_git_basics.md) | Init, add, commit, status, log | 90 min |
+| Guide 2 | [guide_02_github_basics.md](guide_02_github_basics.md) | Remotes, push, clone, pull | 90 min |
+| Guide 3 | [guide_03_branching_and_pr.md](guide_03_branching_and_pr.md) | Branches, merge, pull requests | 120 min |
+
+## Day 2 Narrative
+
+You will take the `~/ncc-labs/day1/` toolkit created on Day 1 and commit it to a new GitHub repository called `ncc-labs`. This repository will be reused on Day 3 when you containerize the Python app.
+
+## Key Artifact
+
+A public GitHub repository `ncc-labs` containing your Day 1 scripts and reports.
+
+---
+
+## Setup Checklist
+
+Before starting, verify your environment:
+
 ```bash
 git --version
+git config --list
 ```
 
-**Install Git if needed:**
-
-- **macOS:** 
-  ```bash
-  brew install git
-  ```
-  Or download from [git-scm.com](https://git-scm.com/)
-
-- **Linux (Ubuntu/Debian):**
-  ```bash
-  sudo apt-get update
-  sudo apt-get install git
-  ```
-
-- **Linux (Fedora/RHEL):**
-  ```bash
-  sudo dnf install git
-  ```
-
-- **Windows:**
-  Download from [git-scm.com](https://git-scm.com/) or install via:
-  ```powershell
-  winget install Git.Git
-  ```
-
-### 2. GitHub Account
-
-- Create a free account at [github.com](https://github.com/)
-- Verify your email address
-- (Optional but recommended) Set up SSH keys for easier authentication
-
-### 3. Git Configuration
-
-Configure your identity (required for commits):
+If needed, configure Git:
 
 ```bash
 git config --global user.name "Your Full Name"
 git config --global user.email "your.email@example.com"
 ```
 
-Verify configuration:
-```bash
-git config --list
-```
-
-### 4. Text Editor
-
-You'll need a text editor for commit messages and file editing:
-
-**Command-line options:**
-- `nano` (easiest for beginners)
-- `vim` or `emacs` (if you're comfortable with them)
-
-**Set default editor:**
-```bash
-# For nano
-git config --global core.editor "nano"
-
-# For VS Code
-git config --global core.editor "code --wait"
-
-# For vim
-git config --global core.editor "vim"
-```
-
-**GUI options:**
-- VS Code (recommended)
-- Sublime Text
-- Atom
-- Any text editor you're comfortable with
-
-### 5. Basic Command Line Knowledge
-
-You should be comfortable with:
-- Navigating directories (`cd`, `pwd`, `ls`)
-- Creating directories (`mkdir`)
-- Creating and editing files
-
-### 6. Internet Connection
-
-Required for:
-- Cloning repositories from GitHub
-- Pushing and pulling changes
-- Accessing GitHub web interface
-
-## Setup Verification
+For easier authentication with GitHub, set up SSH keys or use GitHub CLI.
 
 Run these commands to verify your setup:
 

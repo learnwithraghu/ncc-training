@@ -1,103 +1,54 @@
-# Module 5: Kubernetes - Container Orchestration
+# Day 5, Part 1: Kubernetes
 
-**From Zero to Hero: Master Kubernetes in 5 Progressive Levels**
+This module covers container orchestration with Kubernetes.
 
-## 🎯 Module Overview
+## What You Will Learn
 
-Welcome to the Kubernetes module! This comprehensive guide takes you from basic cluster operations to advanced orchestration concepts. Kubernetes (K8s) is the industry-standard container orchestration platform that automates deployment, scaling, and management of containerized applications.
+By the end of this module, you will be able to:
 
-### What You'll Learn
+- Understand Kubernetes architecture and core concepts
+- Deploy pods, deployments, and services
+- Configure networking and storage
+- Use ConfigMaps and Secrets
+- Run advanced workloads like Jobs and StatefulSets
 
-By completing this module, you will:
+## Time Estimate
 
-✅ Understand Kubernetes architecture and core concepts  
-✅ Manage pods, deployments, and replica sets  
-✅ Configure services and networking  
-✅ Implement persistent storage and configuration management  
-✅ Deploy stateful applications and scheduled jobs  
-✅ Apply production-ready best practices  
-✅ Monitor and troubleshoot K8s applications
+Approximately **3 hours** (including hands-on exercises).
 
----
+## Prerequisites
 
-## 📋 Prerequisites
+- Completion of [Day 4](../00-course-roadmap.md#day-4-jenkins-github-actions-and-ecr)
+- Kubernetes cluster access (provided by instructor)
+- `kubectl` installed
 
-Before starting this module, ensure you have:
+## Guide Sequence
 
-- ✅ **Kubernetes cluster set up and running** (Minikube, Kind, or cloud-based)
-- ✅ **kubectl installed** and configured
-- ✅ Completion of Module 3 (Docker) - **Required**
-- ✅ Basic understanding of containerization
-- ✅ Terminal/command-line proficiency
+| Guide | File | Topic | Duration |
+|-------|------|-------|----------|
+| Guide 1 | [00-OVERVIEW.md](00-OVERVIEW.md) | K8s theory and architecture | 30 min |
+| Guide 2 | [01-basics.md](01-basics.md) | Cluster basics and kubectl | 45 min |
+| Guide 3 | [02-pods-deployments.md](02-pods-deployments.md) | Pods, deployments, scaling | 60 min |
+| Guide 4 | [03-services-networking.md](03-services-networking.md) | Services, ingress, networking | 60 min |
+| Guide 5 | [04-storage-config.md](04-storage-config.md) | Volumes, ConfigMaps, Secrets | 60 min |
+| Guide 6 | [05-advanced.md](05-advanced.md) | StatefulSets, Jobs, Helm intro | 90 min |
 
-### Verify Your Setup
+## Day 5 Narrative
+
+You will learn how to deploy containerized applications to Kubernetes. The document-search capstone app will be deployed using the manifests and Helm chart you build in the next modules.
+
+## Key Artifact
+
+Working Kubernetes manifests for deploying a containerized application.
+
+## Verify Your Setup
 
 ```bash
-# Check kubectl is installed
 kubectl version --client
-
-# Verify cluster connection
 kubectl cluster-info
-
-# Check cluster nodes
 kubectl get nodes
-
-# Verify you can create resources
 kubectl auth can-i create deployments
 ```
-
----
-
-## 🎓 Learning Path
-
-This module is organized into **5 progressive levels**, each building on the previous:
-
-```
-Level 1: Kubernetes Basics           → Cluster fundamentals
-Level 2: Pods & Deployments          → Application deployment
-Level 3: Services & Networking       → Connectivity & exposure
-Level 4: Storage & Configuration     → Data persistence & config
-Level 5: Advanced Topics             → Production-ready patterns
-```
-
-### Recommended Approach
-
-1. **Read [00-OVERVIEW.md](./00-OVERVIEW.md)** for theoretical foundation
-2. **Follow levels sequentially** (01 → 02 → 03 → 04 → 05)
-3. **Practice all commands** in your cluster
-4. **Apply YAML manifests** from level subfolders
-5. **Experiment and break things** - that's how you learn!
-
----
-
-## 📚 Module Contents
-
-| File/Folder | Description | Duration |
-|-------------|-------------|----------|
-| [00-OVERVIEW.md](./00-OVERVIEW.md) | Comprehensive K8s theory and architecture | 30 min |
-| [01-basics.md](./01-basics.md) | **Level 1:** Cluster basics and kubectl | 45 min |
-| [02-pods-deployments.md](./02-pods-deployments.md) | **Level 2:** Pods, deployments, scaling | 60 min |
-| [03-services-networking.md](./03-services-networking.md) | **Level 3:** Services, ingress, networking | 60 min |
-| [04-storage-config.md](./04-storage-config.md) | **Level 4:** Volumes, ConfigMaps, Secrets | 60 min |
-| [05-advanced.md](./05-advanced.md) | **Level 5:** StatefulSets, Jobs, Helm | 90 min |
-| `level-01-basics/` | Scripts and manifests for Level 1 | - |
-| `level-02-pods-deployments/` | Scripts and manifests for Level 2 | - |
-| `level-03-services-networking/` | Scripts and manifests for Level 3 | - |
-| `level-04-storage-config/` | Scripts and manifests for Level 4 | - |
-| `level-05-advanced/` | Scripts and manifests for Level 5 | - |
-
-**Total Duration:** 5-6 hours (including hands-on practice)
-
----
-
-## 🚀 Quick Command Reference
-
-### Level 1: Basics
-
-```bash
-# Cluster information
-kubectl cluster-info
-kubectl get nodes
 kubectl get namespaces
 
 # Create namespace

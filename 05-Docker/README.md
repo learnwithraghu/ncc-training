@@ -1,103 +1,55 @@
-# Docker Containerization Module
+# Day 3, Part 1: Docker
 
-Welcome to the Docker Containerization module of the Zero to Hero DevOps Course. This module will transform you from Docker beginner to confident practitioner, capable of containerizing applications and managing Docker environments in production.
+This module covers containerization with Docker.
 
-## 📚 Module Overview
-
-This module takes a structured approach to learning Docker:
-
-1. **Theoretical Foundation** ([00-OVERVIEW.md](./00-OVERVIEW.md))
-   - Why containers revolutionized software deployment
-   - Container vs VM architecture
-   - Docker internal workings
-   - Real-world DevOps use cases
-
-2. **Hands-On Learning** (Sections 01-04)
-   - Building Docker images
-   - Managing volumes and data persistence
-   - Configuring container networking
-   - Operating and debugging containers
-
-3. **Best Practices** ([05-best-practices.md](./05-best-practices.md))
-   - Production-ready Dockerfiles
-   - Security considerations
-   - Performance optimization
-   - CI/CD integration patterns
-
-4. **Practical Application** ([lab-exercises/](./lab-exercises/))
-   - Comprehensive lab challenge
-   - Real-world scenarios
-   - Testing and validation
-
-## 🗂️ Module Structure
-
-```
-03-Docker/
-├── 00-OVERVIEW.md                    Comprehensive Docker fundamentals (2200+ words)
-├── 01-docker-basics.md               Hello World app, building images, running containers  
-├── 02-volumes-and-storage.md         Data persistence, named volumes, bind mounts
-├── 03-networking.md                  Container networking, custom networks
-├── 04-container-operations.md         Logs, accessing containers, debugging
-├── 05-best-practices.md              Production practices, security, optimization
-├── application/                       Sample Python Flask application
-│   ├── app.py
-│   ├── requirements.txt
-│   ├── Dockerfile
-│   └── .dockerignore
-├── lab-exercises/                     Hands-on challenges
-│   ├── LAB_CHALLENGE.md
-│   └── test.sh
-├── reference/                         Quick references and troubleshooting
-│   ├── QUICK_REFERENCE.md
-│   └── TROUBLESHOOTING.md
-└── README.md                         This file
-```
-
-## 🎯 Learning Objectives
+## What You Will Learn
 
 By the end of this module, you will be able to:
 
-- [ ] **Explain** containerization concepts and benefits
-- [ ] **Build** Docker images from Dockerfiles
-- [ ] **Run** containers with proper configuration
-- [ ] **Manage** data persistence using volumes
-- [ ] **Configure** container networking
-- [ ] **Debug** container issues using logs and inspection tools
-- [ ] **Apply** Docker best practices for security and performance
-- [ ] **Integrate** Docker into CI/CD pipelines
-- [ ] **Optimize** Docker images for production use
+- Explain what containers are and why they matter
+- Build Docker images from Dockerfiles
+- Run, stop, and inspect containers
+- Manage container networking and volumes
+- Apply Docker best practices
 
-## 🚀 Getting Started
+## Time Estimate
 
-### Prerequisites
+Approximately **4 hours** (including hands-on exercises).
 
-Before starting this module, ensure you have:
+## Prerequisites
 
-**Docker Installed:**
+- Completion of [Day 2](../00-course-roadmap.md#day-2-git-and-github-basics)
+- Docker installed (`docker --version`)
+
+## Guide Sequence
+
+| Guide | File | Topic | Duration |
+|-------|------|-------|----------|
+| Guide 1 | [00-OVERVIEW.md](00-OVERVIEW.md) | Container theory and concepts | 30 min |
+| Guide 2 | [01-docker-basics.md](01-docker-basics.md) | Hello World, images, containers | 60 min |
+| Guide 3 | [02-volumes-and-storage.md](02-volumes-and-storage.md) | Volumes and bind mounts | 45 min |
+| Guide 4 | [03-networking.md](03-networking.md) | Container networking | 45 min |
+| Guide 5 | [04-container-operations.md](04-container-operations.md) | Logs, exec, debugging | 45 min |
+| Guide 6 | [05-best-practices.md](05-best-practices.md) | Production practices | 30 min |
+
+## Day 3 Narrative
+
+You will take the Python app from your `ncc-labs` GitHub repository and containerize it. The Docker image you build today will be pushed to ECR by your CI/CD pipeline on Day 4.
+
+## Key Artifact
+
+A working Docker image for a Python Flask application.
+
+## Getting Started
+
+Verify Docker is installed:
+
 ```bash
-# Verify Docker installation
-docker --version  # Should show Docker version 20.x or higher
-docker info       # Shows Docker system information
+docker --version
+docker info
 ```
 
-**Installation Options:**
-- **macOS/Windows**: [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-- **Linux**: Docker Engine
-  ```bash
-  # Ubuntu/Debian
-  curl -fsSL https://get.docker.com  | sh
-  
-  # Verify
-  sudo systemctl status docker
-  ```
-
-**Basic Command Line Knowledge:**
-- Comfortable with terminal/command prompt
-- Understand basic Linux commands (if not, complete 01-Linux module first)
-
-**Development Environment:**
-- Text editor (VS Code recommended)
-- (Optional) Python 3.x for testing the Flask app locally
+If Docker is not installed, ask your instructor or follow the installation steps in [00-OVERVIEW.md](00-OVERVIEW.md).
 
 ### Quick Docker Test
 

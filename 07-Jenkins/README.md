@@ -1,103 +1,53 @@
-# Jenkins CI/CD Pipeline Module
+# Day 4, Part 1: Jenkins
 
-Welcome to the Jenkins CI/CD Pipeline module. This module takes a **progressive, ladder approach** to learning Jenkins - starting with setup and gradually building to advanced pipeline patterns.
+This module covers CI/CD with Jenkins.
 
-## 📚 Module Overview
-
-This module provides hands-on experience with:
-
-1. **Jenkins Setup on EC2** - Installing and configuring Jenkins on AWS EC2
-2. **First Pipeline** - Creating and understanding basic pipelines
-3. **Gitea Integration** - Connecting Jenkins to Gitea repositories
-4. **Docker Build Pipeline** - Building Docker images using Jenkins
-5. **AWS ECR Integration** - Pushing Docker images to Amazon ECR
-6. **Advanced Groovy** - Writing complex pipeline scripts and patterns
-
-## 🗂️ Module Structure
-
-```
-04-Jenkins/
-├── 00-OVERVIEW.md                    Jenkins theory and concepts
-├── README.md                         This file - Module guide
-├── 01-jenkins-setup.md               Lesson 1: Setup Jenkins on EC2
-├── 02-first-pipeline.md              Lesson 2: Create your first pipeline
-├── 03-gitea-integration.md            Lesson 3: Connect Gitea to Jenkins
-├── 04-docker-build.md                Lesson 4: Build Docker images
-├── 05-ecr-integration.md             Lesson 5: Push to AWS ECR
-├── 06-groovy-advanced.md             Lesson 6: Advanced Groovy patterns
-├── scripts/                          Jenkins scripts and configurations
-│   ├── Jenkinsfile                   Complete pipeline example
-│   ├── jenkins-ec2-setup.sh          EC2 Jenkins installation script
-│   ├── ecr-setup.sh                  AWS ECR setup script
-│   └── jenkins-plugins.txt            Required Jenkins plugins list
-└── examples/                         Additional example Jenkinsfiles
-    ├── simple-docker-build.groovy
-    └── multi-stage-pipeline.groovy
-```
-
-## 🎯 Learning Objectives
+## What You Will Learn
 
 By the end of this module, you will be able to:
 
-- [ ] **Install** Jenkins on EC2 instance
-- [ ] **Configure** Jenkins with required plugins
-- [ ] **Create** basic Jenkins pipelines
-- [ ] **Connect** Jenkins to Gitea repositories
-- [ ] **Build** Docker images in Jenkins pipelines
-- [ ] **Push** Docker images to AWS ECR
-- [ ] **Write** advanced Groovy pipeline scripts
-- [ ] **Debug** and troubleshoot Jenkins pipelines
+- Install and configure Jenkins
+- Create freestyle and pipeline jobs
+- Connect Jenkins to Git repositories
+- Build Docker images in Jenkins
+- Push Docker images to Amazon ECR
 
-## 🚀 Prerequisites
+## Time Estimate
 
-Before starting this module, ensure you have:
+Approximately **4 hours** (including hands-on exercises).
 
-### 1. AWS Account Setup
+## Prerequisites
 
-- Active AWS account with appropriate permissions
-- AWS CLI installed and configured
-- IAM user with permissions for:
-  - EC2 (create, manage instances)
-  - ECR (create repositories, push/pull images)
-  - IAM (create roles and policies)
+- Completion of [Day 3](../00-course-roadmap.md#day-3-docker-and-docker-compose)
+- Jenkins instance (provided by instructor or installed on EC2)
+- AWS account and ECR access
 
-### 2. AWS CLI Installation
+## Guide Sequence
 
-```bash
-# macOS
-brew install awscli
+| Guide | File | Topic | Duration |
+|-------|------|-------|----------|
+| Guide 1 | [00-OVERVIEW.md](00-OVERVIEW.md) | Jenkins theory and concepts | 30 min |
+| Guide 2 | [01-jenkins-setup.md](01-jenkins-setup.md) | Jenkins setup on EC2 | 60 min |
+| Guide 3 | [02-first-pipeline.md](02-first-pipeline.md) | First pipeline | 45 min |
+| Guide 4 | [03-gitea-integration.md](03-gitea-integration.md) | Gitea integration | 45 min |
+| Guide 5 | [04-docker-build.md](04-docker-build.md) | Docker build pipeline | 60 min |
+| Guide 6 | [05-ecr-integration.md](05-ecr-integration.md) | Push to ECR | 60 min |
 
-# Linux
-curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-unzip awscliv2.zip
-sudo ./aws/install
+## Day 4 Narrative
 
-# Verify installation
-aws --version
-```
+You will set up Jenkins to build the Docker image from your `ncc-labs` repository and push it to Amazon ECR. Later in the day, you will build the same pipeline in GitHub Actions to compare the two CI/CD tools.
 
-### 3. AWS CLI Configuration
+## Key Artifact
 
-```bash
-# Configure AWS credentials
-aws configure
+A Jenkins pipeline that builds and pushes a Docker image to ECR.
 
-# You'll be prompted for:
-# AWS Access Key ID: [Your access key]
-# AWS Secret Access Key: [Your secret key]
-# Default region name: [e.g., us-east-1]
-# Default output format: [json]
-```
+## Existing Content
 
-### 4. Gitea Account
+This module reuses the original Jenkins content. The folder structure includes:
 
-- Gitea account (creds provided)
-- Gitea repository (sample-config)
-- Access Token for Jenkins integration
-
-### 5. Docker Knowledge
-
-- Understanding of Docker basics (complete 03-Docker module first)
+- `scripts/` — Jenkinsfiles and setup scripts
+- `examples/` — Additional pipeline examples
+- `jenkins-challenge.md` — Advanced challenge
 - Docker installed locally for testing
 
 ## 📖 Progressive Learning Path

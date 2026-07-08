@@ -1,10 +1,10 @@
-# Zero to Hero: DevOps Training Course
+# NCC DevOps Bootcamp
 
-**A comprehensive, hands-on journey from Linux fundamentals to containerization**
+**A 5-day, hands-on journey from Linux fundamentals to Kubernetes and Helm**
 
 ## 🎯 Course Overview
 
-This course is designed to take you from complete beginner to confident DevOps practitioner. You'll build foundational skills in Linux, master version control with Git, and learn containerization with Docker—the three pillars of modern DevOps practices.
+This bootcamp takes you from complete beginner to confident DevOps practitioner. Each day builds on the previous day, and every day produces a real artifact that feeds into the next.
 
 ### Who Is This Course For?
 
@@ -20,28 +20,41 @@ By the end of this course, you will:
 
 ✅ Navigate and manage Linux systems confidently  
 ✅ Write bash scripts to automate repetitive tasks  
-✅ Use Git for version control and team collaboration  
-✅ Implement branching strategies for different workflows  
+✅ Write Python scripts for DevOps automation  
+✅ Use Git and GitHub for version control and collaboration  
 ✅ Build and deploy containerized applications with Docker  
+✅ Run multi-container applications with Docker Compose  
 ✅ Set up CI/CD pipelines with Jenkins  
-✅ Integrate Jenkins with GitHub and AWS ECR  
+✅ Build CI/CD workflows with GitHub Actions  
+✅ Integrate Jenkins and GitHub Actions with AWS ECR  
 ✅ Deploy and manage applications with Kubernetes  
-✅ Configure services, storage, and networking in K8s  
+✅ Package Kubernetes applications with Helm  
 ✅ Apply DevOps best practices for security and performance
 
 ## 📚 Course Structure
 
-The course is organized into five progressive modules, each building on the previous:
+The course is organized into 11 progressive modules across 5 days:
 
 ```
-ncc-train/
-├── 01-Linux/                Linux fundamentals and bash scripting
-├── 02-Git/                  Version control and collaboration
-├── 03-Docker/               Containerization and deployment
-├── 04-Jenkins/              CI/CD pipelines and automation
-├── 05-Kubernetes/           Container orchestration
-└── README.md               This file
+ncc-training/
+├── 00-course-roadmap.md     Day-by-day learning map
+├── 01-Linux/                Day 1 — Linux fundamentals
+├── 02-Bash-Scripting/       Day 1 — Bash scripting
+├── 03-Python-Fundamentals/  Day 1 — Python for DevOps
+├── 04-Git-and-GitHub/       Day 2 — Version control & collaboration
+├── 05-Docker/               Day 3 — Containerization
+├── 06-Docker-Compose/       Day 3 — Multi-container apps
+├── 07-Jenkins/              Day 4 — CI/CD with Jenkins
+├── 08-GitHub-Actions/       Day 4 — CI/CD with GitHub Actions
+├── 09-Kubernetes/           Day 5 — Container orchestration
+├── 10-Helm/                 Day 5 — Kubernetes package manager
+├── 11-Capstone-Document-Search/  Day 5 — End-to-end project
+├── 99-quiz-challenge/       MCQ quiz across all topics
+├── COURSE_PLAN.md           Implementation progress tracker
+└── README.md                This file
 ```
+
+Start with [00-course-roadmap.md](00-course-roadmap.md) for the full day-by-day plan.
 
 ---
 

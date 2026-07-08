@@ -1,38 +1,58 @@
-# Linux & Bash Scripting Hands-on Session - Prerequisites
+# Day 1, Part 1: Linux Fundamentals
 
-## Overview
-This session is designed to provide a hands-on introduction to Linux command-line basics and Bash scripting. By the end of this 1.5-hour session, you will be comfortable navigating the file system, managing files, and writing basic automation scripts.
+This module is the first part of **Day 1** of the NCC DevOps Bootcamp. It covers the essential Linux command-line skills every DevOps engineer needs.
+
+## What You Will Learn
+
+By the end of this module, you will be able to:
+
+- Navigate the Linux filesystem using the terminal
+- Create, copy, move, and delete files and directories
+- Edit files with `vim` and `nano`
+- Monitor system resources and manage processes
+- Understand file permissions and how to change them
+
+## Time Estimate
+
+Approximately **2 hours** (including hands-on exercises).
 
 ## Prerequisites
-To participate effectively in this lab, please ensure you have the following:
 
-### 1. Operating System Access
-*   **Linux/macOS:** You can use your native terminal.
-*   **Windows:**
-    *   **WSL (Windows Subsystem for Linux):** Highly recommended. Install Ubuntu from the Microsoft Store.
-    *   **Git Bash:** A good alternative if WSL is not available.
-    *   **Virtual Machine:** VirtualBox or VMware running a Linux distribution (Ubuntu, CentOS, etc.).
+- Access to a terminal (Linux, macOS, or WSL on Windows)
+- A text editor (`nano`, `vim`, or VS Code)
+- No prior Linux experience required
 
-### 2. Terminal Emulator
-*   You need a terminal application to type commands.
-    *   **macOS:** Terminal (built-in) or iTerm2.
-    *   **Windows:** Windows Terminal, PowerShell, or Git Bash.
-    *   **Linux:** GNOME Terminal, Konsole, or xterm.
+## Guide Sequence
 
-### 3. Text Editor
-*   You will need a text editor to write scripts.
-    *   **Command-line editors:** `nano` (easiest for beginners), `vim`, or `emacs`.
-    *   **GUI editors:** VS Code (recommended), Sublime Text, or Atom.
+Follow these guides in order:
 
-### 4. Basic Knowledge
-*   No prior Linux experience is required.
-*   A willingness to type commands and experiment!
+| Guide | File | Topic | Duration |
+|-------|------|-------|----------|
+| Guide 1 | [guide_01_intro_and_navigation.md](guide_01_intro_and_navigation.md) | Terminal basics, `pwd`, `ls`, `cd`, `man` | 20 min |
+| Guide 2 | [guide_02_file_management.md](guide_02_file_management.md) | Files, directories, permissions | 25 min |
+| Guide 3 | [guide_03_text_editors.md](guide_03_text_editors.md) | Vim basics | 15 min |
+| Guide 4 | [guide_04_system_management.md](guide_04_system_management.md) | Processes, monitoring, logs | 20 min |
+
+## Day 1 Narrative
+
+The commands and workspace you create in this module feed directly into the next modules:
+
+- In **02-Bash-Scripting**, you will write scripts that use these Linux commands.
+- In **03-Python-Fundamentals**, you will write Python programs that read and process files you create here.
+- On **Day 2**, the entire `~/ncc-labs/day1/` folder will be committed to GitHub.
 
 ## Setup Instructions
-1.  Open your terminal.
-2.  Create a directory for today's session:
-    ```bash
-    mkdir linux-session
-    cd linux-session
-    ```
-3.  You are ready to begin!
+
+1. Open your terminal.
+2. Create the Day 1 workspace:
+   ```bash
+   mkdir -p ~/ncc-labs/day1
+   cd ~/ncc-labs/day1
+   ```
+3. Follow the guides in order above.
+
+## Additional Resources
+
+- [00-OVERVIEW.md](00-OVERVIEW.md) — Comprehensive Linux theory
+- [instructor-guide.md](instructor-guide.md) — Notes for instructors
+- [07-challenges/](07-challenges/) — Extra hands-on challenges

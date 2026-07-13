@@ -34,10 +34,15 @@ Work through the topics in `guided-learning/` in order:
 | Topic 4 | [guided-learning/topic-04/](guided-learning/topic-04/) | Hidden files and globbing |
 | Topic 5 | [guided-learning/topic-05/](guided-learning/topic-05/) | File management |
 | Topic 6 | [guided-learning/topic-06/](guided-learning/topic-06/) | File permissions |
-| Topic 7 | [guided-learning/topic-07/](guided-learning/topic-07/) | Editing with Nano and Vim |
-| Topic 8 | [guided-learning/topic-08/](guided-learning/topic-08/) | Text editor practice |
-| Topic 9 | [guided-learning/topic-09/](guided-learning/topic-09/) | Process management |
-| Topic 10 | [guided-learning/topic-10/](guided-learning/topic-10/) | Log troubleshooting |
+| Topic 7 | [guided-learning/topic-07/](guided-learning/topic-07/) | Viewing files and text output |
+| Topic 8 | [guided-learning/topic-08/](guided-learning/topic-08/) | Editing with Nano and Vim |
+| Topic 9 | [guided-learning/topic-09/](guided-learning/topic-09/) | Search with grep and find |
+| Topic 10 | [guided-learning/topic-10/](guided-learning/topic-10/) | Process management |
+| Topic 11 | [guided-learning/topic-11/](guided-learning/topic-11/) | Disk usage and system info |
+| Topic 12 | [guided-learning/topic-12/](guided-learning/topic-12/) | Log troubleshooting |
+| Topic 13 | [guided-learning/topic-13/](guided-learning/topic-13/) | Redirection and pipes |
+| Topic 14 | [guided-learning/topic-14/](guided-learning/topic-14/) | Archives and compression |
+| Topic 15 | [guided-learning/topic-15/](guided-learning/topic-15/) | Linux mini workflow |
 
 ## Day 1 Narrative
 
@@ -51,11 +56,11 @@ The commands and workspace you create in this module feed directly into the next
 
 The practice material for this module now lives in [guided-learning/](guided-learning/).
 
-- `topic-01/` through `topic-10/` hold the learning topics
-- each topic has `layer-1.md`, `layer-2.md`, and `layer-3.md`
-- layer 1 is the learner task, layer 2 is the checkpoint, and layer 3 is the solution/demo
+- `topic-01/` through `topic-15/` hold the learning topics
+- each topic is a single guided lesson with commands, notes, and checkpoints in one file
+- each topic is designed to take about 20 minutes to complete
 
-This module now carries a 10-topic guided-learning set with a balanced mix of easy, medium, and hard material.
+This module now carries a 15-topic guided-learning set with a steady 20-minute pace for each lesson.
 
 ## Setup Instructions
 
@@ -70,4 +75,4 @@ This module now carries a 10-topic guided-learning set with a balanced mix of ea
 ## Additional Resources
 
 - [00-OVERVIEW.md](00-OVERVIEW.md) — Comprehensive Linux theory
-- [guided-learning/](guided-learning/) — Practice topics and layered walkthroughs
+- [guided-learning/](guided-learning/) — Practice topics and self-contained lessons

@@ -1,21 +1,20 @@
 # Guided Learning - Linux Fundamentals
 
-This module uses a single guided-learning area instead of separate exercise and solution folders.
+This module uses a single guided-learning area with one self-contained lesson per topic.
 
 ## Structure
 
-- `topic-01/` through `topic-10/` hold the learning topics
-- each topic has three layers:
-  - `layer-1.md` - learner prompt
-  - `layer-2.md` - guidance or checkpoint
-  - `layer-3.md` - instructor solution
+- `topic-01/` through `topic-15/` hold the learning topics
+- each topic has a single `guide.md` file
+- each topic is designed to take about 20 minutes
 
 ## Recommended Flow
 
 1. Open the topic.
-2. Work through layer 1.
-3. Use layer 2 as a checkpoint or hint layer.
-4. Show layer 3 as the solution/demo layer.
+2. Read the explanation and commands.
+3. Run the commands as you go.
+4. Use the notes and checkpoint prompts to confirm understanding.
+5. Finish the topic in about 20 minutes before moving on.
 
 ## Topic List
 
@@ -25,7 +24,12 @@ This module uses a single guided-learning area instead of separate exercise and 
 - Topic 04 - Hidden Files and Globbing
 - Topic 05 - File Management
 - Topic 06 - File Permissions
-- Topic 07 - Editing with Nano and Vim
-- Topic 08 - Text Editor Practice
-- Topic 09 - Process Management
-- Topic 10 - Log Troubleshooting
+- Topic 07 - Viewing Files and Text Output
+- Topic 08 - Editing with Nano and Vim
+- Topic 09 - Search with grep and find
+- Topic 10 - Process Management
+- Topic 11 - Disk Usage and System Info
+- Topic 12 - Log Troubleshooting
+- Topic 13 - Redirection and Pipes
+- Topic 14 - Archives and Compression
+- Topic 15 - Linux Mini Workflow

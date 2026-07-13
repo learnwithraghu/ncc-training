@@ -12,8 +12,8 @@ That means:
 
 - if you add a new topic, create matching guided-learning topic files
 - if you rename or move a guide, update the linked module README and guided-learning README files
-- if you change one layer of a topic, adjust the other layers too
-- if a module uses `guided-learning/`, keep the topic and layer structure mirrored
+- if you change one lesson, adjust the surrounding lessons so the sequence still flows
+- if a module uses `guided-learning/`, keep the topic flow mirrored and self-contained
 
 ## Repository Pattern
 
@@ -23,21 +23,17 @@ Each numbered module should follow the same guided-learning layout:
 module-name/
   guided-learning/
     topic-01/
-      layer-1.md
-      layer-2.md
-      layer-3.md
+      guide.md
     topic-02/
-      layer-1.md
-      layer-2.md
-      layer-3.md
+      guide.md
 ```
 
 ## Content Rules
 
-- Aim for about 10 topics per section when the module depth supports it.
-- Keep the three layers consistent and predictable: learner task, checkpoint, and solution/demo.
-- Make the guided-learning layers mirror each other so live demonstration stays simple.
-- Keep naming consistent so the learner version and solution version are easy to compare.
+- Aim for about 15 topics in the Linux module unless there is a strong reason to keep fewer.
+- Keep each topic self-contained so it can be completed in about 20 minutes.
+- Include commands, explanation, and checkpoint prompts inside the same guide.
+- Keep naming consistent so the learning path is easy to scan.
 
 ## Scope
 
@@ -47,11 +43,11 @@ module-name/
 
 ## Teaching Flow
 
-1. Show layer 1 on screen.
-2. Let learners implement the task.
-3. Review layer 2 as the checkpoint.
-4. Review layer 3 as the solution/demo.
-5. Keep the topic layout identical across modules.
+1. Open the topic guide.
+2. Walk through the commands with the learner.
+3. Pause at the checkpoint prompts.
+4. Finish with the same lesson flow every time.
+5. Keep each topic self-contained and time-boxed.
 
 ## Tool Compatibility
 
@@ -59,4 +55,4 @@ This file is intended to be useful in Cursor, GitHub Copilot, and OpenCode-style
 
 - Keep the instructions direct and repository-focused.
 - Prefer small, consistent edits over broad rewrites.
-- When in doubt, keep guided-learning topics and layers aligned.
+- When in doubt, keep guided-learning topics aligned and self-contained.

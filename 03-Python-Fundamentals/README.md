@@ -14,7 +14,7 @@ By the end of this module, you will be able to:
 
 ## Time Estimate
 
-Approximately **2 hours** (including hands-on exercises).
+Approximately **6-7 hours** total, split into 20 guided topics at about 20 minutes each.
 
 ## Prerequisites
 
@@ -22,26 +22,32 @@ Approximately **2 hours** (including hands-on exercises).
 - Python 3 installed (verify with `python3 --version`)
 - Working directory: `~/ncc-labs/day1/`
 
-## Guide Sequence
+## Guided Learning Topics
 
-Follow these guides in order:
+Work through the topics in `guided-learning/` in order:
 
-| Guide | File | Topic | Duration |
-|-------|------|-------|----------|
-| Guide 7 | [guide_01_python_for_devops.md](guide_01_python_for_devops.md) | Python basics, file I/O, log parsing | 75 min |
-| Guide 8 | [guide_02_python_automation_lab.md](guide_02_python_automation_lab.md) | Combine Python with Bash orchestration | 60 min |
-
-## Labs
-
-- [labs/lab_01_python_challenge.md](labs/lab_01_python_challenge.md) — Practice challenges
-- [labs/sample.log](labs/sample.log) — Sample log file for exercises
-
-## Practice Materials
-
-Use these folders during the live session:
-
-- [exercise/](exercise/) — learner tasks split into `easy/`, `medium/`, and `hard/`
-- [solution/](solution/) — matching instructor solutions for live demonstration
+| Topic | Folder | Focus |
+|-------|--------|-------|
+| Topic 1 | [guided-learning/topic-01/](guided-learning/topic-01/) | Python setup and first script |
+| Topic 2 | [guided-learning/topic-02/](guided-learning/topic-02/) | Variables and data types |
+| Topic 3 | [guided-learning/topic-03/](guided-learning/topic-03/) | Lists and loops |
+| Topic 4 | [guided-learning/topic-04/](guided-learning/topic-04/) | Conditionals and comparisons |
+| Topic 5 | [guided-learning/topic-05/](guided-learning/topic-05/) | Reading files |
+| Topic 6 | [guided-learning/topic-06/](guided-learning/topic-06/) | Writing files |
+| Topic 7 | [guided-learning/topic-07/](guided-learning/topic-07/) | Command-line arguments |
+| Topic 8 | [guided-learning/topic-08/](guided-learning/topic-08/) | Functions and scope |
+| Topic 9 | [guided-learning/topic-09/](guided-learning/topic-09/) | Dictionaries and counting |
+| Topic 10 | [guided-learning/topic-10/](guided-learning/topic-10/) | Log parsing basics |
+| Topic 11 | [guided-learning/topic-11/](guided-learning/topic-11/) | Error handling |
+| Topic 12 | [guided-learning/topic-12/](guided-learning/topic-12/) | Paths and file system work |
+| Topic 13 | [guided-learning/topic-13/](guided-learning/topic-13/) | subprocess and shell commands |
+| Topic 14 | [guided-learning/topic-14/](guided-learning/topic-14/) | CSV and JSON |
+| Topic 15 | [guided-learning/topic-15/](guided-learning/topic-15/) | Reporting scripts |
+| Topic 16 | [guided-learning/topic-16/](guided-learning/topic-16/) | Config file validation |
+| Topic 17 | [guided-learning/topic-17/](guided-learning/topic-17/) | Log parser build |
+| Topic 18 | [guided-learning/topic-18/](guided-learning/topic-18/) | Disk usage reporting |
+| Topic 19 | [guided-learning/topic-19/](guided-learning/topic-19/) | Day 1 orchestrator |
+| Topic 20 | [guided-learning/topic-20/](guided-learning/topic-20/) | Python mini workflow |
 
 ## Day 1 Narrative
 
@@ -49,5 +55,4 @@ The Python `log_parser.py` you build here reads the log files created by your Ba
 
 ## Additional Resources
 
-- [exercise/](exercise/) — Practice tasks for learners
-- [solution/](solution/) — Reference solutions for instructors
+- [guided-learning/](guided-learning/) — Python topics and walkthroughs

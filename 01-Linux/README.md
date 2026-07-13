@@ -22,16 +22,22 @@ Approximately **2 hours** (including hands-on exercises).
 - A text editor (`nano`, `vim`, or VS Code)
 - No prior Linux experience required
 
-## Guide Sequence
+## Guided Learning Topics
 
-Follow these guides in order:
+Work through the topics in `guided-learning/` in order:
 
-| Guide | File | Topic | Duration |
-|-------|------|-------|----------|
-| Guide 1 | [guide_01_intro_and_navigation.md](guide_01_intro_and_navigation.md) | Terminal basics, `pwd`, `ls`, `cd`, `man` | 20 min |
-| Guide 2 | [guide_02_file_management.md](guide_02_file_management.md) | Files, directories, permissions | 25 min |
-| Guide 3 | [guide_03_text_editors.md](guide_03_text_editors.md) | Vim basics | 15 min |
-| Guide 4 | [guide_04_system_management.md](guide_04_system_management.md) | Processes, monitoring, logs | 20 min |
+| Topic | Folder | Focus |
+|-------|--------|-------|
+| Topic 1 | [guided-learning/topic-01/](guided-learning/topic-01/) | Basic navigation |
+| Topic 2 | [guided-learning/topic-02/](guided-learning/topic-02/) | Directory structure |
+| Topic 3 | [guided-learning/topic-03/](guided-learning/topic-03/) | Help and man pages |
+| Topic 4 | [guided-learning/topic-04/](guided-learning/topic-04/) | Hidden files and globbing |
+| Topic 5 | [guided-learning/topic-05/](guided-learning/topic-05/) | File management |
+| Topic 6 | [guided-learning/topic-06/](guided-learning/topic-06/) | File permissions |
+| Topic 7 | [guided-learning/topic-07/](guided-learning/topic-07/) | Editing with Nano and Vim |
+| Topic 8 | [guided-learning/topic-08/](guided-learning/topic-08/) | Text editor practice |
+| Topic 9 | [guided-learning/topic-09/](guided-learning/topic-09/) | Process management |
+| Topic 10 | [guided-learning/topic-10/](guided-learning/topic-10/) | Log troubleshooting |
 
 ## Day 1 Narrative
 
@@ -41,12 +47,15 @@ The commands and workspace you create in this module feed directly into the next
 - In **03-Python-Fundamentals**, you will write Python programs that read and process files you create here.
 - On **Day 2**, the entire `~/ncc-labs/day1/` folder will be committed to GitHub.
 
-## Practice Materials
+## Guided Learning
 
-Use these folders during the live session:
+The practice material for this module now lives in [guided-learning/](guided-learning/).
 
-- [exercise/](exercise/) — learner tasks split into `easy/`, `medium/`, and `hard/`
-- [solution/](solution/) — matching instructor solutions for live demonstration
+- `topic-01/` through `topic-10/` hold the learning topics
+- each topic has `layer-1.md`, `layer-2.md`, and `layer-3.md`
+- layer 1 is the learner task, layer 2 is the checkpoint, and layer 3 is the solution/demo
+
+This module now carries a 10-topic guided-learning set with a balanced mix of easy, medium, and hard material.
 
 ## Setup Instructions
 
@@ -61,6 +70,4 @@ Use these folders during the live session:
 ## Additional Resources
 
 - [00-OVERVIEW.md](00-OVERVIEW.md) — Comprehensive Linux theory
-- [instructor-guide.md](instructor-guide.md) — Notes for instructors
-- [exercise/](exercise/) — Practice tasks for learners
-- [solution/](solution/) — Reference solutions for instructors
+- [guided-learning/](guided-learning/) — Practice topics and layered walkthroughs

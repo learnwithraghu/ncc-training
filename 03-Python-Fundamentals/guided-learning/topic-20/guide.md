@@ -8,7 +8,23 @@ Put the Python fundamentals together into one short practice workflow.
 ## Commands to Use
 ```bash
 cd ~/ncc-labs/day1
-cat > mini_python_workflow.py << 'EOF'
+vi mini_python_workflow.py
+python3 mini_python_workflow.py
+```
+
+## Guided Steps
+1. Open `vi mini_python_workflow.py` and add the script content below.
+2. Build a path with `pathlib`.
+3. Write a short summary file.
+4. Read the summary back and print it.
+5. Explain how this uses several concepts from earlier topics.
+6. Review the whole module flow from first script to workflow.
+
+## Checkpoint
+Which Python concepts from this module did you use in this final workflow?
+
+## Script Content
+```python
 from pathlib import Path
 
 base_dir = Path.home() / 'ncc-labs' / 'day1'
@@ -23,16 +39,4 @@ lines = [
 
 summary_file.write_text('\n'.join(lines) + '\n', encoding='utf-8')
 print(summary_file.read_text(encoding='utf-8'))
-EOF
-python3 mini_python_workflow.py
 ```
-
-## Guided Steps
-1. Build a path with `pathlib`.
-2. Write a short summary file.
-3. Read the summary back and print it.
-4. Explain how this uses several concepts from earlier topics.
-5. Review the whole module flow from first script to workflow.
-
-## Checkpoint
-Which Python concepts from this module did you use in this final workflow?

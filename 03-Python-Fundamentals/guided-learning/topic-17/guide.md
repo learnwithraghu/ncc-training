@@ -8,7 +8,23 @@ Build a parser that counts log levels and lists errors.
 ## Commands to Use
 ```bash
 cd ~/ncc-labs/day1
-cat > log_parser.py << 'EOF'
+vi log_parser.py
+python3 log_parser.py sample.log
+```
+
+## Guided Steps
+1. Open `vi log_parser.py` and add the script content below.
+2. Read the log file path from `sys.argv`.
+2. Count log levels with `defaultdict`.
+3. Collect error lines in a list.
+4. Print a summary and the error details.
+5. Explain how the parser fits the Day 1 workflow.
+
+## Checkpoint
+Why does `defaultdict(int)` make counting simpler?
+
+## Script Content
+```python
 import sys
 from collections import defaultdict
 
@@ -37,16 +53,4 @@ print('\nError Details')
 print('=============')
 for error in errors:
     print(error)
-EOF
-python3 log_parser.py sample.log
 ```
-
-## Guided Steps
-1. Read the log file path from `sys.argv`.
-2. Count log levels with `defaultdict`.
-3. Collect error lines in a list.
-4. Print a summary and the error details.
-5. Explain how the parser fits the Day 1 workflow.
-
-## Checkpoint
-Why does `defaultdict(int)` make counting simpler?

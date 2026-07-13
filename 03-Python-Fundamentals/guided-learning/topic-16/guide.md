@@ -8,12 +8,32 @@ Validate a simple KEY=VALUE config file.
 ## Commands to Use
 ```bash
 cd ~/ncc-labs/day1
-cat > app.conf << 'EOF'
+vi app.conf
+vi validate_config.py
+python3 validate_config.py
+```
+
+## Guided Steps
+1. Open `vi app.conf` and add the sample config content below.
+2. Open `vi validate_config.py` and add the script content below.
+3. Skip blank lines and comments.
+4. Split each setting on `=`.
+5. Check whether required keys are present.
+6. Print a validation result.
+
+## Checkpoint
+Why is it helpful to validate config files before a script uses them?
+
+## File Content
+`app.conf`
+```text
 APP_NAME=MyApp
 PORT=8080
 LOG_LEVEL=INFO
-EOF
-cat > validate_config.py << 'EOF'
+```
+
+## Script Content
+```python
 required_keys = {'APP_NAME', 'PORT', 'LOG_LEVEL'}
 found_keys = set()
 
@@ -30,16 +50,4 @@ if missing_keys:
     print(f'Missing required keys: {sorted(missing_keys)}')
 else:
     print('Config valid: True')
-EOF
-python3 validate_config.py
 ```
-
-## Guided Steps
-1. Create a sample config file.
-2. Skip blank lines and comments.
-3. Split each setting on `=`.
-4. Check whether required keys are present.
-5. Print a validation result.
-
-## Checkpoint
-Why is it helpful to validate config files before a script uses them?

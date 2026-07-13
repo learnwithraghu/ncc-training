@@ -8,7 +8,23 @@ Combine Python scripts into one simple workflow.
 ## Commands to Use
 ```bash
 cd ~/ncc-labs/day1
-cat > run_day1.py << 'EOF'
+vi run_day1.py
+python3 run_day1.py
+```
+
+## Guided Steps
+1. Open `vi run_day1.py` and add the script content below.
+2. Create a small Python orchestrator.
+2. Run two scripts in sequence.
+3. Stop on errors with `check=True`.
+4. Print a completion message.
+5. Connect this idea to the Bash orchestrator from Day 1.
+
+## Checkpoint
+What is the benefit of running several Python tasks from one script?
+
+## Script Content
+```python
 import subprocess
 
 steps = [
@@ -20,16 +36,4 @@ for step in steps:
     subprocess.run(step, check=True)
 
 print('Day 1 Python workflow complete')
-EOF
-python3 run_day1.py
 ```
-
-## Guided Steps
-1. Create a small Python orchestrator.
-2. Run two scripts in sequence.
-3. Stop on errors with `check=True`.
-4. Print a completion message.
-5. Connect this idea to the Bash orchestrator from Day 1.
-
-## Checkpoint
-What is the benefit of running several Python tasks from one script?

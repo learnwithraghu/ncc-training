@@ -102,6 +102,13 @@ If this works, you're ready to proceed!
    - Apply everything you've learned
    - Solve real-world scenarios
 
+### Practice Materials
+
+Use these folders during the live session:
+
+- [exercise/](exercise/) — learner tasks split into `easy/`, `medium/`, and `hard/`
+- [solution/](solution/) — matching instructor solutions for live demonstration
+
 ### For Intermediate Users (Some Docker Experience)
 
 1. Skim [00-OVERVIEW.md](./00-OVERVIEW.md) to fill knowledge gaps
@@ -232,6 +239,11 @@ Practical Application:
 - [ ] Containerize a simple application
 - [ ] Debug a failing container
 - [ ] Optimize a Dockerfile
+
+## Additional Resources
+
+- [exercise/](exercise/) — Practice tasks for learners
+- [solution/](solution/) — Reference solutions for instructors
 
 ---
 

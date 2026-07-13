@@ -33,6 +33,13 @@ Follow these guides in order:
 
 - [labs/lab_01_bash_challenge.md](labs/lab_01_bash_challenge.md) — Practice challenges
 
+## Practice Materials
+
+Use these folders during the live session:
+
+- [exercise/](exercise/) — learner tasks split into `easy/`, `medium/`, and `hard/`
+- [solution/](solution/) — matching instructor solutions for live demonstration
+
 ## Day 1 Narrative
 
 The `backup.sh` script you build here is part of your Day 1 toolkit. On Day 2, you will commit this entire toolkit to a GitHub repository.
@@ -40,3 +47,8 @@ The `backup.sh` script you build here is part of your Day 1 toolkit. On Day 2, y
 ## Key Artifact
 
 By the end of this module, you should have a working `~/ncc-labs/day1/backup.sh` that backs up `.txt` and `.log` files to a timestamped `backup/` directory.
+
+## Additional Resources
+
+- [exercise/](exercise/) — Practice tasks for learners
+- [solution/](solution/) — Reference solutions for instructors

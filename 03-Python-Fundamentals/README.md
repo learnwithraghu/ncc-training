@@ -36,6 +36,18 @@ Follow these guides in order:
 - [labs/lab_01_python_challenge.md](labs/lab_01_python_challenge.md) — Practice challenges
 - [labs/sample.log](labs/sample.log) — Sample log file for exercises
 
+## Practice Materials
+
+Use these folders during the live session:
+
+- [exercise/](exercise/) — learner tasks split into `easy/`, `medium/`, and `hard/`
+- [solution/](solution/) — matching instructor solutions for live demonstration
+
 ## Day 1 Narrative
 
 The Python `log_parser.py` you build here reads the log files created by your Bash scripts. A single `run_day1.sh` orchestrator ties Linux, Bash, and Python together. On Day 2, this entire `day1/` folder becomes your first Git commit.
+
+## Additional Resources
+
+- [exercise/](exercise/) — Practice tasks for learners
+- [solution/](solution/) — Reference solutions for instructors

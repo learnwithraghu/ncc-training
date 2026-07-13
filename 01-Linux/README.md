@@ -41,6 +41,13 @@ The commands and workspace you create in this module feed directly into the next
 - In **03-Python-Fundamentals**, you will write Python programs that read and process files you create here.
 - On **Day 2**, the entire `~/ncc-labs/day1/` folder will be committed to GitHub.
 
+## Practice Materials
+
+Use these folders during the live session:
+
+- [exercise/](exercise/) — learner tasks split into `easy/`, `medium/`, and `hard/`
+- [solution/](solution/) — matching instructor solutions for live demonstration
+
 ## Setup Instructions
 
 1. Open your terminal.
@@ -55,4 +62,5 @@ The commands and workspace you create in this module feed directly into the next
 
 - [00-OVERVIEW.md](00-OVERVIEW.md) — Comprehensive Linux theory
 - [instructor-guide.md](instructor-guide.md) — Notes for instructors
-- [07-challenges/](07-challenges/) — Extra hands-on challenges
+- [exercise/](exercise/) — Practice tasks for learners
+- [solution/](solution/) — Reference solutions for instructors

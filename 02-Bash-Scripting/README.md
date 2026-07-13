@@ -13,7 +13,7 @@ By the end of this module, you will be able to:
 
 ## Time Estimate
 
-Approximately **3 hours** total, split into 10 guided topics at about 20 minutes each.
+Approximately **5 hours** total, split into 15 guided topics at about 20 minutes each.
 
 ## Prerequisites
 
@@ -36,6 +36,11 @@ Work through the topics in `guided-learning/` in order:
 | Topic 8 | [guided-learning/topic-08/](guided-learning/topic-08/) | Backup script build |
 | Topic 9 | [guided-learning/topic-09/](guided-learning/topic-09/) | Reporting and log analysis |
 | Topic 10 | [guided-learning/topic-10/](guided-learning/topic-10/) | Menu-driven automation challenge |
+| Topic 11 | [guided-learning/topic-11/](guided-learning/topic-11/) | Script arguments and usage hints |
+| Topic 12 | [guided-learning/topic-12/](guided-learning/topic-12/) | Case statements and menu routing |
+| Topic 13 | [guided-learning/topic-13/](guided-learning/topic-13/) | Arrays and iterating values |
+| Topic 14 | [guided-learning/topic-14/](guided-learning/topic-14/) | Debugging and tracing |
+| Topic 15 | [guided-learning/topic-15/](guided-learning/topic-15/) | Bash mini workflow |
 
 ## Day 1 Narrative
 

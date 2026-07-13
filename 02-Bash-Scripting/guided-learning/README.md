@@ -4,7 +4,7 @@ This module uses one self-contained lesson per topic.
 
 ## Structure
 
-- `topic-01/` through `topic-10/` hold the learning topics
+- `topic-01/` through `topic-15/` hold the learning topics
 - each topic has a single `guide.md` file
 - each topic is designed to take about 20 minutes
 
@@ -28,3 +28,8 @@ This module uses one self-contained lesson per topic.
 - Topic 08 - Backup Script Build
 - Topic 09 - Reporting and Log Analysis
 - Topic 10 - Menu-Driven Automation Challenge
+- Topic 11 - Script Arguments and Usage Hints
+- Topic 12 - Case Statements and Menu Routing
+- Topic 13 - Arrays and Iterating Values
+- Topic 14 - Debugging and Tracing
+- Topic 15 - Bash Mini Workflow

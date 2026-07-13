@@ -14,31 +14,39 @@ By the end of this module, you will be able to:
 
 ## Time Estimate
 
-Approximately **4 hours** (including hands-on exercises).
+Approximately **6-7 hours** total, split into 20 guided topics at about 20 minutes each.
 
 ## Prerequisites
 
 - Completion of [Day 2](../00-course-roadmap.md#day-2-git-and-github-basics)
 - Docker installed (`docker --version`)
 
-## Guide Sequence
+## Guided Learning Topics
 
-| Guide | File | Topic | Duration |
-|-------|------|-------|----------|
-| Guide 1 | [00-OVERVIEW.md](00-OVERVIEW.md) | Container theory and concepts | 30 min |
-| Guide 2 | [01-docker-basics.md](01-docker-basics.md) | Hello World, images, containers | 60 min |
-| Guide 3 | [02-volumes-and-storage.md](02-volumes-and-storage.md) | Volumes and bind mounts | 45 min |
-| Guide 4 | [03-networking.md](03-networking.md) | Container networking | 45 min |
-| Guide 5 | [04-container-operations.md](04-container-operations.md) | Logs, exec, debugging | 45 min |
-| Guide 6 | [05-best-practices.md](05-best-practices.md) | Production practices | 30 min |
+Work through the topics in `guided-learning/` in order:
 
-## Day 3 Narrative
-
-You will take the Python app from your `ncc-labs` GitHub repository and containerize it. The Docker image you build today will be pushed to ECR by your CI/CD pipeline on Day 4.
-
-## Key Artifact
-
-A working Docker image for a Python Flask application.
+| Topic | Folder | Focus |
+|-------|--------|-------|
+| Topic 1 | [guided-learning/topic-01/](guided-learning/topic-01/) | Container mindset and quick test |
+| Topic 2 | [guided-learning/topic-02/](guided-learning/topic-02/) | Images and layers |
+| Topic 3 | [guided-learning/topic-03/](guided-learning/topic-03/) | Run containers and publish ports |
+| Topic 4 | [guided-learning/topic-04/](guided-learning/topic-04/) | Environment variables and inspect |
+| Topic 5 | [guided-learning/topic-05/](guided-learning/topic-05/) | Logs and exec |
+| Topic 6 | [guided-learning/topic-06/](guided-learning/topic-06/) | Volumes and data persistence |
+| Topic 7 | [guided-learning/topic-07/](guided-learning/topic-07/) | Bind mounts and app state |
+| Topic 8 | [guided-learning/topic-08/](guided-learning/topic-08/) | Build the sample app image |
+| Topic 9 | [guided-learning/topic-09/](guided-learning/topic-09/) | Image tagging and lifecycle |
+| Topic 10 | [guided-learning/topic-10/](guided-learning/topic-10/) | Healthchecks and restart behavior |
+| Topic 11 | [guided-learning/topic-11/](guided-learning/topic-11/) | Docker networking basics |
+| Topic 12 | [guided-learning/topic-12/](guided-learning/topic-12/) | Docker Compose basics |
+| Topic 13 | [guided-learning/topic-13/](guided-learning/topic-13/) | Compose with the sample app |
+| Topic 14 | [guided-learning/topic-14/](guided-learning/topic-14/) | Dockerfile best practices |
+| Topic 15 | [guided-learning/topic-15/](guided-learning/topic-15/) | Security and non-root users |
+| Topic 16 | [guided-learning/topic-16/](guided-learning/topic-16/) | Multi-stage builds |
+| Topic 17 | [guided-learning/topic-17/](guided-learning/topic-17/) | Registry and ECR concepts |
+| Topic 18 | [guided-learning/topic-18/](guided-learning/topic-18/) | Troubleshooting containers |
+| Topic 19 | [guided-learning/topic-19/](guided-learning/topic-19/) | Full app workflow |
+| Topic 20 | [guided-learning/topic-20/](guided-learning/topic-20/) | Docker mini workflow |
 
 ## Getting Started
 
@@ -49,78 +57,17 @@ docker --version
 docker info
 ```
 
-If Docker is not installed, ask your instructor or follow the installation steps in [00-OVERVIEW.md](00-OVERVIEW.md).
+If Docker is not installed, ask your instructor to help you get it running before starting the topics.
 
 ### Quick Docker Test
 
 Verify your Docker installation:
 
 ```bash
-# Run hello-world container
 docker run hello-world
-
-# Expected output: "Hello from Docker!"
 ```
 
-If this works, you're ready to proceed!
-
-## 📖 Recommended Learning Path
-
-### For Beginners (No Docker Experience)
-
-1. **Start with theory**: Read [00-OVERVIEW.md](./00-OVERVIEW.md) thoroughly
-   - Understand containers vs VMs
-   - Learn Docker architecture
-   - Grasp why Docker matters for DevOps
-
-2. **Hands-on basics**: Work through [01-docker-basics.md](./01-docker-basics.md)
-   - Inspect the sample application
-   - Build your first Docker image
-   - Run and test containers
-
-3. **Data management**: Follow [02-volumes-and-storage.md](./02-volumes-and-storage.md)
-   - Understand volume concepts
-   - Practice data persistence
-   - Learn bind mounts vs named volumes
-
-4. **Networking**: Study [03-networking.md](./03-networking.md)
-   - Explore Docker networks
-   - Connect multiple containers
-   - Understand service discovery
-
-5. **Operations**: Practice [04-container-operations.md](./04-container-operations.md)
-   - View and follow logs
-   - Access running containers
-   - Debug common issues
-
-6. **Best practices**: Review [05-best-practices.md](./05-best-practices.md)
-   - Learn production patterns
-   - Understand security implications  
-   - Optimize Dockerfiles
-
-7. **Challenge yourself**: Complete [lab-exercises/LAB_CHALLENGE.md](./lab-exercises/LAB_CHALLENGE.md)
-   - Apply everything you've learned
-   - Solve real-world scenarios
-
-### Practice Materials
-
-Use these folders during the live session:
-
-- [exercise/](exercise/) — learner tasks split into `easy/`, `medium/`, and `hard/`
-- [solution/](solution/) — matching instructor solutions for live demonstration
-
-### For Intermediate Users (Some Docker Experience)
-
-1. Skim [00-OVERVIEW.md](./00-OVERVIEW.md) to fill knowledge gaps
-2. Quickly review [01-docker-basics.md](./01-docker-basics.md)
-3. Focus on [05-best-practices.md](./05-best-practices.md) for production patterns
-4. Jump to [lab-exercises/](./lab-exercises/) to test your skills
-
-### Estimated Time
-
-- **Beginners**: 4-6 hours (including hands-on exercises)
-- **Intermediate**: 2-3 hours (focused on advanced topics)
-- **Review/Refresher**: 1 hour (best practices and lab challenge)
+If this works, you're ready to start the guided topics.
 
 ## 🛠️ Sample Application
 
@@ -150,6 +97,9 @@ This module uses a Python Flask web application to demonstrate Docker concepts. 
 ### Quick References
 - [QUICK_REFERENCE.md](./reference/QUICK_REFERENCE.md) - Common Docker commands
 - [TROUBLESHOOTING.md](./reference/TROUBLESHOOTING.md) - Common issues and solutions
+
+### Guided Learning
+- [guided-learning/](guided-learning/) - 20 self-contained Docker topics
 
 ### Next Steps After This Module
 - **Container Orchestration**: Kubernetes, Docker Swarm
@@ -214,43 +164,6 @@ docker build --help
 docker volume --help
 ```
 
-## ✅ Module Completion Checklist
+## Guided Learning Focus
 
-Before moving to the next module, ensure you can:
-
-Technical Skills:
-- [ ] Write a Dockerfile from scratch
-- [ ] Build and run containers successfully
-- [ ] Mount volumes for data persistence
-- [ ] Create and use Docker networks
-- [ ] View and interpret container logs
-- [ ] Access containers for debugging
-- [ ] Apply security best practices
-
-Conceptual Understanding:
-- [ ] Explain how containers differ from VMs
-- [ ] Describe Docker's layered architecture
-- [ ] Understand when to use volumes vs bind mounts
-- [ ] Explain Docker networking modes
-- [ ] Describe Docker's role in CI/CD
-
-Practical Application:
-- [ ] Complete the lab challenge successfully
-- [ ] Containerize a simple application
-- [ ] Debug a failing container
-- [ ] Optimize a Dockerfile
-
-## Additional Resources
-
-- [exercise/](exercise/) — Practice tasks for learners
-- [solution/](solution/) — Reference solutions for instructors
-
----
-
-## 🐳 Ready to Begin?
-
-Start your containerization journey with [00-OVERVIEW.md](./00-OVERVIEW.md) to build a solid theoretical foundation, then dive into hands-on exercises!
-
-Remember: Docker skills are among the most in-demand in DevOps. The time you invest here will pay dividends throughout your career.
-
-**Happy Containerizing!**
+The topic guides replace the old guide, exercise, solution, and lab flow. Each lesson is self-contained and designed to take about 20 minutes.

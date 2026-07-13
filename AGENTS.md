@@ -30,7 +30,7 @@ module-name/
 
 ## Content Rules
 
-- Aim for about 15 topics in the Linux module, about 15 topics in the Bash module, and about 20 topics in the Python module unless there is a strong reason to keep fewer.
+- Aim for about 15 topics in the Linux module, about 15 topics in the Bash module, about 20 topics in the Python module, and about 20 topics in the Docker module unless there is a strong reason to keep fewer.
 - Keep each topic self-contained so it can be completed in about 20 minutes.
 - Include commands, explanation, and checkpoint prompts inside the same guide.
 - Keep naming consistent so the learning path is easy to scan.

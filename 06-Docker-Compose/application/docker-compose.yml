@@ -1,0 +1,45 @@
+services:
+  web:
+    build: .
+    env_file:
+      - .env.example
+    ports:
+      - "5000:5000"
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "from urllib.request import urlopen; urlopen('http://127.0.0.1:5000/health', timeout=2)"]
+      interval: 20s
+      timeout: 3s
+      retries: 3
+    volumes:
+      - compose_data:/app/data
+
+  worker:
+    build: .
+    command: ["python", "worker.py"]
+    env_file:
+      - .env.example
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    volumes:
+      - compose_data:/app/data
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    volumes:
+      - redis_data:/data
+
+volumes:
+  compose_data:
+  redis_data:

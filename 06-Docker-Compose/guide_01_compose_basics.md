@@ -85,48 +85,38 @@ services:
 
 ## Hands-On: Run Nginx with Compose
 
-### Step 1: Create a project directory
+### Step 1: Open the module app
 
 ```bash
-mkdir -p ~/ncc-labs/day3/compose-nginx
-cd ~/ncc-labs/day3/compose-nginx
+cd /workspaces/ncc-training/06-Docker-Compose/application
 ```
 
-### Step 2: Create an HTML file
+### Step 2: Review the Compose file
 
 ```bash
-mkdir -p html
-cat > html/index.html << 'EOF'
-<h1>Hello from Docker Compose!</h1>
-EOF
+vi docker-compose.yml
 ```
 
-### Step 3: Create docker-compose.yml
+### Step 3: Validate the Compose config
+
+Run:
 
 ```bash
-cat > docker-compose.yml << 'EOF'
-version: "3.9"
-
-services:
-  web:
-    image: nginx:alpine
-    ports:
-      - "8080:80"
-    volumes:
-      - ./html:/usr/share/nginx/html
-EOF
+docker compose config
 ```
 
 ### Step 4: Start the service
 
 ```bash
 docker compose up -d
+until curl -fsS http://localhost:5000/health; do sleep 1; done
 ```
 
 ### Step 5: Verify
 
 ```bash
-curl http://localhost:8080
+curl http://localhost:5000/health
+curl http://localhost:5000/
 docker compose ps
 docker compose logs
 ```

@@ -15,119 +15,77 @@ Approximately **60 minutes**.
 
 ## The Application
 
-You will build a simple Flask web app that counts page visits using Redis as a cache.
+You will run a Docker Compose app with:
+
+- a Flask API (`web`)
+- a background worker (`worker`)
+- a Redis service (`redis`)
+
+The API queues events in Redis and the worker processes them into a shared data volume.
 
 ## Project Structure
 
 ```
-~/ncc-labs/day3/flask-redis/
+/workspaces/ncc-training/06-Docker-Compose/application/
 ├── app.py
+├── worker.py
 ├── requirements.txt
 ├── Dockerfile
-└── docker-compose.yml
+├── docker-compose.yml
+└── .env.example
 ```
 
-## Step 1: Create the Flask App
+## Step 1: Open the App Directory
 
 ```bash
-mkdir -p ~/ncc-labs/day3/flask-redis
-cd ~/ncc-labs/day3/flask-redis
+cd /workspaces/ncc-training/06-Docker-Compose/application
+vi docker-compose.yml
 ```
 
-Create `app.py`:
+## Step 2: Review App Components
 
-```python
-from flask import Flask
-import redis
-import os
-
-app = Flask(__name__)
-cache = redis.Redis(host=os.environ.get("REDIS_HOST", "redis"), port=6379)
-
-@app.route("/")
-def hello():
-    count = cache.incr("hits")
-    return f"Hello! This page has been visited {count} times.\n"
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
+```bash
+vi app.py
+vi worker.py
+vi Dockerfile
 ```
 
-Create `requirements.txt`:
+Confirm:
 
-```
-flask==3.0.0
-redis==5.0.1
-```
+- `web` exposes `/`, `/health`, `/events`, and `/processed`
+- `worker` processes queued events
+- Redis acts as the queue backend
 
-## Step 2: Create the Dockerfile
-
-```dockerfile
-FROM python:3.11-slim
-
-WORKDIR /app
-
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-
-COPY app.py .
-
-EXPOSE 5000
-
-CMD ["python", "app.py"]
-```
-
-## Step 3: Create docker-compose.yml
-
-```yaml
-version: "3.9"
-
-services:
-  web:
-    build: .
-    ports:
-      - "5000:5000"
-    environment:
-      - REDIS_HOST=redis
-    depends_on:
-      - redis
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5000/"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-  redis:
-    image: redis:7-alpine
-    restart: unless-stopped
-```
-
-## Step 4: Build and Run
+## Step 3: Build and Run
 
 ```bash
 docker compose up -d --build
+until curl -fsS http://localhost:5000/health; do sleep 1; done
 ```
 
-## Step 5: Test
+## Step 4: Test
 
 ```bash
-curl http://localhost:5000
-curl http://localhost:5000
-curl http://localhost:5000
+curl http://localhost:5000/
+curl http://localhost:5000/health
+curl -X POST http://localhost:5000/events -H 'Content-Type: application/json' -d '{"title":"compose-lab"}'
+curl http://localhost:5000/events
+curl http://localhost:5000/processed
 ```
 
-Each request should increment the visit counter.
+You should see a healthy app, an event queued, and processed output once the worker consumes it.
 
-## Step 6: Inspect and Scale
+## Step 5: Inspect and Scale
 
 ```bash
 docker compose ps
 docker compose logs web
+docker compose logs worker
 docker compose logs redis
+docker compose up -d --scale worker=2
 ```
 
-## Step 7: Clean Up
+## Step 6: Clean Up
 
 ```bash
 docker compose down
@@ -139,8 +97,8 @@ docker compose down
 
 By the end of this guide, you should have:
 
-- [ ] A Docker image for a Python Flask app
-- [ ] A `docker-compose.yml` running Flask + Redis
+- [ ] A Docker image for the module app
+- [ ] A `docker-compose.yml` running web + worker + redis
 - [ ] A working multi-service app on `localhost:5000`
 
 On **Day 4**, you will automate the Docker build and push to ECR using Jenkins and GitHub Actions.
@@ -150,6 +108,6 @@ On **Day 4**, you will automate the Docker build and push to ECR using Jenkins a
 ## Check Your Understanding
 
 1. What does `depends_on` do in a Compose file?
-2. Why is Redis a good fit for a visit counter?
+2. Why is Redis a good fit for queue-based workflows?
 3. What does `restart: unless-stopped` mean?
-4. How would you scale the `web` service to 3 instances?
+4. How would you scale the `worker` service to 3 instances?

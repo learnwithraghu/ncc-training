@@ -25,7 +25,7 @@ Approximately **2 hours** (including hands-on exercises).
 | Guide | File | Topic | Duration |
 |-------|------|-------|----------|
 | Guide 1 | [guide_01_compose_basics.md](guide_01_compose_basics.md) | Compose file structure, services, networks | 60 min |
-| Guide 2 | [guide_02_multi_service_lab.md](guide_02_multi_service_lab.md) | Flask + Redis multi-service app | 60 min |
+| Guide 2 | [guide_02_multi_service_lab.md](guide_02_multi_service_lab.md) | Web + Worker + Redis multi-service app | 60 min |
 
 ## Day 3 Narrative
 
@@ -33,4 +33,8 @@ You will extend the Docker image from Part 1 into a multi-service application. T
 
 ## Key Artifact
 
-A `docker-compose.yml` that runs a Python web app with a Redis cache.
+A `docker-compose.yml` that runs a Python web app, background worker, and Redis.
+
+## Module App
+
+Use the training app in [application/](application/) for all Docker Compose guided learning.

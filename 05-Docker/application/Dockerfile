@@ -1,37 +1,43 @@
-# Use official Python runtime as base image
-FROM python:3.11-slim
+# syntax=docker/dockerfile:1
 
-# Set metadata
+FROM python:3.11-slim AS builder
+
+WORKDIR /build
+
+COPY requirements.txt .
+
+RUN pip wheel --no-cache-dir --wheel-dir /wheels -r requirements.txt
+
+FROM python:3.11-slim AS runtime
+
 LABEL maintainer="your-email@example.com"
 LABEL description="Docker Hello World Python Application"
 LABEL version="1.0"
 
-# Set working directory in container
 WORKDIR /app
 
-# Copy requirements first (for better caching)
-COPY requirements.txt .
+ENV ENVIRONMENT=production \
+    APP_VERSION=1.0 \
+    PYTHONUNBUFFERED=1 \
+    DATA_DIR=/app/data \
+    HOST=0.0.0.0 \
+    PORT=5000
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN useradd --create-home --shell /usr/sbin/nologin appuser \
+    && mkdir -p /app/data \
+    && chown -R appuser:appuser /app
 
-# Copy application code
-COPY app.py .
+COPY --from=builder /wheels /wheels
+RUN pip install --no-cache-dir /wheels/* \
+    && rm -rf /wheels
 
-# Create data directory for volumes
-RUN mkdir -p /app/data
+COPY --chown=appuser:appuser app.py .
 
-# Set environment variables
-ENV ENVIRONMENT=production
-ENV APP_VERSION=1.0
-ENV PYTHONUNBUFFERED=1
+USER appuser
 
-# Expose port 5000
 EXPOSE 5000
 
-# Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD python -c "import requests; requests.get('http://localhost:5000/health')" || exit 1
+    CMD python -c "from urllib.request import urlopen; urlopen('http://127.0.0.1:5000/health', timeout=2)"
 
-# Run the application
 CMD ["python", "app.py"]

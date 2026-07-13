@@ -31,3 +31,4 @@ README.md
 # Data (we'll mount this as volume)
 data/
 *.txt
+!requirements.txt

@@ -4,12 +4,18 @@ Docker Hello World Application
 A simple Flask web application demonstrating Docker containerization
 """
 
-from flask import Flask, jsonify, request
 from datetime import datetime
+from pathlib import Path
 import os
 import socket
 
+from flask import Flask, jsonify, request
+
 app = Flask(__name__)
+
+DATA_DIR = Path(os.getenv('DATA_DIR', '/app/data'))
+HOST = os.getenv('HOST', '0.0.0.0')
+PORT = int(os.getenv('PORT', '5000'))
 
 # Track visit count (will be lost when container restarts without volumes)
 visit_count = 0
@@ -25,7 +31,8 @@ def hello():
         'container_id': socket.gethostname(),
         'timestamp': datetime.now().isoformat(),
         'visit_count': visit_count,
-        'environment': os.getenv('ENVIRONMENT', 'development')
+        'environment': os.getenv('ENVIRONMENT', 'development'),
+        'data_dir': str(DATA_DIR)
     })
 
 @app.route('/health')
@@ -41,40 +48,43 @@ def info():
     """Container information endpoint"""
     return jsonify({
         'hostname': socket.gethostname(),
+        'host': HOST,
+        'port': PORT,
         'environment_variables': {
             'ENVIRONMENT': os.getenv('ENVIRONMENT', 'not set'),
-            'APP_VERSION': os.getenv('APP_VERSION', 'not set')
+            'APP_VERSION': os.getenv('APP_VERSION', 'not set'),
+            'DATA_DIR': os.getenv('DATA_DIR', str(DATA_DIR))
         },
-        'python_version': os.sys.version
+        'python_version': os.sys.version,
+        'data_dir_exists': DATA_DIR.exists()
     })
 
 @app.route('/write', methods=['POST'])
 def write_data():
     """Write data to a file (demonstrates volumes)"""
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
     message = data.get('message', 'No message provided')
     
-    # Write to /app/data directory (will be mounted as volume)
-    data_dir = '/app/data'
-    os.makedirs(data_dir, exist_ok=True)
+    # Write to the data directory (usually mounted as a volume)
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
     
-    filename = f"{data_dir}/messages.txt"
-    with open(filename, 'a') as f:
+    filename = DATA_DIR / 'messages.txt'
+    with filename.open('a', encoding='utf-8') as f:
         f.write(f"{datetime.now().isoformat()} - {message}\n")
     
     return jsonify({
         'status': 'success',
         'message': 'Data written to file',
-        'file': filename
+        'file': str(filename)
     })
 
 @app.route('/read')
 def read_data():
     """Read data from file (demonstrates volumes)"""
-    filename = '/app/data/messages.txt'
+    filename = DATA_DIR / 'messages.txt'
     
     try:
-        with open(filename, 'r') as f:
+        with filename.open('r', encoding='utf-8') as f:
             content = f.readlines()
         return jsonify({
             'status': 'success',
@@ -91,6 +101,7 @@ if __name__ == '__main__':
     print("Starting Docker Hello World Application...")
     print(f"Container ID: {socket.gethostname()}")
     print(f"Environment: {os.getenv('ENVIRONMENT', 'development')}")
+    print(f"Data directory: {DATA_DIR}")
     
     # Run on all interfaces (0.0.0.0) so it's accessible from outside container
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host=HOST, port=PORT, debug=False)

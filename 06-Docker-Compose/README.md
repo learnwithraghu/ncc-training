@@ -1,40 +1,45 @@
 # Day 3, Part 2: Docker Compose
 
-This module teaches you how to run multi-container applications using Docker Compose.
+This module teaches you how to define and operate a multi-service application with Docker Compose.
 
 ## What You Will Learn
 
 By the end of this module, you will be able to:
 
-- Explain why Docker Compose is useful
-- Write and read `docker-compose.yml` files
-- Start, stop, and scale multi-service applications
-- Add health checks and restart policies
+- Explain why Compose is useful in local DevOps workflows
+- Read and edit a `docker-compose.yml` file confidently
+- Build, run, and inspect web, worker, and Redis services
+- Use health checks, dependencies, volumes, and scaling
+- Troubleshoot common Compose startup and runtime problems
 
 ## Time Estimate
 
-Approximately **2 hours** (including hands-on exercises).
+Approximately **4 hours** total, split into 12 guided topics at about 20 minutes each.
 
 ## Prerequisites
 
 - Completion of [05-Docker](../05-Docker/README.md)
 - Docker Compose installed (`docker compose version`)
 
-## Guide Sequence
+## Guided Learning Topics
 
-| Guide | File | Topic | Duration |
-|-------|------|-------|----------|
-| Guide 1 | [guide_01_compose_basics.md](guide_01_compose_basics.md) | Compose file structure, services, networks | 60 min |
-| Guide 2 | [guide_02_multi_service_lab.md](guide_02_multi_service_lab.md) | Web + Worker + Redis multi-service app | 60 min |
+Work through the topics in [guided-learning/](guided-learning/) in order:
 
-## Day 3 Narrative
-
-You will extend the Docker image from Part 1 into a multi-service application. The `docker-compose.yml` you create here will later be referenced when building CI/CD pipelines on Day 4.
-
-## Key Artifact
-
-A `docker-compose.yml` that runs a Python web app, background worker, and Redis.
+| Topic | Folder | Focus |
+|-------|--------|-------|
+| Topic 1 | [guided-learning/topic-01/](guided-learning/topic-01/) | Compose mindset and quick checks |
+| Topic 2 | [guided-learning/topic-02/](guided-learning/topic-02/) | Compose file structure walkthrough |
+| Topic 3 | [guided-learning/topic-03/](guided-learning/topic-03/) | Validate Compose config |
+| Topic 4 | [guided-learning/topic-04/](guided-learning/topic-04/) | Build and start services |
+| Topic 5 | [guided-learning/topic-05/](guided-learning/topic-05/) | Health checks and dependencies |
+| Topic 6 | [guided-learning/topic-06/](guided-learning/topic-06/) | Environment and env files |
+| Topic 7 | [guided-learning/topic-07/](guided-learning/topic-07/) | Volumes and persistent data |
+| Topic 8 | [guided-learning/topic-08/](guided-learning/topic-08/) | Queue workflow with worker |
+| Topic 9 | [guided-learning/topic-09/](guided-learning/topic-09/) | Logs, exec, and troubleshooting |
+| Topic 10 | [guided-learning/topic-10/](guided-learning/topic-10/) | Service scaling patterns |
+| Topic 11 | [guided-learning/topic-11/](guided-learning/topic-11/) | Rebuild and rollout workflow |
+| Topic 12 | [guided-learning/topic-12/](guided-learning/topic-12/) | Compose mini workflow |
 
 ## Module App
 
-Use the training app in [application/](application/) for all Docker Compose guided learning.
+Use the training app in [application/](application/) for all guided topics.

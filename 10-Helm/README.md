@@ -1,19 +1,20 @@
 # Day 5, Part 2: Helm
 
-This module covers Helm, the package manager for Kubernetes.
+This module teaches Helm through a guided-learning path from chart basics to a capstone-style workflow.
 
 ## What You Will Learn
 
 By the end of this module, you will be able to:
 
-- Explain what Helm is and why it is useful
-- Create and structure a Helm chart
-- Use Helm values and templates
-- Install, upgrade, and rollback Helm releases
+- Explain Helm chart, release, and values concepts
+- Search and inspect chart repositories
+- Create, lint, template, and package Helm charts
+- Install, upgrade, rollback, and uninstall releases safely
+- Build a practical chart workflow for the document-search app shape
 
 ## Time Estimate
 
-Approximately **1.5 hours** (including hands-on exercises).
+Approximately **3 to 3.5 hours** total, split into 10 guided topics at about 20 minutes each.
 
 ## Prerequisites
 
@@ -21,17 +22,32 @@ Approximately **1.5 hours** (including hands-on exercises).
 - Helm installed (`helm version`)
 - Kubernetes cluster access
 
-## Guide Sequence
+## Guided Learning Topics
 
-| Guide | File | Topic | Duration |
-|-------|------|-------|----------|
-| Guide 1 | [guide_01_helm_basics.md](guide_01_helm_basics.md) | Charts, releases, values | 45 min |
-| Guide 2 | [guide_02_chart_for_capstone.md](guide_02_chart_for_capstone.md) | Build chart for document-search app | 60 min |
+Work through topics in [guided-learning/](guided-learning/) in order:
 
-## Day 5 Narrative
+| Topic | Folder | Focus |
+|-------|--------|-------|
+| Topic 1 | [guided-learning/topic-01/](guided-learning/topic-01/) | Helm mindset and environment checks |
+| Topic 2 | [guided-learning/topic-02/](guided-learning/topic-02/) | Chart and repository discovery |
+| Topic 3 | [guided-learning/topic-03/](guided-learning/topic-03/) | Release lifecycle basics |
+| Topic 4 | [guided-learning/topic-04/](guided-learning/topic-04/) | Create your first chart |
+| Topic 5 | [guided-learning/topic-05/](guided-learning/topic-05/) | Values and template fundamentals |
+| Topic 6 | [guided-learning/topic-06/](guided-learning/topic-06/) | Service and deployment templating |
+| Topic 7 | [guided-learning/topic-07/](guided-learning/topic-07/) | Lint, template, and dry-run validation |
+| Topic 8 | [guided-learning/topic-08/](guided-learning/topic-08/) | Upgrade, rollback, and value overrides |
+| Topic 9 | [guided-learning/topic-09/](guided-learning/topic-09/) | Package and reuse a chart |
+| Topic 10 | [guided-learning/topic-10/](guided-learning/topic-10/) | Capstone Helm mini workflow |
 
-You will package the Kubernetes manifests for the document-search capstone into a Helm chart. This makes the deployment reusable and configurable.
+## Topic Assets
 
-## Key Artifact
+Topics that need helper files include local `assets/` folders, so each lesson can run independently from its own topic directory.
 
-A Helm chart that deploys the document-search application to Kubernetes.
+## Legacy References
+
+Legacy narrative guides remain as reference material:
+
+- [guide_01_helm_basics.md](guide_01_helm_basics.md)
+- [guide_02_chart_for_capstone.md](guide_02_chart_for_capstone.md)
+
+Primary learner flow is now the guided-learning topic sequence.

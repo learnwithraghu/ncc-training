@@ -3,9 +3,10 @@ set -euo pipefail
 
 readonly SCRIPT_NAME="NCC Docker Training - Infrastructure Validator"
 readonly SEP="============================================================"
+readonly SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+readonly APP_DIR="${SCRIPT_DIR}/../application"
 readonly SANDBOX="/tmp/ncc-docker-validation-$$"
 readonly PREFIX="ncc-docker-val-$$"
-readonly APP_DIR="/workspaces/ncc-training/05-Docker/application"
 
 PASS=0
 WARN=0
@@ -137,7 +138,7 @@ docker_expect "docker run --rm hello-world" \
     "Hello from Docker" "pull-run"
 
 docker_expect "hello-world exits cleanly" \
-    "docker run --rm hello-world >/dev/null 2>&1; echo rc=\$?" \
+    "docker run --rm hello-world >/dev/null 2>&1 && echo rc=\$?" \
     "rc=0" "pull-run"
 echo ""
 
@@ -146,14 +147,14 @@ echo ""
 echo -e "${CYAN}[ 3] Images, Pull, History (Topic 02)${NC}"
 
 docker_ok "docker images lists local images" \
-    "docker images 2>/dev/null | head -1 | grep -q REPOSITORY; echo ok" "images"
+    "docker images 2>/dev/null | head -1 | grep -q REPOSITORY && echo ok" "images"
 
 docker_expect "docker pull python:3.11-slim" \
-    "timeout 120 docker pull python:3.11-slim 2>&1; echo done" \
+    "timeout 120 docker pull python:3.11-slim 2>&1 && echo done" \
     "done" "pull"
 
 docker_expect "docker history python:3.11-slim" \
-    "docker history python:3.11-slim 2>&1 | head -1 | grep -q CREATED; echo ok" \
+    "docker history python:3.11-slim 2>&1 | head -1 | grep -q CREATED && echo ok" \
     "ok" "history"
 echo ""
 
@@ -163,7 +164,7 @@ echo -e "${CYAN}[ 4] Run & Publish Ports (Topic 03)${NC}"
 
 docker rm -f "${PREFIX}-webtest" &>/dev/null || true
 docker_ok "docker run -d --name webtest -p 8080:80 nginx" \
-    "docker run -d --name ${PREFIX}-webtest -p 8080:80 nginx 2>&1; echo ok" "run"
+    "docker run -d --name ${PREFIX}-webtest -p 8080:80 nginx 2>&1 && echo ok" "run"
 
 if wait_for_container "${PREFIX}-webtest" 15; then
     echo -e "  ${GREEN}[PASS]${NC} ps docker ps shows running container"
@@ -175,14 +176,14 @@ else
 fi
 
 docker_expect "docker port shows mapped port" \
-    "docker port ${PREFIX}-webtest 2>&1 | grep -q '8080'; echo ok" \
+    "docker port ${PREFIX}-webtest 2>&1 | grep -q '8080' && echo ok" \
     "ok" "port"
 
 docker_ok "docker stop webtest" \
-    "docker stop ${PREFIX}-webtest 2>&1; echo ok" "stop"
+    "docker stop ${PREFIX}-webtest 2>&1 && echo ok" "stop"
 
 docker_ok "docker rm webtest" \
-    "docker rm ${PREFIX}-webtest 2>&1; echo ok" "rm"
+    "docker rm ${PREFIX}-webtest 2>&1 && echo ok" "rm"
 echo ""
 
 # ── 5. Environment variables & inspect ─────────────────────────────
@@ -191,12 +192,12 @@ echo -e "${CYAN}[ 5] Environment Variables & Inspect (Topic 04)${NC}"
 
 docker rm -f "${PREFIX}-appdemo" &>/dev/null || true
 docker_ok "docker run -e ENVIRONMENT=training -e APP_VERSION=2.0" \
-    "docker run -d --name ${PREFIX}-appdemo -p 5000:5000 -e ENVIRONMENT=training -e APP_VERSION=2.0 nginx 2>&1; echo ok" "env"
+    "docker run -d --name ${PREFIX}-appdemo -p 5000:5000 -e ENVIRONMENT=training -e APP_VERSION=2.0 nginx 2>&1 && echo ok" "env"
 
 wait_for_container "${PREFIX}-appdemo" 10 || true
 
 docker_expect "docker inspect shows container config" \
-    "docker inspect ${PREFIX}-appdemo 2>&1 | grep -q 'Id'; echo ok" \
+    "docker inspect ${PREFIX}-appdemo 2>&1 | grep -q 'Id' && echo ok" \
     "ok" "inspect"
 
 docker_expect "ENVIRONMENT env var visible in container" \
@@ -215,10 +216,10 @@ docker run -d --name "${PREFIX}-appdemo" -p 5000:5000 nginx &>/dev/null || true
 sleep 2
 
 docker_ok "docker logs returns output" \
-    "docker logs ${PREFIX}-appdemo 2>/dev/null > ${SANDBOX}/logs-out; wc -l < ${SANDBOX}/logs-out | grep -q '[1-9]'; echo ok" "logs"
+    "docker logs ${PREFIX}-appdemo 2>/dev/null > ${SANDBOX}/logs-out; wc -l < ${SANDBOX}/logs-out | grep -q '[1-9]' && echo ok" "logs"
 
 docker_ok "docker exec runs command inside container" \
-    "docker exec ${PREFIX}-appdemo hostname 2>&1 | grep -q . ; echo ok" "exec"
+    "docker exec ${PREFIX}-appdemo hostname 2>&1 | grep -q .  && echo ok" "exec"
 
 docker rm -f "${PREFIX}-appdemo" &>/dev/null || true
 echo ""
@@ -242,7 +243,7 @@ docker_expect "docker volume inspect returns mountpoint" \
 
 docker rm -f "${PREFIX}-appdemo" &>/dev/null || true
 docker_ok "docker run with volume mount" \
-    "docker run -d --name ${PREFIX}-appdemo -v ${PREFIX}-appdata:/app/data nginx 2>&1; echo ok" "volume-mount"
+    "docker run -d --name ${PREFIX}-appdemo -v ${PREFIX}-appdata:/app/data nginx 2>&1 && echo ok" "volume-mount"
 
 docker_expect "data survives in volume after write" \
     "docker exec ${PREFIX}-appdemo sh -c 'echo persisted > /app/data/test.txt && cat /app/data/test.txt' 2>&1" \
@@ -261,7 +262,7 @@ echo "bind-mount-test" > "${SANDBOX}/host-data/hello.txt"
 
 docker rm -f "${PREFIX}-appdemo" &>/dev/null || true
 docker_ok "docker run with bind mount" \
-    "docker run -d --name ${PREFIX}-appdemo -v ${SANDBOX}/host-data:/mnt/host nginx 2>&1; echo ok" "bind-mount"
+    "docker run -d --name ${PREFIX}-appdemo -v ${SANDBOX}/host-data:/mnt/host nginx 2>&1 && echo ok" "bind-mount"
 
 docker_expect "bind mount file visible in container" \
     "docker exec ${PREFIX}-appdemo cat /mnt/host/hello.txt 2>&1" \
@@ -287,7 +288,7 @@ else
 fi
 
 docker_ok "docker build -t ${PREFIX}-app:1.0" \
-    "docker build -t ${PREFIX}-app:1.0 ${APP_DIR} 2>&1; echo ok" "build"
+    "docker build -t ${PREFIX}-app:1.0 ${APP_DIR} 2>&1 && echo ok" "build"
 
 docker_expect "image exists in local registry" \
     "docker images --filter reference=${PREFIX}-app:1.0 --format '{{.Repository}}:{{.Tag}}'" \
@@ -299,14 +300,14 @@ echo ""
 echo -e "${CYAN}[10] Image Tagging & Lifecycle (Topic 09)${NC}"
 
 docker_ok "docker tag creates additional tag" \
-    "docker tag ${PREFIX}-app:1.0 ${PREFIX}-app:latest 2>&1; echo ok" "tag"
+    "docker tag ${PREFIX}-app:1.0 ${PREFIX}-app:latest 2>&1 && echo ok" "tag"
 
 docker_expect "both tags visible in docker images" \
     "docker images --filter reference=${PREFIX}-app --format '{{.Tag}}' | sort | tr '\n' ' '" \
     "1.0" "images-tags"
 
 docker_ok "docker rmi removes a tag" \
-    "docker rmi ${PREFIX}-app:latest 2>&1; echo ok" "rmi"
+    "docker rmi ${PREFIX}-app:latest 2>&1 && echo ok" "rmi"
 echo ""
 
 # ── 11. Healthchecks ───────────────────────────────────────────────
@@ -315,7 +316,7 @@ echo -e "${CYAN}[11] Healthchecks (Topic 10)${NC}"
 
 docker rm -f "${PREFIX}-appdemo" &>/dev/null || true
 docker_ok "docker run with healthcheck (sample app)" \
-    "docker run -d --name ${PREFIX}-appdemo -p 5000:5000 ${PREFIX}-app:1.0 2>&1; echo ok" "health-run"
+    "docker run -d --name ${PREFIX}-appdemo -p 5000:5000 ${PREFIX}-app:1.0 2>&1 && echo ok" "health-run"
 
 echo "  (waiting up to 20s for health check to pass...)"
 sleep 5
@@ -345,16 +346,16 @@ echo ""
 echo -e "${CYAN}[12] Networking (Topic 11)${NC}"
 
 docker_expect "docker network ls" \
-    "docker network ls --format '{{.Name}}' | grep -q bridge; echo ok" \
+    "docker network ls --format '{{.Name}}' | grep -q bridge && echo ok" \
     "ok" "net-ls"
 
 docker network rm "${PREFIX}-net" &>/dev/null || true
 docker_ok "docker network create" \
-    "docker network create ${PREFIX}-net 2>&1; echo ok" "net-create"
+    "docker network create ${PREFIX}-net 2>&1 && echo ok" "net-create"
 
 docker rm -f "${PREFIX}-netapp" &>/dev/null || true
 docker_ok "docker run --network" \
-    "docker run -d --name ${PREFIX}-netapp --network ${PREFIX}-net nginx 2>&1; echo ok" "net-run"
+    "docker run -d --name ${PREFIX}-netapp --network ${PREFIX}-net nginx 2>&1 && echo ok" "net-run"
 
 docker_expect "docker network inspect shows container" \
     "docker network inspect ${PREFIX}-net --format '{{range .Containers}}{{.Name}}{{end}}'" \
@@ -391,11 +392,11 @@ if [ -f "${APP_DIR}/docker-compose.yml" ]; then
 
     if docker compose version &>/dev/null 2>&1; then
         docker_expect "docker compose config validates file" \
-            "docker compose -f ${APP_DIR}/docker-compose.yml config --quiet 2>&1; echo ok" \
+            "docker compose -f ${APP_DIR}/docker-compose.yml config --quiet 2>&1 && echo ok" \
             "ok" "compose-config"
     elif command -v docker-compose &>/dev/null; then
         docker_expect "docker-compose config validates file" \
-            "docker-compose -f ${APP_DIR}/docker-compose.yml config --quiet 2>&1; echo ok" \
+            "docker-compose -f ${APP_DIR}/docker-compose.yml config --quiet 2>&1 && echo ok" \
             "ok" "compose-config"
     else
         echo -e "  ${YELLOW}[WARN]${NC} compose compose not available — skipping config validation"
@@ -518,7 +519,7 @@ docker_expect "registry-tagged image exists" \
 docker rmi -f "${PREFIX}-reg.example.com/${PREFIX}-app:staging" &>/dev/null || true
 
 docker_expect "docker login command exists" \
-    "docker login --help 2>&1 | grep -q 'Log in'; echo ok" \
+    "docker login --help 2>&1 | grep -q 'Log in' && echo ok" \
     "ok" "login-cmd"
 echo ""
 
@@ -531,11 +532,11 @@ docker_expect "docker ps -a shows all containers" \
     "NAMES" "tshoot-ps"
 
 docker_expect "docker inspect format works" \
-    "docker inspect --format='{{.Id}}' ${PREFIX}-app:1.0 2>&1 | grep -q 'sha256'; echo ok" \
+    "docker inspect --format='{{.Id}}' ${PREFIX}-app:1.0 2>&1 | grep -q 'sha256' && echo ok" \
     "ok" "tshoot-inspect"
 
 docker_expect "docker logs on stopped container" \
-    "docker run --rm --name ${PREFIX}-tshoot nginx >/dev/null 2>&1; echo ok" \
+    "docker run --rm --name ${PREFIX}-tshoot nginx >/dev/null 2>&1 && echo ok" \
     "ok" "tshoot-logs"
 echo ""
 
@@ -545,7 +546,7 @@ echo -e "${CYAN}[20] Full App Workflow (Topic 19)${NC}"
 
 docker rm -f "${PREFIX}-appdemo" &>/dev/null || true
 docker_ok "end-to-end build + run" \
-    "docker run -d --name ${PREFIX}-appdemo -p 5000:5000 ${PREFIX}-app:1.0 2>&1; echo ok" "e2e-run"
+    "docker run -d --name ${PREFIX}-appdemo -p 5000:5000 ${PREFIX}-app:1.0 2>&1 && echo ok" "e2e-run"
 
 sleep 3
 
@@ -580,7 +581,7 @@ docker volume create "${PREFIX}-appdata" &>/dev/null || true
 
 docker rm -f "${PREFIX}-appdemo" &>/dev/null || true
 docker_ok "final: run with named volume" \
-    "docker run -d --name ${PREFIX}-appdemo -p 5000:5000 -v ${PREFIX}-appdata:/app/data ${PREFIX}-app:1.0 2>&1; echo ok" "final-run"
+    "docker run -d --name ${PREFIX}-appdemo -p 5000:5000 -v ${PREFIX}-appdata:/app/data ${PREFIX}-app:1.0 2>&1 && echo ok" "final-run"
 
 sleep 3
 

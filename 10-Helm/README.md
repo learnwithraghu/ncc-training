@@ -22,6 +22,16 @@ Approximately **3 to 3.5 hours** total, split into 10 guided topics at about 20 
 - Helm installed (`helm version`)
 - Kubernetes cluster access
 
+## Verify Your Environment
+
+Before starting the topics, run the infrastructure validator to confirm Helm, kubectl, and the cluster can execute every command used across the 10 guided topics:
+
+```bash
+/workspaces/ncc-training/10-Helm/helpers/validate-infra.sh
+```
+
+The validator checks Helm environment, repository discovery, release install/uninstall, chart creation, templating, linting, dry-run, upgrades, rollbacks, packaging, and the capstone workflow. Fix any failures before teaching or running the module.
+
 ## Guided Learning Topics
 
 Work through topics in [guided-learning/](guided-learning/) in order:

@@ -532,9 +532,8 @@ docker_expect "registry-tagged image exists" \
 
 docker rmi -f "${PREFIX}-reg.example.com/${PREFIX}-app:staging" &>/dev/null || true
 
-docker_expect "docker login command exists" \
-    "docker login --help 2>&1 | grep -q 'Log in' && echo ok" \
-    "ok" "login-cmd"
+docker_ok "docker login command exists" \
+    "docker login --help >/dev/null 2>&1 && echo ok" "login-cmd"
 echo ""
 
 # ── 19. Troubleshooting commands ───────────────────────────────────

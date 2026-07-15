@@ -21,6 +21,16 @@ Approximately **4 hours** total, split into 12 guided topics at about 20 minutes
 - Completion of [05-Docker](../05-Docker/README.md)
 - Docker Compose installed (`docker compose version`)
 
+## Verify Your Environment
+
+Before starting the topics, run the infrastructure validator to confirm this environment can build, run, and operate the full Compose stack:
+
+```bash
+/workspaces/ncc-training/06-Docker-Compose/helpers/validate-infra.sh
+```
+
+The validator checks the Docker Compose plugin, the project files, the `docker-compose.yml` config, service health, env-file values, volume persistence, the queue/worker workflow, scaling, rebuilds, and final cleanup. Fix any failures before teaching or running the module.
+
 ## Guided Learning Topics
 
 Work through the topics in [guided-learning/](guided-learning/) in order:

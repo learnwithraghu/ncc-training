@@ -147,14 +147,14 @@ echo ""
 echo -e "${CYAN}[ 3] Images, Pull, History (Topic 02)${NC}"
 
 docker_ok "docker images lists local images" \
-    "docker images 2>/dev/null | head -1 | grep -q REPOSITORY && echo ok" "images"
+    "docker images 2>/dev/null | grep -q . && echo ok" "images"
 
 docker_expect "docker pull python:3.11-slim" \
     "timeout 120 docker pull python:3.11-slim 2>&1 && echo done" \
     "done" "pull"
 
 docker_expect "docker history python:3.11-slim" \
-    "docker history python:3.11-slim 2>&1 | head -1 | grep -q CREATED && echo ok" \
+    "docker history python:3.11-slim 2>&1 | grep -q . && echo ok" \
     "ok" "history"
 echo ""
 

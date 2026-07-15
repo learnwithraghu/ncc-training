@@ -379,14 +379,20 @@ echo ""
 
 echo -e "${CYAN}[12] Logs, Exec, and Troubleshooting (Topic 09)${NC}"
 
+# Generate fresh log lines before reading logs so the check is deterministic.
+if command -v curl &>/dev/null; then
+    curl -fsS http://localhost:5000/health >/dev/null 2>&1 || true
+    sleep 1
+fi
+
 compose_ok "docker compose logs web returns output" \
-    "docker compose logs web 2>&1 | head -5 | grep -q .  && echo ok" "logs"
+    "docker compose logs --tail 5 web 2>&1 | grep -q . && echo ok" "logs"
 
 compose_ok "docker compose logs worker returns output" \
-    "docker compose logs worker 2>&1 | head -5 | grep -q .  && echo ok" "logs"
+    "docker compose logs --tail 5 worker 2>&1 | grep -q . && echo ok" "logs"
 
 compose_ok "docker compose logs redis returns output" \
-    "docker compose logs redis 2>&1 | head -5 | grep -q .  && echo ok" "logs"
+    "docker compose logs --tail 5 redis 2>&1 | grep -q . && echo ok" "logs"
 
 compose_expect "docker compose exec web lists /app/data" \
     "docker compose exec web sh -c 'ls /app/data' 2>&1 | grep -q .  && echo ok" "ok" "exec"

@@ -17,16 +17,20 @@ def main() -> None:
     DATA_DIR.mkdir(parents=True, exist_ok=True)
     output_file = DATA_DIR / "processed.log"
 
+    print(f"Worker started, listening on queue: {QUEUE_NAME}", flush=True)
+
     while True:
         try:
             item = client.lpop(QUEUE_NAME)
             if item:
+                print(f"Processing event: {item}", flush=True)
                 with output_file.open("a", encoding="utf-8") as handle:
                     handle.write(f"{datetime.utcnow().isoformat()}Z processed {item}\n")
             else:
                 time.sleep(1)
         except redis.RedisError:
             # Keep the worker alive while redis restarts.
+            print("Redis unavailable, retrying...", flush=True)
             time.sleep(2)
 
 

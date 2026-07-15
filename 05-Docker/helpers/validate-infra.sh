@@ -8,6 +8,19 @@ readonly APP_DIR="${SCRIPT_DIR}/../application"
 readonly SANDBOX="/tmp/ncc-docker-validation-$$"
 readonly PREFIX="ncc-docker-val-$$"
 
+# Find an available host port; prefer 8080 to stay close to the topic example.
+find_free_port() {
+    local port
+    for port in 8080 8081 8082 8083 8084 8085 8086 8087 8088 8089 8090 8091 8092 8093 8094 8095 8096 8097 8098 8099; do
+        if ! (echo >/dev/tcp/127.0.0.1/$port) 2>/dev/null; then
+            echo "$port"
+            return 0
+        fi
+    done
+    echo "8080"
+}
+readonly HTTP_PORT=$(find_free_port)
+
 PASS=0
 WARN=0
 FAIL=0
@@ -44,6 +57,7 @@ echo -e "${CYAN}[info]${NC} Environment"
 echo "  User      : $(whoami 2>/dev/null || echo 'unknown')"
 echo "  Hostname  : $(hostname 2>/dev/null || echo 'unknown')"
 echo "  Kernel    : $(uname -srm 2>/dev/null || echo 'unknown')"
+echo "  HTTP port : ${HTTP_PORT}"
 echo ""
 
 # ── Helpers ───────────────────────────────────────────────────────
@@ -163,8 +177,8 @@ echo ""
 echo -e "${CYAN}[ 4] Run & Publish Ports (Topic 03)${NC}"
 
 docker rm -f "${PREFIX}-webtest" &>/dev/null || true
-docker_ok "docker run -d --name webtest -p 8080:80 nginx" \
-    "docker run -d --name ${PREFIX}-webtest -p 8080:80 nginx 2>&1 && echo ok" "run"
+docker_ok "docker run -d --name webtest -p ${HTTP_PORT}:80 nginx" \
+    "docker run -d --name ${PREFIX}-webtest -p ${HTTP_PORT}:80 nginx 2>&1 && echo ok" "run"
 
 if wait_for_container "${PREFIX}-webtest" 15; then
     echo -e "  ${GREEN}[PASS]${NC} ps docker ps shows running container"
@@ -176,7 +190,7 @@ else
 fi
 
 docker_expect "docker port shows mapped port" \
-    "docker port ${PREFIX}-webtest 2>&1 | grep -q '8080' && echo ok" \
+    "docker port ${PREFIX}-webtest 2>&1 | grep -q '${HTTP_PORT}' && echo ok" \
     "ok" "port"
 
 docker_ok "docker stop webtest" \

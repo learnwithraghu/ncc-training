@@ -278,7 +278,7 @@ compose_ok "docker compose up -d --build succeeds" \
     "timeout 240 docker compose up -d --build 2>&1 && echo ok" "up"
 
 compose_expect "docker compose ps shows running services" \
-    "docker compose ps --format '{{.Service}}' | sort | uniq | tr '\n' ' ' | grep -qE 'web worker redis' && echo ok" "ok" "ps"
+    "docker compose ps --format '{{.Service}}' | sort -u | grep -cE '^(web|worker|redis)$' | grep -q '3' && echo ok" "ok" "ps"
 
 wait_for_health 60
 echo ""

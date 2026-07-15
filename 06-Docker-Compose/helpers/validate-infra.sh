@@ -199,7 +199,7 @@ else
 fi
 
 docker_ok "docker compose ps works" \
-    "docker compose ps 2>&1 | head -1 | grep -qE 'NAME|CONTAINER'; echo ok" "tool"
+    "docker compose ps 2>&1 | grep -q . && echo ok" "tool"
 echo ""
 
 # ── 3. Optional curl ──────────────────────────────────────────────────
@@ -256,16 +256,16 @@ echo ""
 echo -e "${CYAN}[ 6] Compose Config Validation (Topic 03)${NC}"
 
 compose_ok "docker compose config renders" \
-    "docker compose config >/dev/null 2>&1; echo ok" "config"
+    "docker compose config >/dev/null 2>&1 && echo ok" "config"
 
 compose_expect "docker compose config shows services" \
-    "docker compose config 2>&1 | grep -q '^services:'; echo ok" "ok" "config"
+    "docker compose config 2>&1 | grep -q '^services:' && echo ok" "ok" "config"
 
 compose_expect "docker compose config lists web, worker, redis" \
-    "docker compose config 2>&1 | grep -qE 'web:|worker:|redis:'; echo ok" "ok" "config"
+    "docker compose config 2>&1 | grep -qE 'web:|worker:|redis:' && echo ok" "ok" "config"
 
 compose_expect "docker compose config lists named volumes" \
-    "docker compose config 2>&1 | grep -q '^volumes:'; echo ok" "ok" "config"
+    "docker compose config 2>&1 | grep -q '^volumes:' && echo ok" "ok" "config"
 echo ""
 
 # ── 7. Build and start services ───────────────────────────────────────
@@ -275,10 +275,10 @@ echo -e "${CYAN}[ 7] Build and Start Services (Topic 04)${NC}"
 docker compose down --volumes --remove-orphans &>/dev/null || true
 
 compose_ok "docker compose up -d --build succeeds" \
-    "timeout 240 docker compose up -d --build 2>&1; echo ok" "up"
+    "timeout 240 docker compose up -d --build 2>&1 && echo ok" "up"
 
 compose_expect "docker compose ps shows running services" \
-    "docker compose ps --format '{{.Service}}' | sort | uniq | tr '\n' ' ' | grep -qE 'web worker redis'; echo ok" "ok" "ps"
+    "docker compose ps --format '{{.Service}}' | sort | uniq | tr '\n' ' ' | grep -qE 'web worker redis' && echo ok" "ok" "ps"
 
 wait_for_health 60
 echo ""
@@ -288,13 +288,13 @@ echo ""
 echo -e "${CYAN}[ 8] Health Checks and Dependencies (Topic 05)${NC}"
 
 compose_expect "redis service healthcheck defined" \
-    "docker compose config 2>&1 | grep -A3 'redis:' | grep -q 'healthcheck'; echo ok" "ok" "health"
+    "docker compose config 2>&1 | grep -A3 'redis:' | grep -q 'healthcheck' && echo ok" "ok" "health"
 
 compose_expect "web service healthcheck defined" \
-    "docker compose config 2>&1 | grep -A10 'web:' | grep -q 'healthcheck'; echo ok" "ok" "health"
+    "docker compose config 2>&1 | grep -A10 'web:' | grep -q 'healthcheck' && echo ok" "ok" "health"
 
 compose_expect "web depends_on redis with condition" \
-    "docker compose config 2>&1 | grep -A8 'depends_on' | grep -q 'condition'; echo ok" "ok" "depends"
+    "docker compose config 2>&1 | grep -A8 'depends_on' | grep -q 'condition' && echo ok" "ok" "depends"
 
 docker_expect "web container reports healthy" \
     "docker inspect --format='{{.State.Health.Status}}' \"$(docker compose ps -q web)\" 2>&1" \
@@ -338,7 +338,7 @@ if command -v curl &>/dev/null; then
     sleep 2
 
     compose_ok "docker compose up -d after down" \
-        "docker compose up -d 2>&1; echo ok" "volume"
+        "docker compose up -d 2>&1 && echo ok" "volume"
 
     wait_for_health 60
 
@@ -380,19 +380,19 @@ echo ""
 echo -e "${CYAN}[12] Logs, Exec, and Troubleshooting (Topic 09)${NC}"
 
 compose_ok "docker compose logs web returns output" \
-    "docker compose logs web 2>&1 | head -5 | grep -q . ; echo ok" "logs"
+    "docker compose logs web 2>&1 | head -5 | grep -q .  && echo ok" "logs"
 
 compose_ok "docker compose logs worker returns output" \
-    "docker compose logs worker 2>&1 | head -5 | grep -q . ; echo ok" "logs"
+    "docker compose logs worker 2>&1 | head -5 | grep -q .  && echo ok" "logs"
 
 compose_ok "docker compose logs redis returns output" \
-    "docker compose logs redis 2>&1 | head -5 | grep -q . ; echo ok" "logs"
+    "docker compose logs redis 2>&1 | head -5 | grep -q .  && echo ok" "logs"
 
 compose_expect "docker compose exec web lists /app/data" \
-    "docker compose exec web sh -c 'ls /app/data' 2>&1 | grep -q . ; echo ok" "ok" "exec"
+    "docker compose exec web sh -c 'ls /app/data' 2>&1 | grep -q .  && echo ok" "ok" "exec"
 
 compose_expect "docker compose exec web reads processed.log" \
-    "docker compose exec web sh -c 'cat /app/data/processed.log' 2>&1 | grep -q 'event-1'; echo ok" "ok" "exec"
+    "docker compose exec web sh -c 'cat /app/data/processed.log' 2>&1 | grep -q 'event-1' && echo ok" "ok" "exec"
 echo ""
 
 # ── 13. Service scaling patterns ──────────────────────────────────────
@@ -400,7 +400,7 @@ echo ""
 echo -e "${CYAN}[13] Service Scaling Patterns (Topic 10)${NC}"
 
 compose_ok "docker compose up -d --scale worker=3" \
-    "docker compose up -d --scale worker=3 2>&1; echo ok" "scale"
+    "docker compose up -d --scale worker=3 2>&1 && echo ok" "scale"
 
 sleep 3
 
@@ -409,7 +409,7 @@ compose_expect "three worker containers are running" \
     "3" "scale"
 
 compose_ok "scale back to single worker" \
-    "docker compose up -d --scale worker=1 2>&1; echo ok" "scale"
+    "docker compose up -d --scale worker=1 2>&1 && echo ok" "scale"
 echo ""
 
 # ── 14. Rebuild and rollout workflow ──────────────────────────────────
@@ -417,10 +417,10 @@ echo ""
 echo -e "${CYAN}[14] Rebuild and Rollout Workflow (Topic 11)${NC}"
 
 compose_ok "docker compose build --no-cache succeeds" \
-    "timeout 240 docker compose build --no-cache 2>&1; echo ok" "rebuild"
+    "timeout 240 docker compose build --no-cache 2>&1 && echo ok" "rebuild"
 
 compose_ok "docker compose up -d after rebuild" \
-    "docker compose up -d 2>&1; echo ok" "rebuild"
+    "docker compose up -d 2>&1 && echo ok" "rebuild"
 
 wait_for_health 60
 
@@ -438,7 +438,7 @@ echo ""
 echo -e "${CYAN}[15] Compose Mini Workflow (Topic 12)${NC}"
 
 compose_ok "docker compose up -d --build (mini workflow)" \
-    "timeout 240 docker compose up -d --build 2>&1; echo ok" "mini"
+    "timeout 240 docker compose up -d --build 2>&1 && echo ok" "mini"
 
 wait_for_health 60
 
@@ -452,7 +452,7 @@ if command -v curl &>/dev/null; then
         "http://localhost:5000/processed" "final-workflow" "mini"
 
     compose_ok "docker compose logs --tail 20 returns output" \
-        "docker compose logs --tail 20 2>&1 | grep -q . ; echo ok" "mini"
+        "docker compose logs --tail 20 2>&1 | grep -q .  && echo ok" "mini"
 else
     echo -e "  ${YELLOW}[WARN]${NC} mini curl not found — skipping workflow endpoint tests"
     WARN=$((WARN + 2))

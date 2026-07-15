@@ -97,6 +97,26 @@ docker_expect() {
     fi
 }
 
+wait_for_container() {
+    local name="$1" timeout="${2:-15}"
+    local i
+    for i in $(seq 1 "$timeout"); do
+        if docker ps --format '{{.Names}}' 2>/dev/null | grep -qxF "$name"; then
+            return 0
+        fi
+        sleep 1
+    done
+    return 1
+}
+
+show_container_state() {
+    local name="$1"
+    echo -e "  ${CYAN}       Container status:${NC}"
+    docker ps -a --filter name="${name}" --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}' 2>&1 | sed 's/^/         /' || true
+    echo -e "  ${CYAN}       Container logs (last 20 lines):${NC}"
+    docker logs --tail 20 "${name}" 2>&1 | sed 's/^/         /' || true
+}
+
 # ── 1. Docker binary, version, daemon ──────────────────────────────
 
 echo -e "${CYAN}[ 1] Docker Installation & Daemon (Topic 01)${NC}"
@@ -145,9 +165,14 @@ docker rm -f "${PREFIX}-webtest" &>/dev/null || true
 docker_ok "docker run -d --name webtest -p 8080:80 nginx" \
     "docker run -d --name ${PREFIX}-webtest -p 8080:80 nginx 2>&1; echo ok" "run"
 
-docker_expect "docker ps shows running container" \
-    "docker ps --filter name=${PREFIX}-webtest --format '{{.Names}}'" \
-    "${PREFIX}-webtest" "ps"
+if wait_for_container "${PREFIX}-webtest" 15; then
+    echo -e "  ${GREEN}[PASS]${NC} ps docker ps shows running container"
+    PASS=$((PASS + 1))
+else
+    echo -e "  ${RED}[FAIL]${NC} ps docker ps shows running container (expected \"${PREFIX}-webtest\", not found after 15s)"
+    show_container_state "${PREFIX}-webtest"
+    FAIL=$((FAIL + 1))
+fi
 
 docker_expect "docker port shows mapped port" \
     "docker port ${PREFIX}-webtest 2>&1 | grep -q '8080'; echo ok" \
@@ -168,6 +193,8 @@ docker rm -f "${PREFIX}-appdemo" &>/dev/null || true
 docker_ok "docker run -e ENVIRONMENT=training -e APP_VERSION=2.0" \
     "docker run -d --name ${PREFIX}-appdemo -p 5000:5000 -e ENVIRONMENT=training -e APP_VERSION=2.0 nginx 2>&1; echo ok" "env"
 
+wait_for_container "${PREFIX}-appdemo" 10 || true
+
 docker_expect "docker inspect shows container config" \
     "docker inspect ${PREFIX}-appdemo 2>&1 | grep -q 'Id'; echo ok" \
     "ok" "inspect"
@@ -184,7 +211,7 @@ echo ""
 echo -e "${CYAN}[ 6] Logs & Exec (Topic 05)${NC}"
 
 docker rm -f "${PREFIX}-appdemo" &>/dev/null || true
-docker run -d --name "${PREFIX}-appdemo" -p 5000:5000 nginx &>/dev/null
+docker run -d --name "${PREFIX}-appdemo" -p 5000:5000 nginx &>/dev/null || true
 sleep 2
 
 docker_ok "docker logs returns output" \
@@ -549,7 +576,7 @@ echo ""
 echo -e "${CYAN}[21] Mini Workflow — Volumes + Write/Read (Topic 20)${NC}"
 
 docker volume rm -f "${PREFIX}-appdata" &>/dev/null || true
-docker volume create "${PREFIX}-appdata" &>/dev/null
+docker volume create "${PREFIX}-appdata" &>/dev/null || true
 
 docker rm -f "${PREFIX}-appdemo" &>/dev/null || true
 docker_ok "final: run with named volume" \

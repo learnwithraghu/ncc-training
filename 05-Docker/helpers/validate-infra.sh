@@ -517,23 +517,23 @@ else
 fi
 echo ""
 
-# ── 18. Registry concepts ──────────────────────────────────────────
+# ── 18. Saving & Loading Images ─────────────────────────────────────
 
-echo -e "${CYAN}[18] Registry Concepts (Topic 17)${NC}"
+echo -e "${CYAN}[18] Saving & Loading Images (Topic 17)${NC}"
 
-check_cmd "docker" "registry"
+docker_ok "docker save exports image to tar" \
+    "docker save -o ${SANDBOX}/ncc-app.tar ${PREFIX}-app:1.0 2>&1 && echo ok" "save"
 
-docker_ok "docker tag for registry-style name" \
-    "docker tag ${PREFIX}-app:1.0 ${PREFIX}-reg.example.com/${PREFIX}-app:staging 2>&1 && echo ok" "tag-reg"
+docker_expect "saved tar contains image manifest" \
+    "tar -tf ${SANDBOX}/ncc-app.tar 2>&1 | grep -q manifest.json && echo ok" \
+    "ok" "save-tar"
 
-docker_expect "registry-tagged image exists" \
-    "docker images ${PREFIX}-reg.example.com/${PREFIX}-app:staging --format '{{.Tag}}' 2>&1" \
-    "staging" "reg-tag"
+docker_ok "docker load imports image from tar" \
+    "docker load -i ${SANDBOX}/ncc-app.tar 2>&1 && echo ok" "load"
 
-docker rmi -f "${PREFIX}-reg.example.com/${PREFIX}-app:staging" &>/dev/null || true
-
-docker_ok "docker login command exists" \
-    "docker login --help >/dev/null 2>&1 && echo ok" "login-cmd"
+docker_expect "loaded image is available locally" \
+    "docker images --filter reference=${PREFIX}-app:1.0 --format '{{.Repository}}:{{.Tag}}' 2>&1" \
+    "${PREFIX}-app:1.0" "load-verify"
 echo ""
 
 # ── 19. Troubleshooting commands ───────────────────────────────────

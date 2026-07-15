@@ -34,7 +34,7 @@ This module uses one self-contained lesson per topic.
 - Topic 14 - Dockerfile Best Practices
 - Topic 15 - Security and Non-Root Users
 - Topic 16 - Multi-Stage Builds
-- Topic 17 - Registry and ECR Concepts
+- Topic 17 - Saving and Loading Images
 - Topic 18 - Troubleshooting Containers
 - Topic 19 - Full App Workflow
 - Topic 20 - Docker Mini Workflow

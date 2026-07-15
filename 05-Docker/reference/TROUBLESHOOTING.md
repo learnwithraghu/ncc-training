@@ -394,39 +394,40 @@ docker exec <container-name> python -m cProfile app.py
 
 ---
 
-### 10. Image Pull/Push Issues
+### 10. Image Save/Load Issues
 
 #### Symptoms
-- Cannot pull image from registry
-- Cannot push image to registry
+- `docker save` produces an empty or unreadable tar file
+- `docker load` fails with a layer or manifest error
+- Imported image does not appear in `docker images`
 
 #### Solutions
 
-**Authentication Required**
+**Verify the tar file**
 ```bash
-# Login to Docker Hub
-docker login
+# List contents to confirm it is a valid image archive
+tar -tf my-image.tar | head
 
-# Login to private registry
-docker login <registry-url>
+# You should see manifest.json and layer files
 ```
 
-**Network Issues**
+**Use the correct load command**
 ```bash
-# Use different DNS
-docker pull --dns 8.8.8.8 <image>
+# Load from a tar file
+docker load -i my-image.tar
 
-# Check proxy settings
-docker info | grep Proxy
+# Do not use docker import for saved images; that creates a flat image
 ```
 
-**Rate Limiting**
+**Compress for transfer**
 ```bash
-# Docker Hub rate limits
-# Solution: Login to increase limits
-docker login
+# Save and compress
+docker save -o my-image.tar my-image:tag
+gzip my-image.tar
 
-# Or use alternative registry
+# Decompress and load on the target host
+gunzip my-image.tar.gz
+docker load -i my-image.tar
 ```
 
 ---

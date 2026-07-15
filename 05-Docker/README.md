@@ -43,7 +43,7 @@ Work through the topics in `guided-learning/` in order:
 | Topic 14 | [guided-learning/topic-14/](guided-learning/topic-14/) | Dockerfile best practices |
 | Topic 15 | [guided-learning/topic-15/](guided-learning/topic-15/) | Security and non-root users |
 | Topic 16 | [guided-learning/topic-16/](guided-learning/topic-16/) | Multi-stage builds |
-| Topic 17 | [guided-learning/topic-17/](guided-learning/topic-17/) | Registry and ECR concepts |
+| Topic 17 | [guided-learning/topic-17/](guided-learning/topic-17/) | Saving and loading images |
 | Topic 18 | [guided-learning/topic-18/](guided-learning/topic-18/) | Troubleshooting containers |
 | Topic 19 | [guided-learning/topic-19/](guided-learning/topic-19/) | Full app workflow |
 | Topic 20 | [guided-learning/topic-20/](guided-learning/topic-20/) | Docker mini workflow |

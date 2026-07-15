@@ -23,6 +23,16 @@ Approximately **6 to 7 hours** total, split into 20 guided topics at about 20 mi
 - Kubernetes cluster access (provided by instructor)
 - kubectl installed and configured
 
+## Verify Your Environment
+
+Before starting the topics, run the infrastructure validator to confirm the cluster can execute every command used across the 20 guided topics:
+
+```bash
+/workspaces/ncc-training/09-Kubernetes/helpers/validate-infra.sh
+```
+
+The validator checks kubectl connectivity, permissions, all guided-topic resources (pods, deployments, services, ingress, network policies, configmaps, secrets, PV/PVC, StatefulSets, Jobs, CronJobs), runs the topic helper scripts, and tests optional cluster add-ons. Fix any failures before teaching or running the module.
+
 ## Guided Learning Topics
 
 Work through topics in [guided-learning/](guided-learning/) in order:

@@ -288,10 +288,10 @@ echo ""
 echo -e "${CYAN}[ 8] Health Checks and Dependencies (Topic 05)${NC}"
 
 compose_expect "redis service healthcheck defined" \
-    "docker compose config 2>&1 | grep -A3 'redis:' | grep -q 'healthcheck' && echo ok" "ok" "health"
+    "docker compose config 2>&1 | awk '/^  redis:/{p=1} p{print} /^  [a-z]+:/{if(p && \$0 !~ /^  redis:/){exit}}' | grep -q 'healthcheck' && echo ok" "ok" "health"
 
 compose_expect "web service healthcheck defined" \
-    "docker compose config 2>&1 | grep -A10 'web:' | grep -q 'healthcheck' && echo ok" "ok" "health"
+    "docker compose config 2>&1 | awk '/^  web:/{p=1} p{print} /^  [a-z]+:/{if(p && \$0 !~ /^  web:/){exit}}' | grep -q 'healthcheck' && echo ok" "ok" "health"
 
 compose_expect "web depends_on redis with condition" \
     "docker compose config 2>&1 | grep -A8 'depends_on' | grep -q 'condition' && echo ok" "ok" "depends"

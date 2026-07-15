@@ -36,7 +36,7 @@ cleanup() {
     for img_tag in "${PREFIX}-app:1.0" "${PREFIX}-app:latest" "${PREFIX}-app:demo" "${PREFIX}-app:final"; do
         docker rmi -f "$img_tag" &>/dev/null || true
     done
-    docker rm -f "${PREFIX}-webtest" "${PREFIX}-appdemo" "${PREFIX}-netapp" &>/dev/null || true
+    docker rm -f "${PREFIX}-webtest" "${PREFIX}-appdemo" "${PREFIX}-netapp" "${PREFIX}-tshoot" &>/dev/null || true
     docker volume rm -f "${PREFIX}-appdata" &>/dev/null || true
     docker network rm "${PREFIX}-net" &>/dev/null || true
     rm -rf "$SANDBOX"
@@ -549,7 +549,7 @@ docker_expect "docker inspect format works" \
     "ok" "tshoot-inspect"
 
 docker_expect "docker logs on stopped container" \
-    "docker run --rm --name ${PREFIX}-tshoot nginx >/dev/null 2>&1 && echo ok" \
+    "docker rm -f ${PREFIX}-tshoot >/dev/null 2>&1; docker run -d --name ${PREFIX}-tshoot nginx >/dev/null 2>&1 && sleep 1 && docker stop ${PREFIX}-tshoot >/dev/null 2>&1 && docker logs ${PREFIX}-tshoot >/dev/null 2>&1 && docker rm -f ${PREFIX}-tshoot >/dev/null 2>&1 && echo ok" \
     "ok" "tshoot-logs"
 echo ""
 

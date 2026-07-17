@@ -53,6 +53,14 @@ Work through the topics in `guided-learning/` in order:
 
 The Python `log_parser.py` you build here reads the log files created by your Bash scripts. A single `run_day1.sh` orchestrator ties Linux, Bash, and Python together. On Day 2, this entire `day1/` folder becomes your first Git commit.
 
+## Labs
+
+The engineer-facing lab scenarios now live in [labs/](labs/).
+
+- `lab-01-...` through `lab-05-...` hold the lab scenarios
+- each lab is split into a description, step flow, and code assets
+- the lab engineer can wire the UI, starter state, and validation from these folders
+
 ## Additional Resources
 
 - [guided-learning/](guided-learning/) — Python topics and walkthroughs

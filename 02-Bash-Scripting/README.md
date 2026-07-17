@@ -50,6 +50,14 @@ The `backup.sh` script you build here is part of your Day 1 toolkit. On Day 2, y
 
 By the end of this module, you should have a working `~/ncc-labs/day1/backup.sh` that backs up `.txt` and `.log` files to a timestamped `backup/` directory and a small set of related helper scripts.
 
+## Labs
+
+The engineer-facing lab scenarios now live in [labs/](labs/).
+
+- `lab-01-...` through `lab-05-...` hold the lab scenarios
+- each lab is split into a description, step flow, and code assets
+- the lab engineer can wire the UI, starter state, and validation from these folders
+
 ## Additional Resources
 
 - [guided-learning/](guided-learning/) — Bash scripting topics and walkthroughs

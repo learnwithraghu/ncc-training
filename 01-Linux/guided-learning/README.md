@@ -2,6 +2,8 @@
 
 This module uses a single guided-learning area with one self-contained lesson per topic.
 
+The engineer-facing lab scenarios live separately in `../labs/` so the guided lessons and lab builds stay aligned but distinct.
+
 ## Structure
 
 - `topic-01/` through `topic-15/` hold the learning topics

@@ -60,7 +60,15 @@ The practice material for this module now lives in [guided-learning/](guided-lea
 - each topic is a single guided lesson with commands, notes, and checkpoints in one file
 - each topic is designed to take about 20 minutes to complete
 
-This module now carries a 15-topic guided-learning set with a steady 20-minute pace for each lesson.
+## Labs
+
+The engineer-facing lab scenarios now live in [labs/](labs/).
+
+- `lab-01-...` through `lab-05-...` hold the lab scenarios
+- each lab is split into a description, step flow, and code assets
+- the lab engineer can wire the UI, starter state, and validation from these folders
+
+This module now carries both a 15-topic guided-learning set and 5 lab scenarios.
 
 ## Setup Instructions
 

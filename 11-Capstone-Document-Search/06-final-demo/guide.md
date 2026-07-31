@@ -15,20 +15,18 @@ This folder has the complete lab tree used through the course:
 ├── guide.md
 ├── app.py
 ├── requirements.txt
-├── .env_example
-├── .gitignore
 ├── Dockerfile
 ├── .dockerignore
 └── docker-compose.yml
 ```
 
-Optional: keep a local `.env` for rebuild demos only. Do not show secret values on screen.
+Shared template for secrets: `../.env_example` at the module root. Optional: keep a local `.env` for rebuild demos only. Do not show secret values on screen.
 
 ---
 
 ## Demo Story (Say This)
 
-1. **Application** — We started with a small Flask API and an `.env_example` template.
+1. **Application** — We started with a small Flask API and one module-root `.env_example` template.
 2. **Dockerize** — We wrote a Dockerfile and, for this class, baked `.env` into the image. We did not use Secrets Manager.
 3. **Local test** — We built `document-search:latest` and curled `/health` on localhost.
 4. **ECR** — We created a repository and pushed the image from the laptop.
@@ -41,7 +39,7 @@ Optional: keep a local `.env` for rebuild demos only. Do not show secret values 
 ### On your laptop
 
 - [ ] Show folder progression `01` → `06`
-- [ ] Show `.env_example` (not real secrets)
+- [ ] Show module-root `.env_example` (not real secrets)
 - [ ] Show `Dockerfile` line `COPY .env .env` and explain the classroom trade-off
 - [ ] Show `docker images | grep document-search`
 - [ ] Optional quick local proof:

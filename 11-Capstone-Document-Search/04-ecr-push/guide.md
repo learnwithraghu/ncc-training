@@ -13,14 +13,12 @@ Approximately **25 minutes**.
 ├── guide.md
 ├── app.py
 ├── requirements.txt
-├── .env_example
-├── .gitignore
 ├── Dockerfile
 ├── .dockerignore
 └── docker-compose.yml
 ```
 
-Bring secrets forward (needed for AWS CLI and for rebuilding if required):
+Bring secrets forward (shared template is `../.env_example`):
 
 ```bash
 cp ../03-local-image-test/.env ./.env

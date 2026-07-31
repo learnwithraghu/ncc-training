@@ -1,4 +1,4 @@
-# Secrets — never commit real credentials
+# Local secrets (any module)
 .env
 .env.local
 .env.*.local
@@ -15,19 +15,17 @@ build/
 .venv/
 venv/
 ENV/
-.env/
 
-# Test / tooling caches
+# Node (if present in labs)
+node_modules/
+
+# Caches and coverage
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
 .coverage
 htmlcov/
 .tox/
-
-# Virtualenvs and local installs created inside step folders
-*/.venv/
-*/venv/
 
 # OS / editor
 .DS_Store
@@ -38,6 +36,13 @@ Thumbs.db
 .vscode/
 *.sublime-*
 
-# Docker / local runtime leftovers
+# Logs and temp
 *.log
 logs/
+*.tmp
+*.temp
+*.bak
+*.cache
+
+# AWS local config copies (never commit)
+.aws/

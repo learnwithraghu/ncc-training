@@ -16,12 +16,13 @@ Before Docker or AWS, a tutor always starts with the **application itself**. If 
 You are working in:
 
 ```text
-01-application-overview/
-├── guide.md           ← you are here
-├── app.py             ← Flask web API
-├── requirements.txt   ← Python dependencies
-├── .env_example       ← safe template (committed)
-└── .gitignore         ← keeps real .env out of git
+11-Capstone-Document-Search/
+├── .env_example                 ← one shared template for the whole module
+├── .gitignore                   ← keeps real .env out of git
+└── 01-application-overview/
+    ├── guide.md                 ← you are here
+    ├── app.py                   ← Flask web API
+    └── requirements.txt         ← Python dependencies
 ```
 
 ## Walkthrough: What Each File Does
@@ -31,7 +32,7 @@ A small Flask API with two routes:
 
 | Route | Purpose |
 |-------|---------|
-| `GET /` | Confirms the app is running and shows `LLM_MODEL` / `AWS_REGION` |
+| `GET /` | Confirms the app is running and shows `LLM_MODEL` / `LLM_API_ENDPOINT` / `AWS_REGION` |
 | `GET /health` | Simple health check for later Docker and ECS checks |
 
 It loads variables with `python-dotenv` so local `.env` values appear in the process environment.
@@ -39,14 +40,16 @@ It loads variables with `python-dotenv` so local `.env` values appear in the pro
 ### `requirements.txt`
 Lists Python packages. Today that is Flask and python-dotenv. Later steps keep this file as-is unless the app grows.
 
-### `.env_example`
-A **template** with placeholder values. Safe to commit. It documents every variable the app and later AWS steps need:
+### Module-root `.env_example`
+There is a **single** template at `11-Capstone-Document-Search/.env_example`. Safe to commit. It documents every variable the app and later AWS steps need:
 
 - AWS CLI credentials and region
-- LLM key and model name
+- LLM key, API endpoint, and model name
 - ECR repository name and account ID
 
-### `.gitignore`
+Copy it into whichever step folder you are working in as `.env` (gitignored). Do not duplicate the template into every step folder.
+
+### Module-root `.gitignore`
 Blocks `.env` from being committed. Real keys stay on your machine only.
 
 ---
@@ -59,10 +62,10 @@ Blocks `.env` from being committed. Real keys stay on your machine only.
 cd 11-Capstone-Document-Search/01-application-overview
 ```
 
-2. Copy the template:
+2. Copy the module template into this folder as `.env`:
 
 ```bash
-cp .env_example .env
+cp ../.env_example .env
 ```
 
 3. Edit `.env` and replace every placeholder with your real values.

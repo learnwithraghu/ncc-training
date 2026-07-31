@@ -13,11 +13,11 @@ Approximately **20 minutes**.
 ├── guide.md
 ├── app.py
 ├── requirements.txt
-├── .env_example
-├── .gitignore
 ├── Dockerfile          ← new
 └── .dockerignore       ← new
 ```
+
+The shared secrets template stays at the module root: `../.env_example`.
 
 If you just arrived here, copy your filled `.env` from Step 01:
 
@@ -25,10 +25,10 @@ If you just arrived here, copy your filled `.env` from Step 01:
 cp ../01-application-overview/.env ./.env
 ```
 
-Or create it again:
+Or create it again from the module template:
 
 ```bash
-cp .env_example .env
+cp ../.env_example .env
 # edit .env with real values
 ```
 
@@ -83,7 +83,7 @@ For this classroom capstone we **copy `.env` into the image** at build time:
 COPY .env .env
 ```
 
-When the container starts, `python-dotenv` loads that file and the app can read `LLM_API_KEY`, `LLM_MODEL`, and AWS-related values.
+When the container starts, `python-dotenv` loads that file and the app can read `LLM_API_KEY`, `LLM_API_ENDPOINT`, `LLM_MODEL`, and AWS-related values.
 
 ### What we are NOT doing
 We will **not** use AWS Secrets Manager, SSM Parameter Store, or ECS secret injection in this module. Those are better for production, but they add IAM and console complexity. Your tutor is keeping the path short:

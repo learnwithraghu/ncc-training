@@ -13,18 +13,16 @@ Approximately **20 minutes**.
 ├── guide.md
 ├── app.py
 ├── requirements.txt
-├── .env_example
-├── .gitignore
 ├── Dockerfile
 ├── .dockerignore
 └── docker-compose.yml   ← optional helper
 ```
 
-Bring your secrets file forward:
+Bring your secrets file forward (template lives only at `../.env_example`):
 
 ```bash
 cp ../02-dockerize/.env ./.env
-# or: cp ../01-application-overview/.env ./.env
+# or: cp ../.env_example .env   # then edit values
 ```
 
 If `.env` is missing, the Docker build will fail on `COPY .env .env`. That is intentional in this lab.
@@ -64,7 +62,7 @@ What should happen:
 - `app.py` and `.env` are copied
 - Build finishes with a success message
 
-If you see `COPY failed: file not found .env`, create `.env` from `.env_example` and rebuild.
+If you see `COPY failed: file not found .env`, run `cp ../.env_example .env`, fill in values, and rebuild.
 
 ## Step 3: Run a Container
 

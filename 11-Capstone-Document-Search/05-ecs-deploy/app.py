@@ -19,6 +19,7 @@ def home():
         {
             "message": "Document Search API is running",
             "llm_model": os.getenv("LLM_MODEL", "not-set"),
+            "llm_api_endpoint": os.getenv("LLM_API_ENDPOINT", "not-set"),
             "aws_region": os.getenv("AWS_REGION", "not-set"),
         }
     )

@@ -23,8 +23,8 @@ Per-step env check (example for Step 01):
 
 ```bash
 cd 01-application-overview
-test -f .env_example && echo "env template present"
-cp -n .env_example .env
+test -f ../.env_example && echo "module env template present"
+cp -n ../.env_example .env
 ```
 
 ## Console Checks

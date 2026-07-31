@@ -13,8 +13,6 @@ Approximately **30 minutes**.
 ├── guide.md
 ├── app.py
 ├── requirements.txt
-├── .env_example
-├── .gitignore
 ├── Dockerfile
 ├── .dockerignore
 └── docker-compose.yml

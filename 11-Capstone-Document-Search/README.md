@@ -52,7 +52,7 @@ Approximately **2 hours**.
 1. Open the step folder for the lesson you are on.
 2. Read `guide.md` first.
 3. Use the code in **that same folder** (do not jump ahead).
-4. When you finish, copy your filled `.env` into the next folder if the guide says so.
+4. When you finish, copy your filled `.env` into the next folder if the guide says so. Use the single module-root [`.env_example`](.env_example) as the template — it is not copied into every step folder.
 5. Each later folder already contains the prior application files so a late joiner can still catch up.
 
 ## Capstone Rules

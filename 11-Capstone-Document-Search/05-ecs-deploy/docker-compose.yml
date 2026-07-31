@@ -6,5 +6,5 @@ services:
       platforms:
         - linux/amd64
     ports:
-      - "5000:5000"
+      - "8501:8501"
     restart: unless-stopped

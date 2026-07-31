@@ -1,7 +1,10 @@
-# Keep build context small, but allow .env to be baked in for this lab
 __pycache__
 *.pyc
+*.pyo
 .venv
+venv
 .git
 .DS_Store
 *.md
+sample-documents/
+app.log

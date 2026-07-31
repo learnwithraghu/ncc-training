@@ -1,6 +1,8 @@
 # Day 5, Part 3: Document Search Capstone
 
-This module is the final project of the NCC DevOps Bootcamp. Work **one folder at a time**. Each folder includes the code you need for that step plus a tutor-style guide. Later folders carry forward everything from earlier ones.
+This module is the final project of the NCC DevOps Bootcamp. Work **one folder at a time**. Each folder includes the License Renewal Document Processor code for that step plus a tutor-style guide.
+
+The app is a **Streamlit** UI: upload a PDF, call your **LLM HTTP endpoint**, view structured data, and download Excel. There is **no Bedrock** and **no S3** in this lab.
 
 ## Learning Path
 
@@ -20,11 +22,11 @@ This module is the final project of the NCC DevOps Bootcamp. Work **one folder a
 
 ## What You Will Learn
 
-- Prepare application code and a safe `.env_example` / `.env` workflow
-- Write a Dockerfile and bake secrets into the image for this lab (no Secrets Manager)
-- Build and test the image on your laptop
-- Create an ECR repository and push from local Docker
-- Deploy with the AWS Console and open `http://<task-public-ip>:5000`
+- Configure `LLM_API_KEY`, `LLM_API_ENDPOINT`, and `LLM_MODEL` (plus AWS/ECR for CLI)
+- Dockerize a Streamlit document processor and bake secrets for class
+- Build and test on port **8501**
+- Push to Amazon ECR from your laptop
+- Deploy with the AWS Console and open `http://<task-public-ip>:8501`
 
 ## Time Estimate
 
@@ -35,14 +37,15 @@ Approximately **2 hours**.
 - Completion of [06-Docker](../06-Docker/README.md) and ECR concepts from [08-GitHub-Actions](../08-GitHub-Actions/README.md)
 - Docker (and optionally Docker Compose)
 - AWS CLI plus an AWS account for ECR and ECS Console access
+- An OpenAI-compatible LLM HTTP endpoint and API key
 
 ## Step Folders
 
 | Step | Folder | What you do | Duration |
 |------|--------|-------------|----------|
-| 1 | [01-application-overview](01-application-overview/guide.md) | Meet the app and create `.env` | 15 min |
+| 1 | [01-application-overview](01-application-overview/guide.md) | Meet the app and create `.env` | 20 min |
 | 2 | [02-dockerize](02-dockerize/guide.md) | Write the Dockerfile; bake secrets | 20 min |
-| 3 | [03-local-image-test](03-local-image-test/guide.md) | Build and test locally | 20 min |
+| 3 | [03-local-image-test](03-local-image-test/guide.md) | Build and test locally on 8501 | 20 min |
 | 4 | [04-ecr-push](04-ecr-push/guide.md) | Create ECR repo and push | 25 min |
 | 5 | [05-ecs-deploy](05-ecs-deploy/guide.md) | Deploy from the AWS Console | 30 min |
 | 6 | [06-final-demo](06-final-demo/guide.md) | Present the end-to-end path | 20 min |
@@ -51,20 +54,21 @@ Approximately **2 hours**.
 
 1. Open the step folder for the lesson you are on.
 2. Read `guide.md` first.
-3. Use the code in **that same folder** (do not jump ahead).
-4. When you finish, copy your filled `.env` into the next folder if the guide says so. Use the single module-root [`.env_example`](.env_example) as the template — it is not copied into every step folder.
-5. Each later folder already contains the prior application files so a late joiner can still catch up.
+3. Use the code in **that same folder**.
+4. Copy your filled `.env` forward when the guide says so. Use the single module-root [`.env_example`](.env_example).
+5. Later folders already contain prior application files so late joiners can catch up.
 
 ## Capstone Rules
 
 - Build locally → push to ECR from your laptop → deploy ECS from the **Console**
-- Access via the **ECS task public IP** (no Application Load Balancer in this lab)
-- Bake `.env` into the image for this classroom path; **do not** use AWS Secrets Manager here
+- Access via the **ECS task public IP** on port **8501** (no ALB in this lab)
+- Bake `.env` into the image for this classroom path; **do not** use Secrets Manager here
 - Never commit a real `.env`
+- No Bedrock and no S3 in the application path
 
 ## Key Artifact
 
-An image in Amazon ECR running as an ECS Fargate task, reachable at `http://<task-public-ip>:5000`.
+An image in Amazon ECR running as an ECS Fargate task, reachable at `http://<task-public-ip>:8501`.
 
 ## Infra Checklist
 

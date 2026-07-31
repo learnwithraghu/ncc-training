@@ -1,19 +1,17 @@
 # Step 01: Application Overview
 
 ## Goal
-Meet the document-search application, understand its files, and prepare your local secrets file.
+Meet the License Renewal Document Processor, understand its files, and prepare your local secrets file.
 
 ## Time
-Approximately **15 minutes**.
+Approximately **20 minutes**.
 
 ## What You Are Learning
-Before Docker or AWS, a tutor always starts with the **application itself**. If you do not know what the app needs to run, you cannot package or deploy it safely.
+Before Docker or AWS, start with the **application itself**. This app uploads a PDF, extracts text locally, calls your LLM HTTP endpoint, and lets you download Excel — with **no Bedrock** and **no S3**.
 
 ---
 
 ## Folder Contents
-
-You are working in:
 
 ```text
 11-Capstone-Document-Search/
@@ -21,89 +19,61 @@ You are working in:
 ├── .gitignore                   ← keeps real .env out of git
 └── 01-application-overview/
     ├── guide.md                 ← you are here
-    ├── app.py                   ← Flask web API
-    └── requirements.txt         ← Python dependencies
+    ├── requirements.txt
+    ├── app/
+    │   └── app.py               ← Streamlit License Renewal app
+    └── sample-documents/        ← practice PDFs for upload testing
 ```
 
-## Walkthrough: What Each File Does
+## Walkthrough: What the App Does
 
-### `app.py`
-A small Flask API with two routes:
+1. You upload a license renewal PDF in the browser.
+2. The app extracts text with `pdfplumber` (or `PyPDF2`).
+3. It sends the text to `LLM_API_ENDPOINT` (OpenAI-compatible chat completions).
+4. It shows a structured table and offers an **Excel download**.
 
-| Route | Purpose |
-|-------|---------|
-| `GET /` | Confirms the app is running and shows `LLM_MODEL` / `LLM_API_ENDPOINT` / `AWS_REGION` |
-| `GET /health` | Simple health check for later Docker and ECS checks |
+There is no cloud document store in this lab. Upload and download stay in the browser.
 
-It loads variables with `python-dotenv` so local `.env` values appear in the process environment.
+### Environment variables that matter for the app
 
-### `requirements.txt`
-Lists Python packages. Today that is Flask and python-dotenv. Later steps keep this file as-is unless the app grows.
+| Variable | Purpose |
+|----------|---------|
+| `LLM_API_KEY` | Bearer token for the LLM API |
+| `LLM_API_ENDPOINT` | Full chat-completions URL |
+| `LLM_MODEL` | Model name sent in the JSON body |
 
-### Module-root `.env_example`
-There is a **single** template at `11-Capstone-Document-Search/.env_example`. Safe to commit. It documents every variable the app and later AWS steps need:
-
-- AWS CLI credentials and region
-- LLM key, API endpoint, and model name
-- ECR repository name and account ID
-
-Copy it into whichever step folder you are working in as `.env` (gitignored). Do not duplicate the template into every step folder.
-
-### Module-root `.gitignore`
-Blocks `.env` from being committed. Real keys stay on your machine only.
+AWS and ECR variables in `.env_example` are for **later local CLI steps** (push to ECR). The Streamlit app runtime only needs the `LLM_*` values.
 
 ---
 
 ## Hands-On: Prepare Your Secrets File
 
-1. Open a terminal in this folder:
-
 ```bash
 cd 11-Capstone-Document-Search/01-application-overview
-```
-
-2. Copy the module template into this folder as `.env`:
-
-```bash
 cp ../.env_example .env
 ```
 
-3. Edit `.env` and replace every placeholder with your real values.
+Edit `.env` and set real `LLM_API_KEY`, `LLM_API_ENDPOINT`, and `LLM_MODEL`.
 
-4. Confirm `.env` is ignored by git:
-
-```bash
-git check-ignore -v .env || echo "If this prints nothing outside a git repo, that is OK for class copies"
-```
-
-## Optional: Run the App Without Docker
+## Optional: Run Without Docker
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-python app.py
+streamlit run app/app.py
 ```
 
-In another terminal:
-
-```bash
-curl http://localhost:5000/
-curl http://localhost:5000/health
-```
-
-Stop the app with `Ctrl+C` when finished.
+Open `http://localhost:8501`, upload a PDF from `sample-documents/`, and process it.
 
 ---
 
 ## Checkpoint
 
-Answer before moving on:
-
-1. Which file is safe to commit — `.env` or `.env_example`?
-2. What does `/health` return, and why will that matter for ECS later?
-3. Name three categories of values stored in `.env_example`.
+1. Which three env vars does the app need at runtime?
+2. Where do processed Excel files go — S3 or your browser download?
+3. Why are sample PDFs useful before you touch Docker?
 
 ## Next Step
 
-When you finish, go to **[02-dockerize](../02-dockerize/)** — same application code, plus a Dockerfile. That step also explains **baking secrets into the image** for this classroom lab (we will not use AWS Secrets Manager here).
+Go to **[02-dockerize](../02-dockerize/)** — same application code, plus a Dockerfile that bakes `.env` into the image.

@@ -1,0 +1,9 @@
+# Local secrets — never commit real credentials
+.env
+.env.local
+.env.*.local
+
+# OS and editor noise
+.DS_Store
+*.swp
+*~

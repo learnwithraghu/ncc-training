@@ -1,0 +1,7 @@
+# Keep build context small, but allow .env to be baked in for this lab
+__pycache__
+*.pyc
+.venv
+.git
+.DS_Store
+*.md

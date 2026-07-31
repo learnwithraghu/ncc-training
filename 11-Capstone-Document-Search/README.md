@@ -1,45 +1,71 @@
 # Day 5, Part 3: Document Search Capstone
 
-This module is the final project of the NCC DevOps Bootcamp. You will deploy the document-search application using Docker and Kubernetes, with no ECR or external cloud dependencies.
+This module is the final project of the NCC DevOps Bootcamp. Work **one folder at a time**. Each folder includes the code you need for that step plus a tutor-style guide. Later folders carry forward everything from earlier ones.
+
+## Learning Path
+
+```text
+01 Application overview
+        ↓
+02 Dockerize (write Dockerfile; bake .env into the image)
+        ↓
+03 Build & test the image locally
+        ↓
+04 Push the image to Amazon ECR (from your laptop)
+        ↓
+05 Deploy with ECS Console (Fargate + task public IP)
+        ↓
+06 Final demo
+```
 
 ## What You Will Learn
 
-By the end of this module, you will be able to:
-
-- Dockerize a real application
-- Run the application locally with Docker Compose
-- Deploy the application to Kubernetes
-- Package the deployment with Helm
-- Demonstrate a complete DevOps workflow
+- Prepare application code and a safe `.env_example` / `.env` workflow
+- Write a Dockerfile and bake secrets into the image for this lab (no Secrets Manager)
+- Build and test the image on your laptop
+- Create an ECR repository and push from local Docker
+- Deploy with the AWS Console and open `http://<task-public-ip>:5000`
 
 ## Time Estimate
 
-Approximately **1.5 hours**.
+Approximately **2 hours**.
 
 ## Prerequisites
 
-- Completion of [09-Kubernetes](../09-Kubernetes/README.md) and [10-Helm](../10-Helm/README.md)
-- Docker and Kubernetes cluster access
-- The document-search application source code
+- Completion of [06-Docker](../06-Docker/README.md) and ECR concepts from [08-GitHub-Actions](../08-GitHub-Actions/README.md)
+- Docker (and optionally Docker Compose)
+- AWS CLI plus an AWS account for ECR and ECS Console access
 
-## Guide Sequence
+## Step Folders
 
-| Guide | File | Topic | Duration |
-|-------|------|-------|----------|
-| Guide 1 | [guide_01_overview.md](guide_01_overview.md) | Capstone overview and goals | 15 min |
-| Guide 2 | [guide_02_dockerize.md](guide_02_dockerize.md) | Build the Docker image locally | 20 min |
-| Guide 3 | [guide_03_compose_local.md](guide_03_compose_local.md) | Run locally with Docker Compose | 15 min |
-| Guide 4 | [guide_04_ci_review.md](guide_04_ci_review.md) | Review CI/CD concepts applied | 10 min |
-| Guide 5 | [guide_05_k8s_deploy.md](guide_05_k8s_deploy.md) | Deploy with plain manifests | 20 min |
-| Guide 6 | [guide_06_helm_chart.md](guide_06_helm_chart.md) | Deploy with Helm | 20 min |
-| Guide 7 | [guide_07_final_demo.md](guide_07_final_demo.md) | Final demo and presentation | 20 min |
+| Step | Folder | What you do | Duration |
+|------|--------|-------------|----------|
+| 1 | [01-application-overview](01-application-overview/guide.md) | Meet the app and create `.env` | 15 min |
+| 2 | [02-dockerize](02-dockerize/guide.md) | Write the Dockerfile; bake secrets | 20 min |
+| 3 | [03-local-image-test](03-local-image-test/guide.md) | Build and test locally | 20 min |
+| 4 | [04-ecr-push](04-ecr-push/guide.md) | Create ECR repo and push | 25 min |
+| 5 | [05-ecs-deploy](05-ecs-deploy/guide.md) | Deploy from the AWS Console | 30 min |
+| 6 | [06-final-demo](06-final-demo/guide.md) | Present the end-to-end path | 20 min |
+
+## How to Use These Folders
+
+1. Open the step folder for the lesson you are on.
+2. Read `guide.md` first.
+3. Use the code in **that same folder** (do not jump ahead).
+4. When you finish, copy your filled `.env` into the next folder if the guide says so.
+5. Each later folder already contains the prior application files so a late joiner can still catch up.
 
 ## Capstone Rules
 
-- Use only Docker and Kubernetes — no ECR or external cloud services.
-- The application image should be built locally and loaded into the cluster.
-- All manifests and the Helm chart should be stored in `~/ncc-labs/day5/`.
+- Build locally → push to ECR from your laptop → deploy ECS from the **Console**
+- Access via the **ECS task public IP** (no Application Load Balancer in this lab)
+- Bake `.env` into the image for this classroom path; **do not** use AWS Secrets Manager here
+- Never commit a real `.env`
 
 ## Key Artifact
 
-A fully deployed document-search application running in Kubernetes, managed by a Helm chart.
+An image in Amazon ECR running as an ECS Fargate task, reachable at `http://<task-public-ip>:5000`.
+
+## Infra Checklist
+
+See [demo-infra-requirement.md](demo-infra-requirement.md).

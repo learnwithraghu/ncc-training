@@ -1,7 +1,7 @@
 # Step 04: Push the Docker Image to Amazon ECR
 
 ## Goal
-Use already configured AWS credentials in `~/.aws/credentials`, then push your locally built License Renewal image to an existing ECR repository.
+Use already configured AWS credentials in `~/.aws/credentials`, hardcode region as `us-east-1`, and push your locally built License Renewal image using the ECR URI copied from AWS Console.
 
 ## Time
 Approximately **25 minutes**.
@@ -38,7 +38,7 @@ ECR stores your image so ECS can pull it. Build and push stay on your laptop; de
 
 The Streamlit app uses `LLM_*` values that were baked into the image.
 
-In this setup, AWS CLI authentication comes from `~/.aws/credentials` (already configured). `.env` is only used for region and ECR values in shell commands.
+In this setup, AWS CLI authentication comes from `~/.aws/credentials` (already configured).
 
 The ECR repository is created in the AWS Console before this step.
 
@@ -56,27 +56,20 @@ sudo apt update && sudo apt install -y awscli
 aws --version
 ```
 
-## Step 2: Prepare `.env` (Region + ECR only)
+## Step 2: Copy ECR URI from AWS Console
 
-Make sure `.env` in this folder contains these values:
+In AWS Console, open **ECR → Repositories → document-search** and copy the image URI.
 
-```env
-AWS_REGION=us-east-1
-ECR_REPOSITORY_NAME=document-search
-```
-
-If needed, copy the shared template first:
+Paste it in terminal as an environment variable:
 
 ```bash
-cp -n ../.env_example .env
+ECR_IMAGE_URI="<ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/document-search:latest"
 ```
 
-Load `.env` and verify the active AWS identity:
+Verify your active AWS identity:
 
 ```bash
-export $(grep -v '^#' .env | xargs)
 aws sts get-caller-identity
-export ECR_REGISTRY_ID=$(aws sts get-caller-identity --query Account --output text)
 ```
 
 Optional check (to confirm credential source):
@@ -89,23 +82,23 @@ aws configure list
 Confirm your ECR repository exists (created in Console):
 
 ```bash
+ECR_REPOSITORY_NAME=$(echo "$ECR_IMAGE_URI" | cut -d/ -f2 | cut -d: -f1)
 aws ecr describe-repositories \
   --repository-names "$ECR_REPOSITORY_NAME" \
-  --region "$AWS_REGION"
+  --region us-east-1
 ```
 
 ## Step 3: Login, Tag, Push
 
 ```bash
-aws ecr get-login-password --region "$AWS_REGION" | \
-  docker login --username AWS --password-stdin \
-  "$ECR_REGISTRY_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
+ECR_REGISTRY=$(echo "$ECR_IMAGE_URI" | cut -d/ -f1)
 
-docker tag document-search:latest \
-  "$ECR_REGISTRY_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:latest"
+aws ecr get-login-password --region us-east-1 | \
+  docker login --username AWS --password-stdin "$ECR_REGISTRY"
 
-docker push \
-  "$ECR_REGISTRY_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:latest"
+docker tag document-search:latest "$ECR_IMAGE_URI"
+
+docker push "$ECR_IMAGE_URI"
 ```
 
 ## Step 4: Verify
@@ -113,7 +106,7 @@ docker push \
 ```bash
 aws ecr describe-images \
   --repository-name "$ECR_REPOSITORY_NAME" \
-  --region "$AWS_REGION"
+  --region us-east-1
 ```
 
 Save your image URI for ECS.
@@ -124,7 +117,7 @@ Save your image URI for ECS.
 
 1. What does ECR provide between your laptop and ECS?
 2. Are AWS keys used here for CLI, for the Streamlit LLM call, or both?
-3. If credentials are in `~/.aws/credentials`, which values in `.env` are still needed for this step?
+3. Why is copying the exact ECR URI from Console safer than manually typing it?
 4. Why must the image already include working `LLM_*` settings?
 
 ## Next Step

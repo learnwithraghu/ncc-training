@@ -27,6 +27,7 @@ Approximately **20 minutes**.
 ### AWS Console
 
 - [ ] ECR image `document-search:latest`
+- [ ] ECR URI copied from Console (`us-east-1`) and used in ECS task definition
 - [ ] ECS service running
 - [ ] Browser to task public IP on **8501**
 - [ ] Upload sample PDF → Process → Download Excel

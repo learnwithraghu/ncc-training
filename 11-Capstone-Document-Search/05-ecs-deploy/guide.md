@@ -11,7 +11,7 @@ Approximately **30 minutes**.
 Same app tree as previous steps, plus an image already in ECR:
 
 ```text
-<ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com/document-search:latest
+<ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/document-search:latest
 ```
 
 Access URL pattern for this lab:
@@ -37,13 +37,21 @@ EC2 → Security Groups → Create `document-search-sg`
 - Inbound: Custom TCP **8501** from My IP
 - Outbound: default (needed so the task can call your LLM endpoint)
 
+## Step 2.5: Copy the Exact ECR URI from Console
+
+Open AWS Console → ECR → Repositories → `document-search`.
+
+Copy the full image URI for `:latest` and keep it ready for Task Definition.
+
+Do not manually type the URI. Paste the exact Console value.
+
 ## Step 3: Task Definition
 
 - Family: `document-search`
 - Fargate · Linux/X86_64
 - CPU `0.5 vCPU` · Memory `1 GB` (Streamlit + PDF processing needs adequate memory)
 - Execution role: `ecsTaskExecutionRole`
-- Container image: your ECR URI
+- Container image: paste the exact ECR image URI copied from Console (`us-east-1`)
 - Port: **8501**
 
 ## Step 4: Service
@@ -72,7 +80,7 @@ curl -f http://<TASK_PUBLIC_IP>:8501/_stcore/health
 
 | Symptom | Check |
 |---------|--------|
-| Cannot pull image | Image URI / execution role |
+| Cannot pull image | URI must be the exact Console copy in `us-east-1`; execution role must allow ECR pull |
 | Timeout in browser | SG port 8501, public IP enabled |
 | LLM errors in UI | Baked `LLM_*` values; outbound internet from task |
 | OOM / task stop | Increase task memory |
@@ -82,6 +90,7 @@ curl -f http://<TASK_PUBLIC_IP>:8501/_stcore/health
 1. Which port must the security group allow?
 2. Why can the URL change after redeploy?
 3. Where do Excel results go after processing on ECS?
+4. Why should you paste the ECR URI from Console instead of manually constructing it?
 
 ## Next Step
 

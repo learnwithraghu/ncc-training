@@ -46,7 +46,7 @@ Approximately **2 hours**.
 | 1 | [01-application-overview](01-application-overview/guide.md) | Meet the app and create `.env` | 20 min |
 | 2 | [02-dockerize](02-dockerize/guide.md) | Write the Dockerfile; bake secrets | 20 min |
 | 3 | [03-local-image-test](03-local-image-test/guide.md) | Build and test locally on 8501 | 20 min |
-| 4 | [04-ecr-push](04-ecr-push/guide.md) | Create ECR repo and push | 25 min |
+| 4 | [04-ecr-push](04-ecr-push/guide.md) | Configure AWS CLI from `.env` and push to ECR | 25 min |
 | 5 | [05-ecs-deploy](05-ecs-deploy/guide.md) | Deploy from the AWS Console | 30 min |
 | 6 | [06-final-demo](06-final-demo/guide.md) | Present the end-to-end path | 20 min |
 

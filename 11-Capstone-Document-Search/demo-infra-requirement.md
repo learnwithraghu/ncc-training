@@ -5,6 +5,7 @@
 - Docker (Docker Compose optional for Step 03)
 - AWS CLI with credentials that can use ECR
 - AWS Console access for ECR, ECS, VPC/security groups, and CloudWatch Logs
+- ECR repository `document-search` created in AWS Console before Step 04
 - A VPC with at least one public subnet (default VPC is fine)
 - Security group allowing inbound TCP `8501` from your IP
 - Outbound internet from the ECS task so it can reach `LLM_API_ENDPOINT`
@@ -42,7 +43,7 @@ streamlit run app/app.py --server.address=0.0.0.0 --server.port=8501
 
 ## Console Checks
 
-- Amazon ECR: can create repository `document-search`
+- Amazon ECR: repository `document-search` exists
 - Amazon ECS: can create a Fargate cluster and service
 - EC2 → Security Groups: inbound TCP `8501`
 - CloudWatch Logs: task logs visible after deploy

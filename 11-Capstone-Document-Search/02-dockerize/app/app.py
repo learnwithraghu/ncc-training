@@ -121,6 +121,12 @@ def call_llm(prompt: str) -> Optional[str]:
     api_key = os.getenv("LLM_API_KEY")
     model = os.getenv("LLM_MODEL")
 
+    # Accept either a base URL (for example, .../v1) or a full
+    # chat completions URL (.../v1/chat/completions).
+    endpoint = endpoint.rstrip("/") if endpoint else endpoint
+    if endpoint and not endpoint.endswith("/chat/completions"):
+        endpoint = f"{endpoint}/chat/completions"
+
     headers = {
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
@@ -204,7 +210,18 @@ Important instructions:
         return parsed_data
     except requests.HTTPError as exc:
         logger.error("LLM HTTP error: %s", exc, exc_info=True)
-        st.error(f"LLM HTTP error: {exc}")
+        status_code = exc.response.status_code if exc.response is not None else None
+        if status_code == 401:
+            st.error(
+                "LLM endpoint returned 401 Unauthorized. Check `LLM_API_KEY` in `.env`."
+            )
+        elif status_code == 403:
+            st.error(
+                "LLM endpoint returned 403 Forbidden. Your key may lack permission for "
+                "this model/endpoint, or network policy is blocking access."
+            )
+        else:
+            st.error(f"LLM HTTP error: {exc}")
         if exc.response is not None:
             st.error(exc.response.text[:500])
         return None

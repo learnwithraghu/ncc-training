@@ -61,10 +61,10 @@ Edit `.env` and set real `LLM_API_KEY`, `LLM_API_ENDPOINT`, and `LLM_MODEL`.
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-streamlit run app/app.py
+streamlit run app/app.py --server.address=0.0.0.0 --server.port=8501
 ```
 
-Open `http://localhost:8501`, upload a PDF from `sample-documents/`, and process it.
+Open `http://127.0.0.1:8501` (or `http://<your-host-ip>:8501`), upload a PDF from `sample-documents/`, and process it.
 
 ---
 

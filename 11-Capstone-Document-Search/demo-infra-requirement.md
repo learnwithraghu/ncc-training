@@ -36,8 +36,8 @@ Local app smoke (optional, without Docker):
 cd 01-application-overview
 python3 -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-streamlit run app/app.py
-# open http://localhost:8501
+streamlit run app/app.py --server.address=0.0.0.0 --server.port=8501
+# open http://127.0.0.1:8501
 ```
 
 ## Console Checks

@@ -23,27 +23,29 @@ Approximately **4 hours** including hands-on exercises.
 - Basic Git knowledge
 - A running Gitea server (lab environment or instructor-provided)
 
-## Guide Sequence
+## Guided Learning Topics
 
-| Lesson | File | Topic | Duration |
-|--------|------|-------|----------|
-| 1 | [01-jenkins-docker-setup.md](01-jenkins-docker-setup.md) | Jenkins Docker setup | 20 min |
-| 2 | [02-jenkins-ui-overview.md](02-jenkins-ui-overview.md) | Jenkins UI overview | 20 min |
-| 3 | [03-jenkins-freestyle-job.md](03-jenkins-freestyle-job.md) | Freestyle job | 20 min |
-| 4 | [04-jenkins-pipeline-basics.md](04-jenkins-pipeline-basics.md) | Pipeline basics | 20 min |
-| 5 | [05-jenkins-pipeline-stages.md](05-jenkins-pipeline-stages.md) | Pipeline stages | 20 min |
-| 6 | [06-jenkins-groovy-part1.md](06-jenkins-groovy-part1.md) | Groovy basics | 20 min |
-| 7 | [07-jenkins-groovy-part2.md](07-jenkins-groovy-part2.md) | More Groovy | 20 min |
-| 8 | [08-jenkins-gitea-integration.md](08-jenkins-gitea-integration.md) | Gitea integration | 20 min |
-| 9 | [09-jenkins-features.md](09-jenkins-features.md) | Jenkins features | 20 min |
-| 10 | [10-jenkins-build-on-push.md](10-jenkins-build-on-push.md) | Build on push | 20 min |
+Work through the topics in `guided-learning/` in order:
+
+| Topic | Folder | Focus | Duration |
+|-------|--------|-------|----------|
+| 1 | [guided-learning/topic-01/](guided-learning/topic-01/) | Jenkins Docker setup | 20 min |
+| 2 | [guided-learning/topic-02/](guided-learning/topic-02/) | Jenkins UI overview | 20 min |
+| 3 | [guided-learning/topic-03/](guided-learning/topic-03/) | Freestyle job | 20 min |
+| 4 | [guided-learning/topic-04/](guided-learning/topic-04/) | Pipeline basics | 20 min |
+| 5 | [guided-learning/topic-05/](guided-learning/topic-05/) | Pipeline stages | 20 min |
+| 6 | [guided-learning/topic-06/](guided-learning/topic-06/) | Groovy basics | 20 min |
+| 7 | [guided-learning/topic-07/](guided-learning/topic-07/) | More Groovy | 20 min |
+| 8 | [guided-learning/topic-08/](guided-learning/topic-08/) | Gitea integration | 20 min |
+| 9 | [guided-learning/topic-09/](guided-learning/topic-09/) | Jenkins features | 20 min |
+| 10 | [guided-learning/topic-10/](guided-learning/topic-10/) | Build on push | 20 min |
 
 ## Module Structure
 
 - `00-OVERVIEW.md` — Theory and concepts
-- `01-*.md` through `10-*.md` — Hands-on lessons
+- `guided-learning/topic-01/` through `topic-10/` — Hands-on topics
 - `lab-project/` — Sample repository to upload to Gitea
-- `guided-learning/` — Short topic guides for each lesson
+- `scripts/jenkins-plugins.txt` — Plugin reference list
 
 ## Key Artifact
 
@@ -62,4 +64,4 @@ Before moving to the next module, ensure you can:
 
 ## Next Steps
 
-Start with the overview in [00-OVERVIEW.md](00-OVERVIEW.md), then work through the lessons in order.
+Start with the overview in [00-OVERVIEW.md](00-OVERVIEW.md), then work through the topics in order.

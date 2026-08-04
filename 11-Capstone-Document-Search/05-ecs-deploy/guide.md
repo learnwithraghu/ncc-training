@@ -94,4 +94,4 @@ curl -f http://<TASK_PUBLIC_IP>:8501/_stcore/health
 
 ## Next Step
 
-Go to **[06-eks-deploy](../06-eks-deploy/)**.
+Go to **[06-local-k8s-deploy](../06-local-k8s-deploy/)**.

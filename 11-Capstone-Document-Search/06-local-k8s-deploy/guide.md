@@ -1,4 +1,4 @@
-# Step 07: Deploy to Local Kubernetes
+# Step 06: Deploy to Local Kubernetes
 
 ## Goal
 Build the `document-search` image locally and deploy it to an existing local Kubernetes cluster, creating a dedicated namespace and using the locally built image.
@@ -19,7 +19,7 @@ Approximately **25 minutes**.
 
 ## Prerequisites
 
-- Completion of [06-eks-deploy](../06-eks-deploy/) OR the earlier Dockerize steps.
+- Completion of [05-ecs-deploy](../05-ecs-deploy/) OR the earlier Dockerize steps.
 - A local Kubernetes cluster already running (for example: Docker Desktop Kubernetes, minikube, kind, k3d, or a similar tool).
 - `kubectl` and `docker` installed and on your PATH.
 

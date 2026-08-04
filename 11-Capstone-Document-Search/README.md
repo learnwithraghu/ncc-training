@@ -17,9 +17,9 @@ The app is a **Streamlit** UI: upload a PDF, call your **LLM HTTP endpoint**, vi
         ↓
 05 Deploy with ECS Console (Fargate + task public IP)
         ↓
-06 Deploy to EKS (Deployment + Service + port-forward)
+06 Deploy to local Kubernetes (local image + namespace + port-forward)
         ↓
-07 Deploy to local Kubernetes (local image + namespace + port-forward)
+07 Deploy to EKS (Deployment + Service + port-forward)
 ```
 
 ## What You Will Learn
@@ -29,8 +29,8 @@ The app is a **Streamlit** UI: upload a PDF, call your **LLM HTTP endpoint**, vi
 - Build and test on port **8501**
 - Push to Amazon ECR from your laptop
 - Deploy with the AWS Console and open `http://<task-public-ip>:8501`
-- Deploy the same image to Amazon EKS and access it via `kubectl port-forward`
 - Build the image locally and deploy it to a local Kubernetes cluster
+- Deploy the same image to Amazon EKS and access it via `kubectl port-forward`
 
 ## Time Estimate
 
@@ -52,8 +52,8 @@ Approximately **2 hours**.
 | 3 | [03-local-image-test](03-local-image-test/guide.md) | Build and test locally on 8501 | 20 min |
 | 4 | [04-ecr-push](04-ecr-push/guide.md) | Use `~/.aws/credentials` and push to ECR | 25 min |
 | 5 | [05-ecs-deploy](05-ecs-deploy/guide.md) | Deploy from the AWS Console | 30 min |
-| 6 | [06-eks-deploy](06-eks-deploy/guide.md) | Deploy to EKS with kubectl and manifests | 30 min |
-| 7 | [07-local-k8s-deploy](07-local-k8s-deploy/guide.md) | Build locally and deploy to local Kubernetes | 25 min |
+| 6 | [06-local-k8s-deploy](06-local-k8s-deploy/guide.md) | Build locally and deploy to local Kubernetes | 25 min |
+| 7 | [07-eks-deploy](07-eks-deploy/guide.md) | Deploy to EKS with kubectl and manifests | 30 min |
 
 ## How to Use These Folders
 
@@ -65,10 +65,10 @@ Approximately **2 hours**.
 
 ## Capstone Rules
 
-- Build locally → push to ECR from your laptop → deploy ECS from the **Console**, deploy to EKS, OR deploy locally
+- Build locally → push to ECR from your laptop → deploy ECS from the **Console**, deploy locally, OR deploy to EKS
 - For ECS: access via the **ECS task public IP** on port **8501** (no ALB in this lab)
-- For EKS: use a `ClusterIP` Service and `kubectl port-forward` to reach the app on `http://localhost:8501`
 - For local Kubernetes: build the image locally, create a namespace, set `imagePullPolicy: Never`, and use `kubectl port-forward`
+- For EKS: use a `ClusterIP` Service and `kubectl port-forward` to reach the app on `http://localhost:8501`
 - Bake `.env` into the image for this classroom path; **do not** use Secrets Manager here
 - Never commit a real `.env`
 - No Bedrock and no S3 in the application path

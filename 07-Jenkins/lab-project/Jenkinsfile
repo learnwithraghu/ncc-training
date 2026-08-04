@@ -1,0 +1,42 @@
+pipeline {
+    agent any
+
+    environment {
+        APP_NAME = 'jenkins-lab-app'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo "Building ${env.APP_NAME}..."
+                sh 'bash run.sh'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo 'Running tests...'
+                sh 'bash test.sh'
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Pipeline finished.'
+            archiveArtifacts artifacts: 'output.txt', allowEmptyArchive: true
+        }
+        success {
+            echo 'Build succeeded!'
+        }
+        failure {
+            echo 'Build failed!'
+        }
+    }
+}

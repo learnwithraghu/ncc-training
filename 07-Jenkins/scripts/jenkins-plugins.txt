@@ -2,23 +2,12 @@
 # Install these plugins for the Jenkins CI/CD pipeline module
 
 # Core Plugins
-github
-github-branch-source
 git
+gitea
 workflow-aggregator
 pipeline-stage-view
 
-# Docker Plugins
-docker-workflow
-docker-plugin
-docker-commons
-
-# AWS Plugins
-pipeline-aws
-aws-credentials
-
 # Pipeline Plugins
-pipeline-github-lib
 pipeline-stage-step
 pipeline-build-step
 pipeline-input-step
@@ -36,11 +25,6 @@ timestamper
 build-timeout
 warnings-ng
 
-# Notification Plugins (Optional)
-slack
-email-ext
-
 # Security Plugins (Recommended)
 credentials
 role-strategy
-

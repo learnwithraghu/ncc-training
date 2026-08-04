@@ -1,228 +1,135 @@
-# Jenkins CI/CD Pipeline - Overview
+# Jenkins CI/CD - Overview
 
 ## What is Jenkins?
 
-Jenkins is an open-source automation server that enables developers to build, test, and deploy software continuously. It's one of the most popular CI/CD tools in the DevOps ecosystem.
+Jenkins is an open-source automation server. It helps teams build, test, and deploy software automatically. Jenkins is one of the most widely used CI/CD tools.
 
-## Why Jenkins?
+## Why Use Jenkins?
 
-### Key Benefits
+- **Automation**: Run tests, builds, and deployments without manual steps
+- **CI/CD**: Build and test code on every change
+- **Extensible**: Thousands of plugins for Git, Gitea, Docker, cloud platforms, and more
+- **Pipeline as Code**: Store build logic in a `Jenkinsfile` inside your repository
 
-1. **Automation**: Automate repetitive tasks in software development
-2. **Continuous Integration**: Automatically build and test code changes
-3. **Continuous Deployment**: Automatically deploy applications
-4. **Extensibility**: Thousands of plugins available
-5. **Self-Hosted**: Full control over your CI/CD infrastructure
-6. **Free and Open Source**: No licensing costs
+## Core Concepts
 
-### Jenkins in DevOps
+### Jobs
 
-Jenkins plays a crucial role in DevOps by:
+A **job** is a task that Jenkins runs. Common job types include:
 
-- **Automating Builds**: Compile code, run tests, package applications
-- **Docker Integration**: Build and push Docker images
-- **Cloud Integration**: Deploy to AWS, Azure, GCP
-- **Quality Gates**: Run tests, code analysis, security scans
-- **Notifications**: Alert teams about build status
+- **Freestyle project**: configured through the web UI
+- **Pipeline**: defined as code in Groovy
 
-## Jenkins Architecture
+### Pipelines
 
-### Components
-
-1. **Jenkins Master**: Central server that manages builds
-2. **Jenkins Agents**: Worker nodes that execute build jobs
-3. **Jobs/Pipelines**: Automated tasks defined as code
-4. **Plugins**: Extensions that add functionality
-
-### Pipeline Types
-
-**Freestyle Projects**: GUI-based job configuration (legacy)
-
-**Pipeline Projects**: Code-based configuration (modern, recommended)
-- **Declarative Pipeline**: Simple, structured syntax
-- **Scripted Pipeline**: Full Groovy scripting power
-
-## Jenkins Pipeline Concepts
-
-### Pipeline Stages
-
-A pipeline consists of multiple stages:
+A **pipeline** is a series of stages and steps:
 
 ```
-Checkout → Build → Test → Deploy
+Checkout → Build → Test → Archive → Deploy
 ```
 
-Each stage can contain multiple steps.
+### Jenkinsfile
 
-### Pipeline as Code
+A `Jenkinsfile` is a text file that defines a Jenkins pipeline. It lives in the source repository, so the pipeline is version-controlled.
 
-Jenkinsfiles (Groovy scripts) define pipelines:
-- Version controlled with your code
-- Reviewable and testable
-- Reusable across projects
-
-### Example Pipeline Flow
+Example:
 
 ```groovy
 pipeline {
     agent any
+
     stages {
-        stage('Checkout') { /* Get code */ }
-        stage('Build') { /* Build Docker image */ }
-        stage('Test') { /* Run tests */ }
-        stage('Deploy') { /* Push to ECR */ }
+        stage('Build') {
+            steps {
+                echo 'Building...'
+            }
+        }
+        stage('Test') {
+            steps {
+                echo 'Testing...'
+            }
+        }
     }
 }
 ```
 
-## Jenkins and Docker
+### Agents
 
-### Why Docker with Jenkins?
+An **agent** is a machine that runs Jenkins jobs. In this module, jobs run on the built-in agent (`agent any`).
 
-1. **Consistent Environments**: Same environment for all builds
-2. **Isolation**: Builds don't interfere with each other
-3. **Reproducibility**: Same results every time
-4. **Portability**: Build anywhere, deploy anywhere
+### Plugins
 
-### Common Use Cases
+Plugins add features to Jenkins. Examples:
 
-- Build Docker images from source code
-- Run tests in containers
-- Push images to container registries (ECR, Docker Hub)
-- Deploy containers to orchestration platforms
+- `Git` — clone Git repositories
+- `Pipeline` — run pipeline jobs
+- `Gitea` — Gitea integration
 
-## Jenkins and AWS Integration
+### Credentials
 
-### AWS Services Used
+Jenkins stores secrets such as passwords and access tokens in **Credentials**. This keeps sensitive data out of job scripts.
 
-1. **EC2**: Host Jenkins server
-2. **ECR**: Store Docker images
-3. **IAM**: Manage permissions
-4. **CloudWatch**: Monitor and log
+## Jenkins and Gitea
 
-### Typical Workflow
+In this module, Jenkins pulls source code from Gitea. The typical flow is:
 
 ```
-GitHub → Jenkins (EC2) → Docker Build → ECR → ECS/EKS
+Developer pushes to Gitea
+        |
+        v
+Gitea sends webhook to Jenkins
+        |
+        v
+Jenkins pulls code and runs Jenkinsfile
+        |
+        v
+Build result is shown in Jenkins
 ```
 
 ## Learning Path
 
-### Module Structure
+This module has 10 lessons:
 
-1. **README.md**: Setup instructions and commands
-2. **02-groovy-pipeline-examples.md**: Pipeline scripting examples
-3. **scripts/**: Ready-to-use scripts and Jenkinsfiles
-4. **examples/**: Additional pipeline examples
+1. Jenkins Docker setup
+2. Jenkins UI overview
+3. Freestyle job
+4. Pipeline basics
+5. Pipeline stages
+6. Groovy basics
+7. More Groovy
+8. Gitea integration
+9. Jenkins features
+10. Build on push
 
-### What You'll Learn
+Each lesson builds on the previous one.
 
-1. **Jenkins Setup**: Install and configure on EC2
-2. **GitHub Integration**: Connect repositories
-3. **Docker Pipelines**: Build images automatically
-4. **ECR Integration**: Push images to AWS
-5. **Groovy Scripting**: Write custom pipelines
+## Sample Project
+
+The `lab-project/` folder contains a small shell-based project used throughout the module. You will upload it to Gitea in Lesson 8.
 
 ## Prerequisites
 
 Before starting this module:
 
-- ✅ AWS account with EC2 and ECR access
-- ✅ GitHub account and repository
-- ✅ Basic Docker knowledge (03-Docker module)
-- ✅ Basic Linux command line skills
-- ✅ Understanding of CI/CD concepts
-
-## Key Concepts
-
-### CI/CD
-
-- **CI (Continuous Integration)**: Automatically build and test code
-- **CD (Continuous Deployment)**: Automatically deploy to production
-
-### Pipeline Stages
-
-- **Checkout**: Get source code
-- **Build**: Compile/package application
-- **Test**: Run automated tests
-- **Deploy**: Release to environment
-
-### Jenkinsfile
-
-Groovy script that defines your pipeline:
-- Lives in your repository
-- Version controlled
-- Defines build process
-
-## Real-World Scenarios
-
-### Scenario 1: Web Application
-
-```
-Developer pushes code → Jenkins builds Docker image → 
-Pushes to ECR → Deploys to ECS
-```
-
-### Scenario 2: Microservices
-
-```
-Multiple services → Each has Jenkinsfile → 
-Parallel builds → Push to ECR → Deploy to Kubernetes
-```
-
-### Scenario 3: Multi-Environment
-
-```
-Feature branch → Build & Test
-Main branch → Build, Test, Deploy to Staging
-Production tag → Deploy to Production
-```
+- Basic Linux command line skills
+- Basic Git knowledge
+- Access to a Jenkins instance (Docker or lab-provided)
+- Access to a Gitea server
 
 ## Best Practices
 
-1. **Pipeline as Code**: Always use Jenkinsfiles
-2. **Version Control**: Store pipelines in Git
-3. **Security**: Use credentials management
-4. **Monitoring**: Set up alerts and logging
-5. **Testing**: Test pipelines before production
-6. **Documentation**: Document pipeline stages
-
-## Common Challenges
-
-### Challenge 1: Build Failures
-
-**Solution**: Add proper error handling and logging
-
-### Challenge 2: Slow Builds
-
-**Solution**: Use Docker layer caching, parallel stages
-
-### Challenge 3: Credential Management
-
-**Solution**: Use Jenkins credentials store, AWS IAM roles
-
-### Challenge 4: Environment Differences
-
-**Solution**: Use Docker for consistent environments
-
-## Next Steps
-
-After completing this module:
-
-1. **Advanced Pipelines**: Multi-branch, parallel execution
-2. **Shared Libraries**: Reusable pipeline code
-3. **Kubernetes Integration**: Deploy to EKS
-4. **Security Scanning**: Integrate security tools
-5. **Monitoring**: Set up Jenkins monitoring
+1. Store pipelines in a `Jenkinsfile` inside the repository
+2. Use Jenkins credentials for secrets
+3. Keep stages small and focused
+4. Archive useful build artifacts
+5. Use webhooks instead of polling when possible
 
 ## Resources
 
 - [Jenkins Official Docs](https://www.jenkins.io/doc/)
-- [Pipeline Syntax Reference](https://www.jenkins.io/doc/book/pipeline/syntax/)
-- [Groovy Documentation](https://groovy-lang.org/documentation.html)
-- [AWS ECR Documentation](https://docs.aws.amazon.com/ecr/)
+- [Jenkins Pipeline Syntax](https://www.jenkins.io/doc/book/pipeline/syntax/)
+- [Gitea Documentation](https://docs.gitea.com/)
 
 ---
 
-**Ready to automate your deployments?** Start with the README.md to set up Jenkins, then explore the Groovy examples to master pipeline scripting!
-
+Ready to start? Go to [Lesson 1: Jenkins Docker Setup](./01-jenkins-docker-setup.md).

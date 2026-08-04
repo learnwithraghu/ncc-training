@@ -10,7 +10,7 @@ Approximately **30 minutes**.
 
 1. Verify a local Kubernetes cluster is running and reachable.
 2. Build the Docker image locally from this folder.
-3. Load the image into the local cluster if needed (kind / minikube / k3d).
+3. Load the image into k3s if needed.
 4. Install the Helm chart, which creates the namespace, Deployment, and Service.
 5. Verify the Helm release and Pod are healthy.
 6. Port-forward the Service and test the app in a browser.
@@ -19,7 +19,7 @@ Approximately **30 minutes**.
 ## Prerequisites
 
 - Completion of [06-local-k8s-deploy](../06-local-k8s-deploy/).
-- A local Kubernetes cluster already running (for example: Docker Desktop Kubernetes, minikube, kind, k3d, or a similar tool).
+- A k3s cluster already running and reachable with `kubectl`.
 - `kubectl`, `docker`, and `helm` installed and on your PATH.
 
 ## Quick Checks
@@ -53,29 +53,20 @@ Confirm the image exists:
 docker images | grep document-search
 ```
 
-## Load the Image into the Cluster (if needed)
+## Load the Image into k3s (if needed)
 
-Some local clusters cannot see images built by your host Docker daemon. Load the image when required:
+This lab uses k3s, so load the image into the k3s containerd store after you build it.
 
-- **kind:**
+From this folder, export the image and import it into k3s:
 
-  ```bash
-  kind load docker-image document-search:latest --name <your-cluster-name>
-  ```
+```bash
+docker save document-search:latest -o document-search.tar
+sudo k3s ctr images import document-search.tar
+```
 
-- **minikube:**
+If the Pod lands on another node in the k3s cluster, import the same tar file there as well.
 
-  ```bash
-  minikube image load document-search:latest
-  ```
-
-- **k3d:**
-
-  ```bash
-  k3d image import document-search:latest --cluster <your-cluster-name>
-  ```
-
-- **Docker Desktop Kubernetes:** the host daemon is shared with the cluster, so no extra load step is needed.
+If you skip this step, the Helm release will create a Pod that stays in `ErrImageNeverPull` because `pullPolicy: Never` tells Kubernetes not to fetch the image from any registry.
 
 ## Inspect the Helm Chart
 

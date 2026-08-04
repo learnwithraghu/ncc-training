@@ -27,7 +27,7 @@ If you already completed an earlier step and have a filled `.env`, you can copy 
 1. Verify a local Kubernetes cluster is running and reachable.
 2. Create the `document-search` namespace.
 3. Build the Docker image locally from this folder.
-4. Load the image into the local cluster if needed (kind / minikube / k3d).
+4. Load the image into k3s if needed.
 5. Apply the namespace, Deployment, and Service manifests.
 6. Verify the Pod is running and healthy.
 7. Port-forward the Service and test the app in a browser.
@@ -36,7 +36,7 @@ If you already completed an earlier step and have a filled `.env`, you can copy 
 ## Prerequisites
 
 - Completion of [05-ecs-deploy](../05-ecs-deploy/) OR the earlier Dockerize steps.
-- A local Kubernetes cluster already running (for example: Docker Desktop Kubernetes, minikube, kind, k3d, or a similar tool).
+- A k3s cluster already running and reachable with `kubectl`.
 - `kubectl` and `docker` installed and on your PATH.
 
 If Docker is not installed yet on Ubuntu, run this once before you continue:
@@ -72,33 +72,22 @@ Confirm the image exists:
 docker images | grep document-search
 ```
 
-## Load the Image into the Cluster (if needed)
+## Load the Image into k3s (if needed)
 
-Some local clusters cannot see images built by your host Docker daemon. Load the image when required:
+This lab uses k3s, so load the image into the k3s containerd store after you build it.
 
-- **kind:**
+From this folder, export the image and import it into k3s:
 
-  ```bash
-  kind load docker-image document-search:latest --name <your-cluster-name>
-  ```
+```bash
+docker save document-search:latest -o document-search.tar
+sudo k3s ctr images import document-search.tar
+```
 
-- **minikube:**
+If the Pod lands on another node in the k3s cluster, import the same tar file there as well.
 
-  ```bash
-  minikube image load document-search:latest
-  ```
+If you skip this step, the Pod will stay in `ErrImageNeverPull` because `imagePullPolicy: Never` tells Kubernetes not to fetch the image from any registry.
 
-- **k3d:**
-
-  ```bash
-  k3d image import document-search:latest --cluster <your-cluster-name>
-  ```
-
-- **Docker Desktop Kubernetes:** the host daemon is shared with the cluster, so no extra load step is needed.
-
-If you skip this step on kind, minikube, or k3d, the Pod will stay in `ErrImageNeverPull` because `imagePullPolicy: Never` tells Kubernetes not to fetch the image from any registry.
-
-If that happens, stop the watch command, load the image, and try again.
+If that happens, stop the watch command, import the image into k3s, and try again.
 
 ## Create the Namespace
 
@@ -146,9 +135,9 @@ kubectl logs -n document-search -l app=document-search --tail=50
 
 You should see Streamlit start and listen on `0.0.0.0:8501`.
 
-If the Pod status is `ImagePullBackOff`, the cluster cannot see the local image. Re-check the load step for your cluster type and confirm `imagePullPolicy: Never` is set in the Deployment.
+If the Pod status is `ImagePullBackOff`, the cluster cannot see the local image. Re-check the k3s import step and confirm `imagePullPolicy: Never` is set in the Deployment.
 
-If the Pod status is `ErrImageNeverPull`, the same fix applies: load `document-search:latest` into the cluster before waiting on the Pod.
+If the Pod status is `ErrImageNeverPull`, the same fix applies: import `document-search.tar` into k3s before waiting on the Pod.
 
 ## Access the App Locally
 

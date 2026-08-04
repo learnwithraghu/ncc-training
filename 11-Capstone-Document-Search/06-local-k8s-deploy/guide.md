@@ -39,6 +39,14 @@ If you already completed an earlier step and have a filled `.env`, you can copy 
 - A local Kubernetes cluster already running (for example: Docker Desktop Kubernetes, minikube, kind, k3d, or a similar tool).
 - `kubectl` and `docker` installed and on your PATH.
 
+If Docker is not installed yet on Ubuntu, run this once before you continue:
+
+```bash
+bash helpers/install-docker.sh
+```
+
+This script installs Docker Engine and adds your user to the `docker` group.
+
 ## Quick Checks
 
 Verify your cluster is reachable:
@@ -88,6 +96,10 @@ Some local clusters cannot see images built by your host Docker daemon. Load the
 
 - **Docker Desktop Kubernetes:** the host daemon is shared with the cluster, so no extra load step is needed.
 
+If you skip this step on kind, minikube, or k3d, the Pod will stay in `ErrImageNeverPull` because `imagePullPolicy: Never` tells Kubernetes not to fetch the image from any registry.
+
+If that happens, stop the watch command, load the image, and try again.
+
 ## Create the Namespace
 
 The manifests in `k8s/` use the `document-search` namespace. Create it before applying the rest of the manifests:
@@ -135,6 +147,8 @@ kubectl logs -n document-search -l app=document-search --tail=50
 You should see Streamlit start and listen on `0.0.0.0:8501`.
 
 If the Pod status is `ImagePullBackOff`, the cluster cannot see the local image. Re-check the load step for your cluster type and confirm `imagePullPolicy: Never` is set in the Deployment.
+
+If the Pod status is `ErrImageNeverPull`, the same fix applies: load `document-search:latest` into the cluster before waiting on the Pod.
 
 ## Access the App Locally
 

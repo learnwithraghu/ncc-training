@@ -17,7 +17,7 @@ The app is a **Streamlit** UI: upload a PDF, call your **LLM HTTP endpoint**, vi
         ↓
 05 Deploy with ECS Console (Fargate + task public IP)
         ↓
-06 Final demo
+06 Deploy to EKS (Deployment + Service + port-forward)
 ```
 
 ## What You Will Learn
@@ -27,6 +27,7 @@ The app is a **Streamlit** UI: upload a PDF, call your **LLM HTTP endpoint**, vi
 - Build and test on port **8501**
 - Push to Amazon ECR from your laptop
 - Deploy with the AWS Console and open `http://<task-public-ip>:8501`
+- Deploy the same image to Amazon EKS and access it via `kubectl port-forward`
 
 ## Time Estimate
 
@@ -48,7 +49,7 @@ Approximately **2 hours**.
 | 3 | [03-local-image-test](03-local-image-test/guide.md) | Build and test locally on 8501 | 20 min |
 | 4 | [04-ecr-push](04-ecr-push/guide.md) | Use `~/.aws/credentials` and push to ECR | 25 min |
 | 5 | [05-ecs-deploy](05-ecs-deploy/guide.md) | Deploy from the AWS Console | 30 min |
-| 6 | [06-final-demo](06-final-demo/guide.md) | Present the end-to-end path | 20 min |
+| 6 | [06-eks-deploy](06-eks-deploy/guide.md) | Deploy to EKS with kubectl and manifests | 30 min |
 
 ## How to Use These Folders
 
@@ -60,15 +61,16 @@ Approximately **2 hours**.
 
 ## Capstone Rules
 
-- Build locally → push to ECR from your laptop → deploy ECS from the **Console**
-- Access via the **ECS task public IP** on port **8501** (no ALB in this lab)
+- Build locally → push to ECR from your laptop → deploy ECS from the **Console** OR deploy to EKS
+- For ECS: access via the **ECS task public IP** on port **8501** (no ALB in this lab)
+- For EKS: use a `ClusterIP` Service and `kubectl port-forward` to reach the app on `http://localhost:8501`
 - Bake `.env` into the image for this classroom path; **do not** use Secrets Manager here
 - Never commit a real `.env`
 - No Bedrock and no S3 in the application path
 
 ## Key Artifact
 
-An image in Amazon ECR running as an ECS Fargate task, reachable at `http://<task-public-ip>:8501`.
+An image in Amazon ECR. For ECS it runs as a Fargate task reachable at `http://<task-public-ip>:8501`. For EKS it runs as a Deployment + Service reachable through `kubectl port-forward`.
 
 ## Infra Checklist
 

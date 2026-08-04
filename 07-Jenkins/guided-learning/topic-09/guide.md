@@ -1,107 +1,74 @@
-# Topic 9: Jenkins Features
+# Topic 9: General Jenkins Plugin Installation
 
-This lesson reviews useful Jenkins features that help you manage and inspect builds.
+Plugins add capabilities to Jenkins. This lesson shows how to find, install, update, and verify plugins through the Jenkins web interface.
 
 ## Learning Objectives
 
-- View and download build artifacts
-- Read build history and trends
-- Add parameters to a job
-- Replay a pipeline
+- Find plugins in the Jenkins plugin manager
+- Install a plugin safely
+- Verify plugin status and versions
+- Understand why plugins should be kept focused and current
 
 ## Prerequisites
 
-- A pipeline job from previous lessons
+- Jenkins is running and accessible
+- Administrator access to Jenkins
 
-## Step 1: View Build History
+## Step 1: Open the Plugin Manager
 
-1. Open any job page
-2. The left panel shows the **Build History**
-3. Click a build number to see its details
-4. Use the **Previous Build** and **Next Build** links to navigate
+1. Open **Manage Jenkins**.
+2. Select **Plugins** or **Manage Plugins**, depending on the Jenkins version.
+3. Use the **Available plugins** tab to search for plugins.
 
-## Step 2: Download Artifacts
+## Step 2: Install a Plugin
 
-If your pipeline archives files with `archiveArtifacts`, they appear on the build page.
+Search for **Pipeline: Input Step**. Select it, then click **Install** or **Install without restart**.
 
-1. Open a build that produced artifacts
-2. Click **Build Artifacts**
-3. Click a file name to download it
+The plugin provides the `input` step used in Topic 8. Jenkins may restart automatically or request a restart after installation.
 
-For example, from `lab-project/Jenkinsfile`:
+## Step 3: Verify Installed Plugins
 
-```groovy
-post {
-    always {
-        archiveArtifacts artifacts: 'output.txt', allowEmptyArchive: true
-    }
-}
-```
+1. Return to the plugin manager.
+2. Open the **Installed plugins** tab.
+3. Search for `Pipeline: Input Step`.
+4. Confirm that it is enabled and has a version listed.
 
-## Step 3: Add a Parameter to a Job
+Useful module plugins include:
 
-1. Open a pipeline job and click **Configure**
-2. Check **This project is parameterized**
-3. Click **Add Parameter → String Parameter**
-4. Set:
-   - Name: `GREETING`
-   - Default Value: `Hello from Jenkins!`
-5. Click **Save**
+- **Git** for source checkout
+- **Pipeline** for Jenkinsfiles
+- **Pipeline: Input Step** for interactive decisions
+- **Docker Pipeline** for Docker-aware pipeline steps
+- **Gitea** for Gitea integration
 
-Now when you click **Build with Parameters**, you can change the value.
+## Step 4: Review Updates Carefully
 
-Use it in the pipeline:
-
-```groovy
-pipeline {
-    agent any
-
-    parameters {
-        string(name: 'GREETING', defaultValue: 'Hello from Jenkins!', description: 'A greeting message')
-    }
-
-    stages {
-        stage('Greet') {
-            steps {
-                echo "${params.GREETING}"
-            }
-        }
-    }
-}
-```
-
-## Step 4: Replay a Pipeline
-
-1. Open a finished build
-2. Click **Replay** on the left menu
-3. Edit the pipeline script
-4. Click **Run**
-
-Replay is useful for testing small changes without editing the job configuration.
+The **Updates** tab lists available updates. Read the dependency information before updating plugins. Apply updates during a maintenance window when Jenkins is shared.
 
 ## Checkpoint
 
-> When would you use **Replay** instead of editing the job configuration?
+> Why should a team install only the plugins it needs instead of installing every available plugin?
 
 ## Common Issues
 
-### Parameter Not Found
+### Plugin Installation Fails
 
-- Use `params.PARAM_NAME` to read the value
-- Make sure the parameter is defined in the job or with the `parameters` block
+- Check that Jenkins can reach its update site.
+- Read the displayed dependency or compatibility error.
+- Retry after resolving the dependency issue.
 
-### Artifacts Missing
+### The Plugin Does Not Appear
 
-- Verify `archiveArtifacts` is inside a `post` or `steps` block
-- Check that the file path is correct
+- Refresh the plugin manager.
+- Check the **Installed plugins** tab.
+- Restart Jenkins if the plugin is waiting for a restart.
 
 ## Key Takeaways
 
-- Build history shows past runs and their status
-- Artifacts preserve files from each build
-- Parameters make jobs reusable
-- Replay lets you test pipeline changes quickly
+- Jenkins functionality is extended through plugins.
+- Plugin dependencies and Jenkins compatibility matter.
+- Always verify that a plugin is installed and enabled before using its steps.
 
 ## Next Steps
 
-[Lesson 10: Build on Push](../topic-10/guide.md) configures automatic builds when code is pushed to Gitea.
+[Lesson 10: Docker Pipeline Plugin](../topic-10/guide.md) prepares Jenkins for a local Docker image build.

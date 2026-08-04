@@ -88,7 +88,7 @@ Build result is shown in Jenkins
 
 ## Learning Path
 
-This module has 10 guided topics:
+This module has 14 guided topics:
 
 1. Jenkins Docker setup
 2. Jenkins UI overview
@@ -97,15 +97,19 @@ This module has 10 guided topics:
 5. Pipeline stages
 6. Groovy basics
 7. More Groovy
-8. Gitea integration
-9. Jenkins features
-10. Build on push
+8. Interactive user input
+9. General plugin installation
+10. Docker Pipeline plugin and agent setup
+11. Gitea integration
+12. Docker build from Gitea
+13. Jenkins features
+14. Build on push
 
 Each topic builds on the previous one.
 
 ## Sample Project
 
-The `lab-project/` folder contains a small shell-based project used throughout the module. You will upload it to Gitea in Topic 8.
+The `lab-project/` folder contains a small shell-based project and a Docker example. You will upload it to Gitea in Topic 11.
 
 ## Prerequisites
 

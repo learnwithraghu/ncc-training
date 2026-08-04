@@ -12,6 +12,7 @@ pipeline-stage-step
 pipeline-build-step
 pipeline-input-step
 pipeline-milestone-step
+docker-workflow
 
 # UI Plugins (Optional but recommended)
 blueocean

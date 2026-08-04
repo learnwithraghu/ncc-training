@@ -1,0 +1,27 @@
+pipeline {
+    agent any
+
+    parameters {
+        string(name: 'IMAGE_TAG', defaultValue: 'training', description: 'Local image tag')
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh "docker build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} -t jenkins-lab:${params.IMAGE_TAG} docker-example"
+            }
+        }
+
+        stage('Inspect Image') {
+            steps {
+                sh "docker image inspect jenkins-lab:${params.IMAGE_TAG}"
+            }
+        }
+    }
+}

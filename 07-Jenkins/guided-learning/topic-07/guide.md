@@ -113,4 +113,4 @@ Run it again. The conditional stage will run.
 
 ## Next Steps
 
-[Lesson 8: Gitea Integration](../topic-08/guide.md) connects Jenkins to a Gitea repository.
+[Lesson 8: Interactive User Input](../topic-08/guide.md) pauses a pipeline for a user decision.

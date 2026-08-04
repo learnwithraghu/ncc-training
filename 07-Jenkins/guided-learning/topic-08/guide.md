@@ -1,115 +1,98 @@
-# Topic 8: Gitea Integration
+# Topic 8: Interactive User Input
 
-This lesson connects Jenkins to a Gitea repository. You will create a repo in Gitea, upload the `lab-project/` files through the Gitea web console, and configure Jenkins to use the `Jenkinsfile` from that repo.
+This lesson pauses a running Jenkins pipeline and asks a user to decide whether the build should continue. The response controls which stage runs.
 
 ## Learning Objectives
 
-- Create a repository in Gitea
-- Upload files using the Gitea web console
-- Add a Gitea access token to Jenkins credentials
-- Create a Jenkins pipeline that reads a `Jenkinsfile` from Gitea
+- Use the Pipeline `input` step
+- Capture a user's choice in a pipeline
+- Run a build stage conditionally
+- Abort a waiting build safely
 
 ## Prerequisites
 
-- Jenkins is running
-- Gitea is running and accessible
-- The `lab-project/` folder from this repository
+- Topic 7 completed
+- Jenkins is running and accessible
+- The Pipeline: Input Step plugin is installed
 
-## Step 1: Create a Gitea Repository
+## Step 1: Create the Pipeline Job
 
-1. Log in to your Gitea server
-2. Click the **+** icon → **New Repository**
-3. Enter:
-   - Owner: your username
-   - Repository name: `jenkins-lab-project`
-   - Visibility: **Private** or **Public** (your choice)
-   - Check **Initialize Repository** (optional)
-4. Click **Create Repository**
+1. Click **New Item**.
+2. Name the job `interactive-build`.
+3. Select **Pipeline**, then click **OK**.
+4. In the **Pipeline** section, choose **Pipeline script**.
 
-## Step 2: Upload the Lab Project Files
+## Step 2: Add the Pipeline
 
-1. In the new repo, click **Add File → Upload files**
-2. Upload the contents of the `lab-project/` folder from this repository:
-   - `README.md`
-   - `app.sh`
-   - `run.sh`
-   - `test.sh`
-   - `VERSION`
-   - `Jenkinsfile`
-3. Make sure the files land at the root of the repo (same folder structure as `lab-project/`)
-4. Add a commit message such as `Initial commit of lab project`
-5. Click **Commit changes**
+Paste this script:
 
-## Step 3: Create a Gitea Access Token
+```groovy
+pipeline {
+    agent any
 
-1. In Gitea, click your profile picture → **Settings → Applications**
-2. Under **Manage Access Tokens**, create a new token:
-   - Token name: `jenkins-token`
-   - Select at least **repo** scope
-3. Click **Generate Token**
-4. Copy the token immediately (you will not see it again)
+    stages {
+        stage('Prepare') {
+            steps {
+                echo 'Preparing the build...'
+            }
+        }
 
-## Step 4: Add the Token to Jenkins Credentials
+        stage('Request Approval') {
+            steps {
+                script {
+                    def decision = input(
+                        message: 'Should Jenkins run the build?',
+                        ok: 'Continue',
+                        parameters: [
+                            choice(
+                                name: 'BUILD_TARGET',
+                                choices: ['test', 'release'],
+                                description: 'Choose the build target'
+                            )
+                        ]
+                    )
+                    env.BUILD_TARGET = decision
+                    echo "Selected target: ${env.BUILD_TARGET}"
+                }
+            }
+        }
 
-1. In Jenkins, go to **Manage Jenkins → Credentials**
-2. Click **System → Global credentials (unrestricted)**
-3. Click **Add Credentials**
-4. Choose:
-   - Kind: **Secret text**
-   - Secret: paste the Gitea token
-   - ID: `gitea-token`
-   - Description: `Gitea access token`
-5. Click **OK**
+        stage('Build') {
+            when {
+                expression { env.BUILD_TARGET != null }
+            }
+            steps {
+                echo "Building the ${env.BUILD_TARGET} target..."
+            }
+        }
+    }
+}
+```
 
-## Step 5: Create a Jenkins Pipeline from SCM
-
-1. Click **New Item**
-2. Name: `gitea-pipeline`
-3. Select **Pipeline**
-4. Click **OK**
-
-In the pipeline configuration:
-
-1. Scroll to **Pipeline**
-2. Definition: **Pipeline script from SCM**
-3. SCM: **Git**
-4. Repository URL: `http://<GITEA_HOST>:3000/<USERNAME>/jenkins-lab-project.git`
-   - Replace the host, port, and username
-5. Credentials: select `gitea-token`
-6. Branch specifier: `*/main`
-7. Script path: `Jenkinsfile`
-8. Click **Save**
-
-## Step 6: Build the Pipeline
-
-1. Click **Build Now**
-2. Jenkins will clone the repo and run the `Jenkinsfile`
-3. Open the console output to verify the pipeline ran
+Click **Save**, then **Build Now**. Open the build page and select **Proceed** or **Abort** when Jenkins pauses.
 
 ## Checkpoint
 
-> Why is it better to store the Gitea token in Jenkins credentials instead of pasting it directly into the pipeline?
+> What happens to the build when the user chooses **Abort** instead of **Proceed**?
 
 ## Common Issues
 
-### Cannot Connect to Gitea
+### The Input Step Is Not Available
 
-- Verify the Gitea URL and port
-- Make sure the repository name and username are correct
-- Check that the token has the `repo` scope
+- Install **Pipeline: Input Step** from **Manage Jenkins → Plugins**.
+- Restart Jenkins if the plugin manager requests it.
 
-### Jenkinsfile Not Found
+### The Choice Is Not Stored
 
-- Make sure `Jenkinsfile` is at the root of the Gitea repo
-- Verify the **Script Path** field says `Jenkinsfile`
+- Assign the return value from `input` to a variable.
+- Store it in `env` or use it in the same `script` block.
 
 ## Key Takeaways
 
-- Gitea repos can be created through the web UI
-- Files can be uploaded directly in Gitea
-- Jenkins credentials keep tokens secure
-- **Pipeline script from SCM** lets Jenkins use the repo's `Jenkinsfile`
+- `input` pauses a pipeline for a human decision.
+- The response can control later stages.
+- Aborting an input step stops the build rather than silently continuing.
 
 ## Next Steps
 
-[Lesson 9: Jenkins Features](../topic-09/guide.md) explores artifacts, parameters, and build history.
+[Lesson 9: General Plugin Installation](../topic-09/guide.md) explains how to manage Jenkins plugins.

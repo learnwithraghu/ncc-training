@@ -1,107 +1,101 @@
-# Topic 13: Jenkins Features
+# Topic 13: Docker Build from Gitea
 
-This lesson reviews useful Jenkins features that help you manage and inspect builds.
+This lesson checks out the Gitea repository and builds a Docker image from its `docker-example/Dockerfile`. The image is built locally only. It is not pushed to a registry.
 
 ## Learning Objectives
 
-- View and download build artifacts
-- Read build history and trends
-- Add parameters to a job
-- Replay a pipeline
+- Build a Docker image from a repository Dockerfile
+- Pass a build argument from Jenkins
+- Inspect the resulting local image
+- Keep image builds separate from image publishing
 
 ## Prerequisites
 
-- A pipeline job from previous lessons
+- Topic 10 completed and `docker version` succeeds in Jenkins
+- Topic 12 completed
+- The `gitea-pipeline` job can check out the repository
 
-## Step 1: View Build History
+## Step 1: Create the Docker Build Job
 
-1. Open any job page
-2. The left panel shows the **Build History**
-3. Click a build number to see its details
-4. Use the **Previous Build** and **Next Build** links to navigate
+1. Create a Pipeline job named `gitea-docker-build`.
+2. Choose **Pipeline script from SCM**.
+3. Use the same Gitea URL, credential, and branch settings from Topic 12.
+4. Set **Script Path** to `docker-example/Jenkinsfile`.
 
-## Step 2: Download Artifacts
+## Step 2: Review the Docker Build Pipeline
 
-If your pipeline archives files with `archiveArtifacts`, they appear on the build page.
-
-1. Open a build that produced artifacts
-2. Click **Build Artifacts**
-3. Click a file name to download it
-
-For example, from `lab-project/Jenkinsfile`:
-
-```groovy
-post {
-    always {
-        archiveArtifacts artifacts: 'output.txt', allowEmptyArchive: true
-    }
-}
-```
-
-## Step 3: Add a Parameter to a Job
-
-1. Open a pipeline job and click **Configure**
-2. Check **This project is parameterized**
-3. Click **Add Parameter → String Parameter**
-4. Set:
-   - Name: `GREETING`
-   - Default Value: `Hello from Jenkins!`
-5. Click **Save**
-
-Now when you click **Build with Parameters**, you can change the value.
-
-Use it in the pipeline:
+The repository contains `docker-example/Jenkinsfile`:
 
 ```groovy
 pipeline {
     agent any
 
     parameters {
-        string(name: 'GREETING', defaultValue: 'Hello from Jenkins!', description: 'A greeting message')
+        string(name: 'IMAGE_TAG', defaultValue: 'training', description: 'Local image tag')
     }
 
     stages {
-        stage('Greet') {
+        stage('Checkout') {
             steps {
-                echo "${params.GREETING}"
+                checkout scm
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh "docker build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} -t jenkins-lab:${params.IMAGE_TAG} docker-example"
+            }
+        }
+
+        stage('Inspect Image') {
+            steps {
+                sh "docker image inspect jenkins-lab:${params.IMAGE_TAG}"
             }
         }
     }
 }
 ```
 
-## Step 4: Replay a Pipeline
+Click **Build with Parameters**, provide a simple tag such as `training-1`, and start the build.
 
-1. Open a finished build
-2. Click **Replay** on the left menu
-3. Edit the pipeline script
-4. Click **Run**
+## Step 3: Verify the Build
 
-Replay is useful for testing small changes without editing the job configuration.
+The console output should show the Dockerfile steps and a successful image inspection. On the Docker host, verify the local image:
+
+```bash
+docker image ls 'jenkins-lab'
+```
+
+This lesson intentionally does not use `docker login`, registry tagging, or `docker push`.
 
 ## Checkpoint
 
-> When would you use **Replay** instead of editing the job configuration?
+> What is the difference between building a local image and publishing an image to a registry?
 
 ## Common Issues
 
-### Parameter Not Found
+### Dockerfile Not Found
 
-- Use `params.PARAM_NAME` to read the value
-- Make sure the parameter is defined in the job or with the `parameters` block
+- Confirm the path is `docker-example/Dockerfile`.
+- Confirm the build context is `docker-example`.
+- Confirm the folder was committed to Gitea.
 
-### Artifacts Missing
+### Image Tag Is Invalid
 
-- Verify `archiveArtifacts` is inside a `post` or `steps` block
-- Check that the file path is correct
+- Use lowercase letters, numbers, periods, dashes, or underscores.
+- Do not include spaces in `IMAGE_TAG`.
+
+### Build Works Locally but Not in Jenkins
+
+- Run `docker version` in the same Jenkins agent.
+- Check the Docker CLI and daemon configuration from Topic 10.
 
 ## Key Takeaways
 
-- Build history shows past runs and their status
-- Artifacts preserve files from each build
-- Parameters make jobs reusable
-- Replay lets you test pipeline changes quickly
+- Jenkins can build images directly from source checked out from Gitea.
+- Build arguments and parameters make the job reusable.
+- A local Docker build does not publish the image.
 
 ## Next Steps
 
-[Lesson 14: Build on Push](../topic-14/guide.md) configures automatic builds when code is pushed to Gitea.
+[Lesson 14: Jenkins Features](../topic-14/guide.md) reviews artifacts, history, parameters, and replay.

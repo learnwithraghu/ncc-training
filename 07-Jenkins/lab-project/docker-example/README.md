@@ -1,6 +1,6 @@
 # Docker Build Example
 
-This folder is the Docker build context used in Jenkins Topic 12.
+This folder is the Docker build context used in Jenkins Topic 13.
 
 Build it locally with:
 

@@ -28,4 +28,4 @@ It contains a small shell script, a test, and a `Jenkinsfile` so learners can pr
 ./test.sh
 ```
 
-The Docker example is built by Jenkins in Topic 12. It is intentionally built locally and is not pushed to a registry.
+The Docker example is built by Jenkins in Topic 13. It is intentionally built locally and is not pushed to a registry.

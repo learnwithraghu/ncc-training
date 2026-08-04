@@ -86,4 +86,4 @@ Run the job. Both commands must succeed before continuing to Topic 11 and Topic 
 
 ## Next Steps
 
-[Lesson 11: Gitea Integration](../topic-11/guide.md) connects Jenkins to the repository containing the Docker example.
+[Lesson 11: Docker Hello World Pipeline](../topic-11/guide.md) runs a simple Docker container from Jenkins.

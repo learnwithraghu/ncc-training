@@ -1,84 +1,87 @@
-# Topic 11: Gitea Integration
+# Topic 11: Docker Hello World Pipeline
 
-This lesson connects Jenkins to a Gitea repository. The repository will contain both the shell lab and the Docker example used in Topic 12.
+This lesson runs Docker's official `hello-world` image from a Jenkins pipeline. It is the first practical test that Jenkins can use Docker successfully.
 
 ## Learning Objectives
 
-- Create a repository in Gitea
-- Upload the lab project and Docker example
-- Add a Gitea access token to Jenkins credentials
-- Create a Jenkins pipeline that reads a Jenkinsfile from Gitea
+- Create a Jenkins pipeline that runs a Docker command
+- Pull and run the `hello-world` image
+- Read container output in Jenkins console logs
+- Remove the temporary container after the run
 
 ## Prerequisites
 
+- Topic 10 completed
+- `docker version` succeeds from a Jenkins build agent
 - Jenkins is running and accessible
-- Gitea is running and accessible
-- The `lab-project/` folder from this repository
 
-## Step 1: Create a Gitea Repository
+## Step 1: Create the Pipeline Job
 
-1. Log in to Gitea.
-2. Click **+ → New Repository**.
-3. Name the repository `jenkins-lab-project`.
-4. Choose **Private** or **Public** and click **Create Repository**.
+1. Click **New Item**.
+2. Name the job `docker-hello-world`.
+3. Select **Pipeline**, then click **OK**.
+4. In the **Pipeline** section, choose **Pipeline script**.
 
-## Step 2: Upload the Project
+## Step 2: Add the Pipeline
 
-Upload the contents of `lab-project/`, preserving this structure:
+Paste this script:
 
-```text
-Jenkinsfile
-app.sh
-run.sh
-test.sh
-VERSION
-docker-example/Dockerfile
-docker-example/README.md
-docker-example/Jenkinsfile
+```groovy
+pipeline {
+    agent any
+
+    stages {
+        stage('Check Docker') {
+            steps {
+                sh 'docker version'
+            }
+        }
+
+        stage('Run Hello World') {
+            steps {
+                sh 'docker run --rm hello-world'
+            }
+        }
+    }
+}
 ```
 
-Commit the files to the `main` branch.
+Click **Save**, then **Build Now**.
 
-## Step 3: Add the Gitea Credential
+## Step 3: Read the Build Output
 
-1. In Gitea, open **Settings → Applications**.
-2. Create an access token named `jenkins-token` with at least `repo` scope.
-3. Copy the token.
-4. In Jenkins, open **Manage Jenkins → Credentials**.
-5. Add a **Secret text** credential with ID `gitea-token`.
+Open **Console Output**. The log should show Docker information, the `hello-world` image pull if needed, the Hello from Docker message, and a successful pipeline result.
 
-## Step 4: Create a Pipeline from SCM
-
-1. Create a Pipeline job named `gitea-pipeline`.
-2. Set **Definition** to **Pipeline script from SCM**.
-3. Select **Git**.
-4. Set the repository URL to `http://<GITEA_HOST>:3000/<USERNAME>/jenkins-lab-project.git`.
-5. Select the `gitea-token` credential.
-6. Set the branch to `*/main` and the script path to `Jenkinsfile`.
-7. Save and click **Build Now**.
+The `--rm` option removes the stopped container after it finishes. The image remains cached on the Docker host for later runs.
 
 ## Checkpoint
 
-> Why should the Gitea token be stored in Jenkins credentials instead of the Jenkinsfile?
+> Why does this pipeline use `docker run --rm hello-world` instead of installing Docker inside the Jenkins job?
 
 ## Common Issues
 
-### Jenkins Cannot Clone the Repository
+### Cannot Connect to the Docker Daemon
 
-- Verify the URL, username, branch, and token scope.
-- Confirm Jenkins can reach the Gitea host from its network.
+- Confirm Topic 10's Docker access test succeeds on the same agent.
+- Check the Docker socket or remote Docker endpoint.
+- Verify Docker Engine is running.
 
-### Docker Example Files Are Missing
+### Image Pull Fails
 
-- Preserve the `docker-example/` folder during upload.
-- Confirm the files are committed to `main`.
+- Confirm the agent has network access to Docker Hub.
+- Retry after checking Docker Hub availability.
+
+### The Hello World Message Is Missing
+
+- Open the build's full **Console Output**.
+- Confirm the `docker run` command completed successfully.
 
 ## Key Takeaways
 
-- Jenkins can load a version-controlled Jenkinsfile from Gitea.
-- Repository folders are available to later build stages.
-- Credentials keep access tokens out of source code.
+- A Jenkins pipeline can run Docker commands on its agent.
+- `hello-world` is a simple end-to-end Docker access test.
+- `--rm` keeps temporary containers from accumulating.
 
 ## Next Steps
 
-[Lesson 12: Docker Build from Gitea](../topic-12/guide.md) builds the image from the repository without pushing it.
+[Lesson 12: Gitea Integration](../topic-12/guide.md) connects Jenkins to the repository used for the Docker build.

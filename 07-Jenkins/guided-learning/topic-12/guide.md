@@ -1,101 +1,84 @@
-# Topic 12: Docker Build from Gitea
+# Topic 12: Gitea Integration
 
-This lesson checks out the Gitea repository and builds a Docker image from its `docker-example/Dockerfile`. The image is built locally only. It is not pushed to a registry.
+This lesson connects Jenkins to a Gitea repository. The repository will contain both the shell lab and the Docker example used in Topic 13.
 
 ## Learning Objectives
 
-- Build a Docker image from a repository Dockerfile
-- Pass a build argument from Jenkins
-- Inspect the resulting local image
-- Keep image builds separate from image publishing
+- Create a repository in Gitea
+- Upload the lab project and Docker example
+- Add a Gitea access token to Jenkins credentials
+- Create a Jenkins pipeline that reads a Jenkinsfile from Gitea
 
 ## Prerequisites
 
-- Topic 10 completed and `docker version` succeeds in Jenkins
-- Topic 11 completed
-- The `gitea-pipeline` job can check out the repository
+- Jenkins is running and accessible
+- Gitea is running and accessible
+- The `lab-project/` folder from this repository
 
-## Step 1: Create the Docker Build Job
+## Step 1: Create a Gitea Repository
 
-1. Create a Pipeline job named `gitea-docker-build`.
-2. Choose **Pipeline script from SCM**.
-3. Use the same Gitea URL, credential, and branch settings from Topic 11.
-4. Set **Script Path** to `docker-example/Jenkinsfile`.
+1. Log in to Gitea.
+2. Click **+ → New Repository**.
+3. Name the repository `jenkins-lab-project`.
+4. Choose **Private** or **Public** and click **Create Repository**.
 
-## Step 2: Add the Docker Build Pipeline
+## Step 2: Upload the Project
 
-The repository contains `docker-example/Jenkinsfile`:
+Upload the contents of `lab-project/`, preserving this structure:
 
-```groovy
-pipeline {
-    agent any
-
-    parameters {
-        string(name: 'IMAGE_TAG', defaultValue: 'training', description: 'Local image tag')
-    }
-
-    stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
-
-        stage('Build Docker Image') {
-            steps {
-                sh "docker build --build-arg BUILD_NUMBER=${env.BUILD_NUMBER} -t jenkins-lab:${params.IMAGE_TAG} docker-example"
-            }
-        }
-
-        stage('Inspect Image') {
-            steps {
-                sh "docker image inspect jenkins-lab:${params.IMAGE_TAG}"
-            }
-        }
-    }
-}
+```text
+Jenkinsfile
+app.sh
+run.sh
+test.sh
+VERSION
+docker-example/Dockerfile
+docker-example/README.md
+docker-example/Jenkinsfile
 ```
 
-Click **Build with Parameters**, provide a simple tag such as `training-1`, and start the build.
+Commit the files to the `main` branch.
 
-## Step 3: Verify the Build
+## Step 3: Add the Gitea Credential
 
-The console output should show the Dockerfile steps and a successful image inspection. On the Docker host, verify the local image:
+1. In Gitea, open **Settings → Applications**.
+2. Create an access token named `jenkins-token` with at least `repo` scope.
+3. Copy the token.
+4. In Jenkins, open **Manage Jenkins → Credentials**.
+5. Add a **Secret text** credential with ID `gitea-token`.
 
-```bash
-docker image ls 'jenkins-lab'
-```
+## Step 4: Create a Pipeline from SCM
 
-This lesson intentionally does not use `docker login`, `docker tag` for a registry, or `docker push`.
+1. Create a Pipeline job named `gitea-pipeline`.
+2. Set **Definition** to **Pipeline script from SCM**.
+3. Select **Git**.
+4. Set the repository URL to `http://<GITEA_HOST>:3000/<USERNAME>/jenkins-lab-project.git`.
+5. Select the `gitea-token` credential.
+6. Set the branch to `*/main` and the script path to `Jenkinsfile`.
+7. Save and click **Build Now**.
 
 ## Checkpoint
 
-> What is the difference between building a local image and publishing an image to a registry?
+> Why should the Gitea token be stored in Jenkins credentials instead of the Jenkinsfile?
 
 ## Common Issues
 
-### Dockerfile Not Found
+### Jenkins Cannot Clone the Repository
 
-- Confirm the path is `docker-example/Dockerfile`.
-- Confirm the build context is `docker-example`.
-- Confirm the folder was committed to Gitea.
+- Verify the URL, username, branch, and token scope.
+- Confirm Jenkins can reach the Gitea host from its network.
 
-### Image Tag Is Invalid
+### Docker Example Files Are Missing
 
-- Use lowercase letters, numbers, periods, dashes, or underscores.
-- Do not include spaces in `IMAGE_TAG`.
-
-### Build Works Locally but Not in Jenkins
-
-- Run `docker version` in the same Jenkins agent.
-- Check the Docker CLI and daemon configuration from Topic 10.
+- Preserve the `docker-example/` folder during upload.
+- Confirm the files are committed to `main`.
 
 ## Key Takeaways
 
-- Jenkins can build images directly from source checked out from Gitea.
-- Build arguments and parameters make the job reusable.
-- A local Docker build does not publish the image.
+- Jenkins can load a version-controlled Jenkinsfile from Gitea.
+- Repository folders are available to later build stages.
+- Credentials keep access tokens out of source code.
 
 ## Next Steps
 
-[Lesson 13: Jenkins Features](../topic-13/guide.md) reviews artifacts, history, parameters, and replay.
+[Lesson 13: Docker Build from Gitea](../topic-13/guide.md) builds the image from the repository without pushing it.

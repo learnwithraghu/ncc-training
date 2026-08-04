@@ -186,3 +186,7 @@ Once your setup is verified, you're ready to learn:
 - Using Git in DevOps workflows
 
 See you in the workshop!
+
+## Kodekloud Playground
+
+You can access the VScode playground here: https://learn.kodekloud.com/learn/playgrounds/playground-python

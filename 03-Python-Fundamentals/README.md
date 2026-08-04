@@ -64,3 +64,7 @@ The engineer-facing lab scenarios now live in [labs/](labs/).
 ## Additional Resources
 
 - [guided-learning/](guided-learning/) — Python topics and walkthroughs
+
+## Kodekloud Playground
+
+You can access the Python playground here: https://learn.kodekloud.com/learn/playgrounds/playground-python

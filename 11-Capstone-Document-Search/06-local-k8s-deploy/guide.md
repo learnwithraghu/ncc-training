@@ -1,7 +1,7 @@
 # Step 06: Deploy to Local Kubernetes
 
 ## Goal
-Build the `document-search` image locally and deploy it to an existing local Kubernetes cluster, creating a dedicated namespace and using the locally built image.
+Build the `document-search` image, push it to the public Docker Hub repository `learnwithraghu/ncc-workshop`, and deploy it to an existing local Kubernetes cluster using the public image.
 
 ## Time
 Approximately **25 minutes**.
@@ -26,8 +26,8 @@ If you already completed an earlier step and have a filled `.env`, you can copy 
 
 1. Verify a local Kubernetes cluster is running and reachable.
 2. Create the `document-search` namespace.
-3. Build the Docker image locally from this folder.
-4. Load the image into k3s if needed.
+3. Build the Docker image from this folder.
+4. Push the image to Docker Hub (`learnwithraghu/ncc-workshop`).
 5. Apply the namespace, Deployment, and Service manifests.
 6. Verify the Pod is running and healthy.
 7. Port-forward the Service and test the app in a browser.
@@ -58,36 +58,27 @@ kubectl get nodes
 
 You should see cluster information and at least one ready node.
 
-## Build the Image Locally
+## Build and Push the Image
 
-From this folder, build the image with a local tag. Make sure `.env` is present in this folder first, because the Dockerfile copies it into the image:
-
-```bash
-docker build -t document-search:latest .
-```
-
-Confirm the image exists:
+From this folder, build the image with the Docker Hub repository tag. Make sure `.env` is present in this folder first, because the Dockerfile copies it into the image:
 
 ```bash
-docker images | grep document-search
+docker build -t learnwithraghu/ncc-workshop:latest .
 ```
 
-## Load the Image into k3s (if needed)
-
-This lab uses k3s, so load the image into the k3s containerd store after you build it.
-
-From this folder, export the image and import it into k3s:
+Push the image to Docker Hub so the Kubernetes cluster can pull it:
 
 ```bash
-docker save document-search:latest -o document-search.tar
-sudo k3s ctr images import document-search.tar
+docker push learnwithraghu/ncc-workshop:latest
 ```
 
-If the Pod lands on another node in the k3s cluster, import the same tar file there as well.
+Confirm the image exists locally:
 
-If you skip this step, the Pod will stay in `ErrImageNeverPull` because `imagePullPolicy: Never` tells Kubernetes not to fetch the image from any registry.
+```bash
+docker images | grep ncc-workshop
+```
 
-If that happens, stop the watch command, import the image into k3s, and try again.
+> The cluster must be able to reach Docker Hub. The Deployment uses `imagePullPolicy: Always` so Kubernetes always fetches the published image.
 
 ## Create the Namespace
 
@@ -135,9 +126,11 @@ kubectl logs -n document-search -l app=document-search --tail=50
 
 You should see Streamlit start and listen on `0.0.0.0:8501`.
 
-If the Pod status is `ImagePullBackOff`, the cluster cannot see the local image. Re-check the k3s import step and confirm `imagePullPolicy: Never` is set in the Deployment.
+If the Pod status is `ImagePullBackOff`, the cluster cannot pull the public image. Check that:
 
-If the Pod status is `ErrImageNeverPull`, the same fix applies: import `document-search.tar` into k3s before waiting on the Pod.
+- The image tag in `k8s/deployment.yaml` matches the tag you pushed (`learnwithraghu/ncc-workshop:latest`).
+- The cluster has outbound internet access to Docker Hub.
+- You are logged in to Docker Hub and the repository is public or the cluster has valid credentials.
 
 ## Access the App Locally
 
@@ -183,15 +176,15 @@ kubectl delete -f k8s/
 Optional: remove the local Docker image:
 
 ```bash
-docker rmi document-search:latest
+docker rmi learnwithraghu/ncc-workshop:latest
 ```
 
 ## Checkpoint
 
-1. Why do we set `imagePullPolicy: Never` in the Deployment?
+1. Why do we set `imagePullPolicy: Always` in the Deployment?
 2. What is the purpose of the `document-search` namespace?
-3. When do you need to run `kind load docker-image` or `minikube image load`?
-4. How can you tell that the Pod is using the locally built image?
+3. What happens if the Pod status shows `ImagePullBackOff`?
+4. How can you tell which container image a Pod is running?
 
 ## Congratulations
 

@@ -17,8 +17,8 @@ spec:
     spec:
       containers:
         - name: document-search
-          image: document-search:latest
-          imagePullPolicy: Never
+          image: learnwithraghu/ncc-workshop:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8501
               name: http

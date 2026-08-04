@@ -144,3 +144,7 @@ Optional: delete the image from ECR and rotate the API key that was baked into t
 ## Congratulations
 
 You have deployed the Document Search application to Amazon EKS, verified the Pod, and accessed the Streamlit UI through Kubernetes port-forwarding.
+
+## Next Step
+
+Go to **[07-local-k8s-deploy](../07-local-k8s-deploy/)**.

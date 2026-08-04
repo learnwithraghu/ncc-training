@@ -167,3 +167,7 @@ docker volume --help
 ## Guided Learning Focus
 
 The topic guides replace the old guide, exercise, solution, and lab flow. Each lesson is self-contained and designed to take about 20 minutes.
+
+## Kodekloud Playground
+
+You can access the Docker playground here: https://learn.kodekloud.com/learn/playgrounds/playground-docker

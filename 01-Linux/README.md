@@ -84,3 +84,7 @@ This module now carries both a 15-topic guided-learning set and 5 lab scenarios.
 
 - [00-OVERVIEW.md](00-OVERVIEW.md) — Comprehensive Linux theory
 - [guided-learning/](guided-learning/) — Practice topics and self-contained lessons
+
+## Kodekloud Playground
+
+You can access the Ubuntu 24.04 playground here: https://kodekloud.com/playgrounds/playground-ubuntu

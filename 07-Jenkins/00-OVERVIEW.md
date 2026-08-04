@@ -88,7 +88,7 @@ Build result is shown in Jenkins
 
 ## Learning Path
 
-This module has 10 lessons:
+This module has 10 guided topics:
 
 1. Jenkins Docker setup
 2. Jenkins UI overview
@@ -101,11 +101,11 @@ This module has 10 lessons:
 9. Jenkins features
 10. Build on push
 
-Each lesson builds on the previous one.
+Each topic builds on the previous one.
 
 ## Sample Project
 
-The `lab-project/` folder contains a small shell-based project used throughout the module. You will upload it to Gitea in Lesson 8.
+The `lab-project/` folder contains a small shell-based project used throughout the module. You will upload it to Gitea in Topic 8.
 
 ## Prerequisites
 
@@ -132,4 +132,4 @@ Before starting this module:
 
 ---
 
-Ready to start? Go to [Lesson 1: Jenkins Docker Setup](./01-jenkins-docker-setup.md).
+Ready to start? Go to [Topic 1: Jenkins Docker Setup](./guided-learning/topic-01/guide.md).

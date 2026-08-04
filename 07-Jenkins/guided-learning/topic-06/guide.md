@@ -1,28 +1,110 @@
-# Topic 6: Groovy Basics
+# Topic 6: Groovy Basics in Pipelines
 
-**Time:** 20 minutes
+This lesson introduces Groovy scripting inside the `script` block. You can use Groovy to add logic to your pipelines.
 
-## Goal
+## Learning Objectives
 
-Use Groovy inside a `script` block to add logic to a pipeline.
+- Use the `script` block in a declarative pipeline
+- Create and use variables
+- Write conditional statements
+- Call built-in Jenkins methods
 
-## Commands to Use
+## Prerequisites
 
-No new terminal commands.
+- You can create a pipeline job
+- You understand basic pipeline stages
 
-## Guided Steps
+## Step 1: Create a New Pipeline Job
 
-1. Create a new pipeline job named `groovy-basics`.
-2. Paste a pipeline with `script` blocks that:
-   - Define variables with `def`
-   - Use `if/else` to check the build number
-   - Read the `VERSION` file with `readFile`
-3. Run the pipeline and read the output.
+1. Click **New Item**
+2. Name: `groovy-basics`
+3. Select **Pipeline**
+4. Click **OK**
+
+## Step 2: Use a `script` Block
+
+Paste this pipeline:
+
+```groovy
+pipeline {
+    agent any
+
+    stages {
+        stage('Variables') {
+            steps {
+                script {
+                    def name = 'Jenkins'
+                    def build = env.BUILD_NUMBER
+                    echo "Hello, ${name}!"
+                    echo "This is build ${build}."
+                }
+            }
+        }
+
+        stage('Condition') {
+            steps {
+                script {
+                    def number = env.BUILD_NUMBER.toInteger()
+                    if (number % 2 == 0) {
+                        echo 'Build number is even.'
+                    } else {
+                        echo 'Build number is odd.'
+                    }
+                }
+            }
+        }
+
+        stage('Read File') {
+            steps {
+                writeFile file: 'version.txt', text: '1.0.0'
+                script {
+                    def version = readFile('version.txt').trim()
+                    echo "Version is ${version}"
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            echo 'Done with Groovy basics.'
+        }
+    }
+}
+```
+
+Click **Save** and then **Build Now**.
+
+## Step 3: View the Output
+
+Open the console output. You should see:
+
+- A greeting using the `name` variable
+- Whether the build number is even or odd
+- The version from `version.txt`
 
 ## Checkpoint
 
-What is the difference between `def myVar` and `env.BUILD_NUMBER`?
+> What is the difference between `def` (Groovy) and `env.BUILD_NUMBER` (Jenkins environment)?
+
+## Common Issues
+
+### Type Errors
+
+- `env.BUILD_NUMBER` is a String. Use `.toInteger()` for math.
+- `readFile` returns a String. Use `.trim()` to remove trailing newlines.
+
+### File Not Found
+
+- Make sure the path is correct relative to the workspace
+- Use `fileExists('path')` to check before reading
+
+## Key Takeaways
+
+- `script {}` lets you write Groovy inside a declarative pipeline
+- `def` creates a local variable
+- You can use `if/else`, loops, and built-in functions
 
 ## Next Steps
 
-Continue with [Lesson 7: More Groovy](../../07-jenkins-groovy-part2.md).
+[Lesson 7: More Groovy](../topic-07/guide.md) covers loops, functions, and the `when` directive.

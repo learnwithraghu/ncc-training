@@ -61,3 +61,7 @@ The engineer-facing lab scenarios now live in [labs/](labs/).
 ## Additional Resources
 
 - [guided-learning/](guided-learning/) — Bash scripting topics and walkthroughs
+
+## Kodekloud Playground
+
+You can access the Ubuntu 24.04 playground here: https://kodekloud.com/playgrounds/playground-ubuntu

@@ -78,3 +78,7 @@ Legacy narrative files remain in this module as reference material:
 - 05-advanced.md
 
 Primary learner flow is now the guided-learning topic sequence.
+
+## Kodekloud Playground
+
+You can access the Kubernetes playground here: https://learn.kodekloud.com/learn/playgrounds/playground-kubernetes-single-node-latest

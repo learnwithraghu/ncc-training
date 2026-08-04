@@ -63,3 +63,7 @@ Before moving to the next module, ensure you can:
 ## Next Steps
 
 Start with the overview in [00-OVERVIEW.md](00-OVERVIEW.md), then work through the lessons in order.
+
+## Kodekloud Playground
+
+You can access the Jenkins playground here: https://kodekloud.com/playgrounds/playground-jenkins

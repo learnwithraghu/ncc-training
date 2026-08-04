@@ -53,3 +53,7 @@ Work through the topics in [guided-learning/](guided-learning/) in order:
 ## Module App
 
 Use the training app in [application/](application/) for all guided topics.
+
+## Kodekloud Playground
+
+You can access the Docker playground here: https://learn.kodekloud.com/learn/playgrounds/playground-docker

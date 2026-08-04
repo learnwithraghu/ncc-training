@@ -61,3 +61,7 @@ Legacy narrative guides remain as reference material:
 - [guide_02_chart_for_capstone.md](guide_02_chart_for_capstone.md)
 
 Primary learner flow is now the guided-learning topic sequence.
+
+## Kodekloud Playground
+
+You can access the Kubernetes playground here: https://learn.kodekloud.com/learn/playgrounds/playground-kubernetes-single-node-latest

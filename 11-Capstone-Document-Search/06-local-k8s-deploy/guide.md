@@ -177,3 +177,7 @@ docker rmi document-search:latest
 ## Congratulations
 
 You built the Document Search image locally and deployed it to a local Kubernetes cluster with a dedicated namespace, accessible through `kubectl port-forward`.
+
+## Next Step
+
+Go to **[07-helm-deploy](../07-helm-deploy/)**.

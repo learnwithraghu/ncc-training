@@ -1,0 +1,10 @@
+services:
+  doc-search:
+    image: document-search:latest
+    build:
+      context: .
+      platforms:
+        - linux/amd64
+    ports:
+      - "8501:8501"
+    restart: unless-stopped

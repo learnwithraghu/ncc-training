@@ -1,0 +1,38 @@
+replicaCount: 1
+
+image:
+  repository: document-search
+  tag: latest
+  pullPolicy: Never
+
+namespace: document-search
+
+service:
+  type: ClusterIP
+  port: 8501
+  targetPort: 8501
+
+resources:
+  requests:
+    cpu: 250m
+    memory: 512Mi
+  limits:
+    cpu: 500m
+    memory: 1Gi
+
+probes:
+  liveness:
+    path: /_stcore/health
+    initialDelaySeconds: 30
+    periodSeconds: 30
+    timeoutSeconds: 10
+    failureThreshold: 3
+  readiness:
+    path: /_stcore/health
+    initialDelaySeconds: 10
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3
+
+env:
+  STREAMLIT_SERVER_FILE_WATCHER_TYPE: none

@@ -1,4 +1,4 @@
-# Step 07: Deploy to EKS
+# Step 08: Deploy to EKS
 
 ## Goal
 Deploy the `document-search` image from ECR to an existing Amazon EKS cluster using Kubernetes manifests, then access the Streamlit UI locally with `kubectl port-forward`.
@@ -18,7 +18,7 @@ Approximately **30 minutes**.
 
 ## Prerequisites
 
-- Completion of [06-local-k8s-deploy](../06-local-k8s-deploy/).
+- Completion of [07-helm-deploy](../07-helm-deploy/).
 - The same `document-search:latest` image already pushed to Amazon ECR.
 - An existing EKS cluster and a `kubeconfig` that points to it.
 - `kubectl` and the AWS CLI installed and configured.

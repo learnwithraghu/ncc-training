@@ -19,7 +19,9 @@ The app is a **Streamlit** UI: upload a PDF, call your **LLM HTTP endpoint**, vi
         ↓
 06 Deploy to local Kubernetes (local image + namespace + port-forward)
         ↓
-07 Deploy to EKS (Deployment + Service + port-forward)
+07 Deploy with Helm to local Kubernetes (Helm chart + values.yaml)
+        ↓
+08 Deploy to EKS (Deployment + Service + port-forward)
 ```
 
 ## What You Will Learn
@@ -30,6 +32,7 @@ The app is a **Streamlit** UI: upload a PDF, call your **LLM HTTP endpoint**, vi
 - Push to Amazon ECR from your laptop
 - Deploy with the AWS Console and open `http://<task-public-ip>:8501`
 - Build the image locally and deploy it to a local Kubernetes cluster
+- Deploy the same local image using Helm and a values-driven chart
 - Deploy the same image to Amazon EKS and access it via `kubectl port-forward`
 
 ## Time Estimate
@@ -53,7 +56,8 @@ Approximately **2 hours**.
 | 4 | [04-ecr-push](04-ecr-push/guide.md) | Use `~/.aws/credentials` and push to ECR | 25 min |
 | 5 | [05-ecs-deploy](05-ecs-deploy/guide.md) | Deploy from the AWS Console | 30 min |
 | 6 | [06-local-k8s-deploy](06-local-k8s-deploy/guide.md) | Build locally and deploy to local Kubernetes | 25 min |
-| 7 | [07-eks-deploy](07-eks-deploy/guide.md) | Deploy to EKS with kubectl and manifests | 30 min |
+| 7 | [07-helm-deploy](07-helm-deploy/guide.md) | Deploy locally-built image with Helm | 30 min |
+| 8 | [08-eks-deploy](08-eks-deploy/guide.md) | Deploy to EKS with kubectl and manifests | 30 min |
 
 ## How to Use These Folders
 
@@ -65,9 +69,9 @@ Approximately **2 hours**.
 
 ## Capstone Rules
 
-- Build locally → push to ECR from your laptop → deploy ECS from the **Console**, deploy locally, OR deploy to EKS
+- Build locally → push to ECR from your laptop → deploy ECS from the **Console**, deploy locally, deploy with Helm, OR deploy to EKS
 - For ECS: access via the **ECS task public IP** on port **8501** (no ALB in this lab)
-- For local Kubernetes: build the image locally, create a namespace, set `imagePullPolicy: Never`, and use `kubectl port-forward`
+- For local Kubernetes and Helm: build the image locally, create a namespace, set `imagePullPolicy: Never`, and use `kubectl port-forward`
 - For EKS: use a `ClusterIP` Service and `kubectl port-forward` to reach the app on `http://localhost:8501`
 - Bake `.env` into the image for this classroom path; **do not** use Secrets Manager here
 - Never commit a real `.env`
@@ -75,7 +79,7 @@ Approximately **2 hours**.
 
 ## Key Artifact
 
-A Docker image running as a container workload. For AWS paths, the image lives in Amazon ECR and runs on ECS or EKS. For the local path, the image is built locally and runs on a local Kubernetes cluster.
+A Docker image running as a container workload. For AWS paths, the image lives in Amazon ECR and runs on ECS or EKS. For the local paths, the image is built locally and runs on a local Kubernetes cluster, either with plain manifests or with Helm.
 
 ## Infra Checklist
 

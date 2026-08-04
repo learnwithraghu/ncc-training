@@ -6,6 +6,22 @@ Build the `document-search` image locally and deploy it to an existing local Kub
 ## Time
 Approximately **25 minutes**.
 
+## Start Here
+
+Open this step folder before you run any commands:
+
+```bash
+cd 11-Capstone-Document-Search/06-local-k8s-deploy
+```
+
+Bring your `.env` file forward so the Docker image can bake in the same app settings used in earlier steps:
+
+```bash
+cp ../.env_example .env
+```
+
+If you already completed an earlier step and have a filled `.env`, you can copy that file instead.
+
 ## What You Will Do
 
 1. Verify a local Kubernetes cluster is running and reachable.
@@ -36,7 +52,7 @@ You should see cluster information and at least one ready node.
 
 ## Build the Image Locally
 
-From this folder, build the image with a local tag:
+From this folder, build the image with a local tag. Make sure `.env` is present in this folder first, because the Dockerfile copies it into the image:
 
 ```bash
 docker build -t document-search:latest .
@@ -74,7 +90,7 @@ Some local clusters cannot see images built by your host Docker daemon. Load the
 
 ## Create the Namespace
 
-The manifests use the `document-search` namespace. Create it before applying:
+The manifests in `k8s/` use the `document-search` namespace. Create it before applying the rest of the manifests:
 
 ```bash
 kubectl apply -f k8s/namespace.yaml
@@ -88,7 +104,7 @@ kubectl get namespace document-search
 
 ## Deploy
 
-Apply the Deployment and Service:
+Apply the Deployment and Service from this folder:
 
 ```bash
 kubectl apply -f k8s/
@@ -122,7 +138,7 @@ If the Pod status is `ImagePullBackOff`, the cluster cannot see the local image.
 
 ## Access the App Locally
 
-Port-forward the Service from the `document-search` namespace:
+Port-forward the Service from the `document-search` namespace while you stay in this step folder:
 
 ```bash
 kubectl port-forward -n document-search svc/document-search 8501:8501

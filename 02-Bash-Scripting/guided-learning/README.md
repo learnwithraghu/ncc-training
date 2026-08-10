@@ -28,7 +28,7 @@ The engineer-facing lab scenarios live separately in `../labs/` so the guided le
 - Topic 06 - Functions and Arguments
 - Topic 07 - Sample Files and Backup Setup
 - Topic 08 - Backup Script Build
-- Topic 09 - Reporting and Log Analysis
+- Topic 09 - Reporting, Processes, and Email
 - Topic 10 - Menu-Driven Automation Challenge
 - Topic 11 - Script Arguments and Usage Hints
 - Topic 12 - Case Statements and Menu Routing

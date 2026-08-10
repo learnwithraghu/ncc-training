@@ -3,56 +3,66 @@
 **Time:** 20 minutes
 
 ## Goal
-Build a Bash script that finds the top 10 processes and emails the report.
+Write a Bash script that takes an email address and sends a hello email.
 
-## Commands to Use
-Copy this into the file with `vi` or `nano`, then run it.
+## Script
+Create the script directly:
 
 ```bash
 cd ~/ncc-labs/day1
-cat > top10_process_email.sh <<'EOF'
+vi top10_process_email.sh
+```
+
+Paste this content:
+
+```bash
 #!/usr/bin/env bash
 set -euo pipefail
 
 TO_EMAIL="${1:?Usage: $0 recipient@example.com}"
 FROM_EMAIL="${FROM_EMAIL:-server@example.com}"
-SUBJECT="${SUBJECT:-Top 10 Processes Report}"
+SUBJECT="${SUBJECT:-Hello}"
 
-REPORT=$(ps -eo pid,ppid,user,%cpu,%mem,comm --sort=-%cpu | head -n 11)
+{
+  echo "Subject: ${SUBJECT}"
+  echo "To: ${TO_EMAIL}"
+  echo "From: ${FROM_EMAIL}"
+  echo "Content-Type: text/plain; charset=UTF-8"
+  echo
+  echo "Hello"
+} | sendmail -t
 
-BODY=$(cat <<EOM
-Subject: ${SUBJECT}
-To: ${TO_EMAIL}
-From: ${FROM_EMAIL}
-Content-Type: text/plain; charset=UTF-8
+echo "Hello email sent to ${TO_EMAIL}."
+```
 
-Top 10 Processes by CPU Usage
+Make it executable and run it:
 
-${REPORT}
-EOM
-)
-
-if command -v sendmail >/dev/null 2>&1; then
-  printf "%s\n" "$BODY" | sendmail -t
-  echo "Email sent using sendmail."
-else
-  echo "sendmail not found."
-  echo "On Alpine Linux, install a mail transfer agent such as postfix:"
-  echo "  sudo apk add postfix"
-  echo "Then enable and start it if needed."
-  exit 1
-fi
-EOF
+```bash
 chmod +x top10_process_email.sh
-./top10_process_email.sh recipient@example.com
+./top10_process_email.sh alice@example.com
+```
+
+## Install on Alpine Linux
+If `sendmail` is missing, install a mail transfer agent first:
+
+```bash
+sudo apk update
+sudo apk add postfix
+sudo rc-update add postfix default
+sudo rc-service postfix start
+```
+
+Check that `sendmail` exists after installation:
+
+```bash
+command -v sendmail
 ```
 
 ## Guided Steps
-1. Use `ps` to list running processes.
-2. Sort by CPU usage and keep the top 10 rows.
-3. Build an email body in a variable.
-4. Send the message with `sendmail`.
-5. If `sendmail` is missing on Alpine Linux, install a mail transfer agent first.
+1. Accept an email address as script input.
+2. Create a short hello message.
+3. Pipe the message to `sendmail`.
+4. Install `postfix` on Alpine Linux if `sendmail` is not available.
 
 ## Checkpoint
-Why is `head -n 11` used instead of `head -n 10`?
+Why is the email address passed as the first argument to the script?

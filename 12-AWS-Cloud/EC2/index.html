@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>F1 3D Showroom — Interactive Formula 1 Experience</title>
+<meta name="description" content="Interactive 3D Formula 1 car showroom with cinematic camera, real photo environments, engine sound and live telemetry." />
+<style>
+  :root{
+    --glass: rgba(11,15,22,.62);
+    --stroke: rgba(255,255,255,.10);
+    --accent:#ff2b2b;
+    --accent2:#00e5ff;
+    --txt:#e9eef6;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; background:#05070b; color:var(--txt); overflow:hidden;
+    font-family:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  canvas{display:block; width:100%; height:100%}
+  #app{position:fixed; inset:0}
+
+  /* ---------- LOADER ---------- */
+  #loader{position:fixed; inset:0; z-index:99; display:flex; flex-direction:column; align-items:center; justify-content:center;
+          background:radial-gradient(1200px 600px at 50% 40%,#141a26 0%,#05070b 70%); transition:opacity .8s ease}
+  #loader.hide{opacity:0; pointer-events:none}
+  .logo{font-weight:800; letter-spacing:.35em; font-size:clamp(28px,7vw,64px);
+        background:linear-gradient(90deg,#fff,#ff2b2b 60%,#00e5ff); -webkit-background-clip:text; background-clip:text; color:transparent}
+  .bar{width:min(420px,70vw); height:4px; border-radius:4px; background:rgba(255,255,255,.12); margin-top:26px; overflow:hidden}
+  .bar > i{display:block; height:100%; width:0%; background:linear-gradient(90deg,var(--accent),var(--accent2)); transition:width .3s}
+  #loader small{margin-top:14px; opacity:.6; letter-spacing:.2em; font-size:11px; text-transform:uppercase}
+
+  /* ---------- PANELS ---------- */
+  .panel{position:absolute; background:var(--glass); border:1px solid var(--stroke); border-radius:16px;
+         backdrop-filter:blur(16px) saturate(140%); -webkit-backdrop-filter:blur(16px) saturate(140%);
+         box-shadow:0 18px 50px rgba(0,0,0,.55); z-index:10}
+  #topbar{top:14px; left:14px; right:14px; display:flex; align-items:center; gap:14px; padding:10px 14px}
+  #topbar h1{margin:0; font-size:15px; letter-spacing:.22em; font-weight:800; text-transform:uppercase; white-space:nowrap}
+  #topbar h1 span{color:var(--accent)}
+  .chip{font-size:10px; letter-spacing:.16em; text-transform:uppercase; padding:5px 10px; border-radius:20px;
+        border:1px solid var(--stroke); background:rgba(255,255,255,.05); opacity:.85; white-space:nowrap}
+  .spacer{flex:1}
+
+  #side{top:74px; left:14px; width:286px; max-height:calc(100vh - 190px); overflow-y:auto; padding:14px}
+  #side::-webkit-scrollbar{width:6px} #side::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18); border-radius:4px}
+  .grp{margin-bottom:16px}
+  .grp h3{margin:0 0 9px; font-size:10px; letter-spacing:.22em; text-transform:uppercase; opacity:.55; font-weight:700}
+  .row{display:flex; gap:7px; flex-wrap:wrap}
+  button.btn{flex:1; min-width:62px; cursor:pointer; color:var(--txt); font-size:11px; letter-spacing:.06em;
+        padding:8px 9px; border-radius:9px; border:1px solid var(--stroke); background:rgba(255,255,255,.05);
+        transition:.18s; font-family:inherit}
+  button.btn:hover{background:rgba(255,255,255,.14); transform:translateY(-1px)}
+  button.btn.on{background:linear-gradient(135deg,var(--accent),#8a0e0e); border-color:transparent; font-weight:700}
+  .swatches{display:flex; gap:7px; flex-wrap:wrap}
+  .sw{width:30px; height:30px; border-radius:50%; cursor:pointer; border:2px solid rgba(255,255,255,.25); transition:.15s}
+  .sw:hover{transform:scale(1.14)}
+  label.rng{display:block; font-size:11px; opacity:.8; margin:10px 0 4px}
+  input[type=range]{width:100%; accent-color:var(--accent); height:20px}
+  input[type=text]{width:100%; padding:8px 10px; border-radius:9px; border:1px solid var(--stroke);
+                   background:rgba(0,0,0,.35); color:var(--txt); font-size:11px; font-family:inherit; margin-bottom:7px}
+  input[type=color]{width:100%; height:32px; border:1px solid var(--stroke); border-radius:9px; background:transparent; cursor:pointer}
+  #photoStatus{font-size:10.5px; opacity:.65; margin-top:6px; line-height:1.45}
+  .drop{border:1px dashed rgba(255,255,255,.2); border-radius:10px; padding:10px; text-align:center; font-size:10.5px; opacity:.7; cursor:pointer}
+  .drop:hover{background:rgba(255,255,255,.05)}
+
+  /* ---------- HUD ---------- */
+  #hud{top:74px; right:14px; width:196px; padding:14px; text-align:right}
+  #spd{font-size:46px; font-weight:800; line-height:.95; font-variant-numeric:tabular-nums}
+  #spd em{font-size:12px; font-style:normal; opacity:.55; letter-spacing:.2em; margin-left:5px}
+  .rpmwrap{height:7px; border-radius:6px; background:rgba(255,255,255,.1); overflow:hidden; margin:11px 0 5px}
+  #rpm{height:100%; width:10%; background:linear-gradient(90deg,#00e5ff,#7CFF00 55%,#ffb800 78%,#ff2b2b); transition:width .08s linear}
+  .hrow{display:flex; justify-content:space-between; font-size:10.5px; letter-spacing:.14em; opacity:.75; margin-top:6px; text-transform:uppercase}
+  .hrow b{font-weight:700; opacity:1}
+  #drsTag{color:#7CFF00}
+
+  /* ---------- TIMELINE ---------- */
+  #timeline{left:50%; transform:translateX(-50%); bottom:14px; width:min(880px, calc(100vw - 28px)); padding:11px 16px;
+            display:flex; align-items:center; gap:14px}
+  #playBtn{width:42px; height:42px; flex:0 0 42px; border-radius:50%; border:none; cursor:pointer; color:#fff; font-size:15px;
+           background:linear-gradient(135deg,var(--accent),#a10f0f); box-shadow:0 6px 20px rgba(255,43,43,.4)}
+  #playBtn:hover{filter:brightness(1.15)}
+  #scrub{flex:1; accent-color:var(--accent)}
+  #tcode{font-size:11px; opacity:.6; font-variant-numeric:tabular-nums; letter-spacing:.1em; white-space:nowrap}
+  #caption{position:absolute; left:50%; transform:translateX(-50%); bottom:84px; z-index:9; text-align:center;
+           font-size:clamp(11px,1.5vw,14px); letter-spacing:.28em; text-transform:uppercase; font-weight:700;
+           text-shadow:0 3px 18px #000; opacity:0; transition:opacity .6s; pointer-events:none; padding:0 20px}
+  #caption.show{opacity:.95}
+  .bars{position:fixed; left:0; right:0; height:0; background:#000; z-index:8; transition:height .6s cubic-bezier(.2,.8,.2,1); pointer-events:none}
+  .bars.t{top:0} .bars.b{bottom:0}
+  body.cinema .bars{height:8vh}
+  body.cinema #side, body.cinema #hud, body.cinema #topbar{opacity:0; pointer-events:none; transition:opacity .4s}
+  body.hideui .panel, body.hideui #caption{opacity:0!important; pointer-events:none}
+
+  #hint{position:absolute; left:14px; bottom:14px; font-size:10px; letter-spacing:.14em; opacity:.35; z-index:7; text-transform:uppercase}
+  @media (max-width:900px){
+    #side{width:246px; max-height:calc(100vh - 240px)}
+    #hud{width:150px} #spd{font-size:34px}
+    #topbar .chip{display:none}
+    #hint{display:none}
+  }
+</style>
+</head>
+<body>
+<div id="app"><canvas id="scene"></canvas></div>
+
+<!-- ============ LOADER ============ -->
+<div id="loader">
+  <div class="logo">F1&nbsp;3D</div>
+  <div class="bar"><i id="lbar"></i></div>
+  <small id="lmsg">Building the car…</small>
+</div>
+
+<div class="bars t"></div><div class="bars b"></div>
+<div id="caption"></div>
+
+<!-- ============ TOP BAR ============ -->
+<div class="panel" id="topbar">
+  <h1>F1<span>·</span>3D Showroom</h1>
+  <div class="chip">WebGL · Three.js</div>
+  <div class="chip">Drag to orbit · Scroll to zoom</div>
+  <div class="spacer"></div>
+  <button class="btn" id="uiBtn" style="max-width:90px">Hide UI</button>
+  <button class="btn" id="shotBtn" style="max-width:100px">📸 Snapshot</button>
+  <button class="btn" id="fsBtn" style="max-width:90px">⛶ Full</button>
+</div>
+
+<!-- ============ SIDE PANEL ============ -->
+<div class="panel" id="side">
+  <div class="grp">
+    <h3>Camera</h3>
+    <div class="row">
+      <button class="btn" data-cam="hero">Hero</button>
+      <button class="btn" data-cam="front">Front</button>
+      <button class="btn" data-cam="side">Side</button>
+    </div>
+    <div class="row" style="margin-top:7px">
+      <button class="btn" data-cam="rear">Rear</button>
+      <button class="btn" data-cam="cockpit">Cockpit</button>
+      <button class="btn" data-cam="wheel">Wheel</button>
+    </div>
+    <div class="row" style="margin-top:7px">
+      <button class="btn" data-cam="top">Top</button>
+      <button class="btn" id="spinBtn">Auto‑spin</button>
+    </div>
+  </div>
+
+  <div class="grp">
+    <h3>Livery</h3>
+    <div class="swatches" id="swatches"></div>
+    <label class="rng">Custom paint</label>
+    <input type="color" id="paint" value="#e10600" />
+  </div>
+
+  <div class="grp">
+    <h3>Drive</h3>
+    <label class="rng">Speed — <b id="spdLbl">210</b> km/h</label>
+    <input type="range" id="speed" min="0" max="340" value="210" />
+    <div class="row" style="margin-top:6px">
+      <button class="btn" id="drsBtn">DRS</button>
+      <button class="btn" id="sndBtn">🔊 Engine</button>
+    </div>
+    <div class="row" style="margin-top:7px">
+      <button class="btn" id="sparkBtn" class="on">Sparks</button>
+      <button class="btn" id="reflBtn">Reflections</button>
+    </div>
+  </div>
+
+  <div class="grp">
+    <h3>Environment</h3>
+    <div class="row">
+      <button class="btn" data-env="studio">Studio</button>
+      <button class="btn" data-env="track">Track</button>
+      <button class="btn" data-env="night">Night</button>
+      <button class="btn" data-env="sunset">Sunset</button>
+    </div>
+  </div>
+
+  <div class="grp">
+    <h3>Real photo backdrop</h3>
+    <div class="row">
+      <button class="btn" data-hdr="venice_sunset_1k">Venice</button>
+      <button class="btn" data-hdr="royal_esplanade_1k">Hall</button>
+      <button class="btn" data-hdr="quarry_01_1k">Quarry</button>
+    </div>
+    <input type="text" id="imgUrl" placeholder="Paste any image / HDR URL…" style="margin-top:8px"/>
+    <div class="row"><button class="btn" id="loadUrl">Load URL</button><button class="btn" id="clearBg">Reset</button></div>
+    <div class="drop" id="drop" style="margin-top:8px">⬆ Click or drop your own photo (jpg / png / hdr)</div>
+    <label class="rng">Backdrop blur</label>
+    <input type="range" id="blur" min="0" max="100" value="18" />
+    <div id="photoStatus">Uses the real photo both as the 360° background <b>and</b> as reflections on the bodywork.</div>
+  </div>
+</div>
+
+<!-- ============ HUD ============ -->
+<div class="panel" id="hud">
+  <div id="spd">210<em>KM/H</em></div>
+  <div class="rpmwrap"><div id="rpm"></div></div>
+  <div class="hrow"><span>RPM</span><b id="rpmTxt">10 400</b></div>
+  <div class="hrow"><span>Gear</span><b id="gear">6</b></div>
+  <div class="hrow"><span>DRS</span><b id="drsTag">CLOSED</b></div>
+  <div class="hrow"><span>Tyre</span><b>SOFT C4</b></div>
+  <div class="hrow"><span>Power</span><b>1000 HP</b></div>
+</div>
+
+<!-- ============ TIMELINE ============ -->
+<div class="panel" id="timeline">
+  <button id="playBtn">❚❚</button>
+  <input type="range" id="scrub" min="0" max="1000" value="0" />
+  <div id="tcode">00:00 / 00:28</div>
+  <button class="btn" id="cineBtn" style="max-width:110px">Cinema mode</button>
+</div>
+
+<div id="hint">Space play/pause · C camera · D drs · H hide UI · R reset</div>
+
+<!-- ============ THREE.JS ============ -->
+<script type="importmap">
+{ "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+}}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls }   from 'three/addons/controls/OrbitControls.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { Reflector }       from 'three/addons/objects/Reflector.js';
+import { RGBELoader }      from 'three/addons/loaders/RGBELoader.js';
+
+const L = {bar:document.getElementById('lbar'), msg:document.getElementById('lmsg'), el:document.getElementById('loader')};
+const prog = (p,m)=>{ L.bar.style.width = p+'%'; if(m) L.msg.textContent = m; };
+
+/* ══════════════════ RENDERER / SCENE / CAMERA ══════════════════ */
+const canvas   = document.getElementById('scene');
+const renderer = new THREE.WebGLRenderer({canvas, antialias:true, preserveDrawingBuffer:true, powerPreference:'high-performance'});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type    = THREE.PCFSoftShadowMap;
+renderer.toneMapping       = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+
+const scene  = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(42, innerWidth/innerHeight, 0.1, 500);
+camera.position.set(6.2, 2.3, 7.2);
+
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true; controls.dampingFactor = .055;
+controls.target.set(0,.6,0);
+controls.minDistance = 2.6; controls.maxDistance = 26;
+controls.maxPolarAngle = Math.PI*.495;
+controls.autoRotateSpeed = .8;
+
+/* ══════════════════ ENVIRONMENT LIGHTING (procedural, always works) ══════════════════ */
+prog(12,'Baking studio lighting…');
+const pmrem = new THREE.PMREMGenerator(renderer);
+const roomEnv = pmrem.fromScene(new RoomEnvironment(renderer), .04).texture;
+scene.environment = roomEnv;
+
+function gradientTexture(top, mid, bottom){
+  const c = document.createElement('canvas'); c.width = 4; c.height = 512;
+  const g = c.getContext('2d'), grd = g.createLinearGradient(0,0,0,512);
+  grd.addColorStop(0,top); grd.addColorStop(.55,mid); grd.addColorStop(1,bottom);
+  g.fillStyle = grd; g.fillRect(0,0,4,512);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+
+const hemi = new THREE.HemisphereLight(0xbfd8ff, 0x0a0c10, .55); scene.add(hemi);
+const key  = new THREE.DirectionalLight(0xffffff, 3.1);
+key.position.set(7,10,6); key.castShadow = true;
+key.shadow.mapSize.set(2048,2048);
+key.shadow.camera.near=1; key.shadow.camera.far=40;
+key.shadow.camera.left=-9; key.shadow.camera.right=9; key.shadow.camera.top=9; key.shadow.camera.bottom=-9;
+key.shadow.bias=-0.0008; key.shadow.radius=3;
+scene.add(key);
+const rim = new THREE.DirectionalLight(0x4fc8ff, 2.0); rim.position.set(-8,4,-7); scene.add(rim);
+const fill= new THREE.DirectionalLight(0xff5a4a, 1.1); fill.position.set(2,3,-9);  scene.add(fill);
+const spotL= new THREE.SpotLight(0xffffff, 60, 22, .55, .6, 1.6); spotL.position.set(0,9,0); scene.add(spotL);
+const underGlow = new THREE.PointLight(0x00e5ff, 0, 5); underGlow.position.set(0,.12,0); scene.add(underGlow);
+
+/* ══════════════════ GROUND : reflector + track ══════════════════ */
+prog(24,'Polishing the floor…');
+const reflector = new Reflector(new THREE.CircleGeometry(26,72), {
+  clipBias:.004, textureWidth:1024, textureHeight:1024, color:0x8a8a8a });
+reflector.rotation.x = -Math.PI/2; reflector.position.y = 0.001; scene.add(reflector);
+
+const gloss = new THREE.Mesh(new THREE.CircleGeometry(26,72),
+  new THREE.MeshStandardMaterial({color:0x090b10, roughness:.32, metalness:0, transparent:true, opacity:.74}));
+gloss.rotation.x = -Math.PI/2; gloss.position.y = .003; gloss.receiveShadow = true; scene.add(gloss);
+
+// procedural asphalt
+function asphaltTex(){
+  const c=document.createElement('canvas'); c.width=c.height=256; const g=c.getContext('2d');
+  g.fillStyle='#22252b'; g.fillRect(0,0,256,256);
+  for(let i=0;i<9000;i++){ const v=Math.random()*46|0; g.fillStyle=`rgba(${v+20},${v+22},${v+26},.6)`;
+    g.fillRect(Math.random()*256,Math.random()*256,1.6,1.6); }
+  const t=new THREE.CanvasTexture(c); t.wrapS=t.wrapT=THREE.RepeatWrapping; t.repeat.set(14,14);
+  t.colorSpace=THREE.SRGBColorSpace; t.anisotropy=8; return t;
+}
+function kerbTex(){
+  const c=document.createElement('canvas'); c.width=32; c.height=128; const g=c.getContext('2d');
+  for(let i=0;i<8;i++){ g.fillStyle = i%2 ? '#e8e8e8' : '#d81616'; g.fillRect(0,i*16,32,16); }
+  const t=new THREE.CanvasTexture(c); t.wrapS=t.wrapT=THREE.RepeatWrapping; t.repeat.set(1,30);
+  t.colorSpace=THREE.SRGBColorSpace; return t;
+}
+const asphalt = asphaltTex();
+const track = new THREE.Mesh(new THREE.PlaneGeometry(240,240),
+  new THREE.MeshStandardMaterial({map:asphalt, roughness:.92, metalness:.02}));
+track.rotation.x=-Math.PI/2; track.receiveShadow=true; track.visible=false; scene.add(track);
+
+const kerbMat = new THREE.MeshStandardMaterial({map:kerbTex(), roughness:.6});
+const kerbs = new THREE.Group(); kerbs.visible = false;
+[-5.6, 5.6].forEach(x=>{
+  const k = new THREE.Mesh(new THREE.BoxGeometry(.9,.07,120), kerbMat);
+  k.position.set(x,.035,0); k.receiveShadow=true; kerbs.add(k);
+});
+scene.add(kerbs);
+
+// soft contact shadow blob
+const blobC = document.createElement('canvas'); blobC.width=blobC.height=256;
+{ const g=blobC.getContext('2d'); const r=g.createRadialGradient(128,128,10,128,128,124);
+  r.addColorStop(0,'rgba(0,0,0,.85)'); r.addColorStop(.55,'rgba(0,0,0,.35)'); r.addColorStop(1,'rgba(0,0,0,0)');
+  g.fillStyle=r; g.fillRect(0,0,256,256); }
+const blob = new THREE.Mesh(new THREE.PlaneGeometry(6.4,3.4),
+  new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(blobC), transparent:true, opacity:.85, depthWrite:false}));
+blob.rotation.x=-Math.PI/2; blob.position.y=.006; scene.add(blob);
+
+/* ══════════════════ MATERIALS ══════════════════ */
+const paintMat  = new THREE.MeshPhysicalMaterial({color:0xe10600, metalness:.45, roughness:.22, clearcoat:1, clearcoatRoughness:.045});
+const accentMat = new THREE.MeshPhysicalMaterial({color:0xffffff, metalness:.3, roughness:.25, clearcoat:1});
+const carbonMat = new THREE.MeshPhysicalMaterial({color:0x15181e, metalness:.55, roughness:.42, clearcoat:.7, clearcoatRoughness:.25});
+const rubberMat = new THREE.MeshStandardMaterial({color:0x0c0d11, roughness:.94, metalness:.02});
+const metalMat  = new THREE.MeshStandardMaterial({color:0xc7ced6, metalness:1, roughness:.22});
+const darkMat   = new THREE.MeshStandardMaterial({color:0x05060a, roughness:.6, metalness:.3});
+const glassMat  = new THREE.MeshPhysicalMaterial({color:0x101820, metalness:.1, roughness:.05, transmission:.85, thickness:.4, transparent:true});
+const compoundMat = new THREE.MeshStandardMaterial({color:0xff2b2b, roughness:.5, emissive:0x330000});
+const brakeMat  = new THREE.MeshStandardMaterial({color:0x201a18, roughness:.55, emissive:0x000000});
+const lightMat  = new THREE.MeshStandardMaterial({color:0xff0000, emissive:0xff0000, emissiveIntensity:2.4});
+
+/* ══════════════════ GEOMETRY HELPERS ══════════════════ */
+function roundedRect(w,h,r){
+  const x=-w/2, y=-h/2, s=new THREE.Shape();
+  s.moveTo(x+r,y); s.lineTo(x+w-r,y); s.quadraticCurveTo(x+w,y,x+w,y+r);
+  s.lineTo(x+w,y+h-r); s.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  s.lineTo(x+r,y+h); s.quadraticCurveTo(x,y+h,x,y+h-r);
+  s.lineTo(x,y+r); s.quadraticCurveTo(x,y,x+r,y); return s;
+}
+function taperedSolid(w,h,r,depth,prof,steps=54){
+  const geo = new THREE.ExtrudeGeometry(roundedRect(w,h,r),
+    {depth, steps, bevelEnabled:true, bevelThickness:.03, bevelSize:.03, bevelSegments:2, curveSegments:10});
+  geo.translate(0,0,-depth/2);
+  if(prof){
+    const p = geo.attributes.position;
+    for(let i=0;i<p.count;i++){
+      const t = prof(p.getZ(i));
+      p.setX(i, p.getX(i)*t.x); p.setY(i, p.getY(i)*t.y + (t.o||0));
+    }
+    p.needsUpdate = true;
+  }
+  geo.computeVertexNormals(); return geo;
+}
+function tube(a,b,r,mat){
+  const dir = new THREE.Vector3().subVectors(b,a), len = dir.length();
+  const m = new THREE.Mesh(new THREE.CylinderGeometry(r,r,len,10), mat);
+  m.position.copy(a).add(b).multiplyScalar(.5);
+  m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0), dir.normalize());
+  m.castShadow = true; return m;
+}
+function box(w,h,d,mat,x=0,y=0,z=0,rx=0){
+  const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);
+  m.position.set(x,y,z); m.rotation.x=rx; m.castShadow=true; m.receiveShadow=true; return m;
+}
+function decalTexture(text,color='#ffffff'){
+  const c=document.createElement('canvas'); c.width=512; c.height=256; const g=c.getContext('2d');
+  g.clearRect(0,0,512,256);
+  g.fillStyle=color; g.font='bold 190px Inter, Arial'; g.textAlign='center'; g.textBaseline='middle';
+  g.fillText(text,256,132);
+  const t=new THREE.CanvasTexture(c); t.colorSpace=THREE.SRGBColorSpace; return t;
+}
+
+/* ══════════════════ THE CAR ══════════════════ */
+prog(42,'Assembling the monocoque…');
+const car = new THREE.Group(); scene.add(car);
+const S = 1;   // scale
+
+// ---- main body / monocoque ----
+const bodyProf = z=>{
+  const f = THREE.MathUtils.smoothstep(z, .2, 2.35);
+  const r = THREE.MathUtils.smoothstep(-z, .7, 2.45);
+  return { x: 1-.74*f-.42*r, y: 1-.52*f-.30*r, o: -.055*f-.02*r };
+};
+const body = new THREE.Mesh(taperedSolid(1.02,.56,.19,5.0,bodyProf), paintMat);
+body.position.set(0,.44,0); body.castShadow=true; body.receiveShadow=true; car.add(body);
+
+// nose tip
+const tip = new THREE.Mesh(new THREE.SphereGeometry(.14,24,16), paintMat);
+tip.scale.set(1,.75,1.8); tip.position.set(0,.375,2.52); car.add(tip);
+
+// ---- sidepods ----
+const podProf = z=>{
+  const f = THREE.MathUtils.smoothstep(z,.45,1.12);
+  const r = THREE.MathUtils.smoothstep(-z,-.25,1.12);
+  return { x: 1-.12*f-.78*r, y: 1-.08*f-.58*r, o: -.03*r };
+};
+[-1,1].forEach(s=>{
+  const pod = new THREE.Mesh(taperedSolid(.56,.5,.16,2.25,podProf,44), paintMat);
+  pod.position.set(.585*s,.38,-.25); pod.castShadow=true; car.add(pod);
+  // intake mouth
+  const mouth = new THREE.Mesh(new THREE.BoxGeometry(.42,.3,.1), darkMat);
+  mouth.position.set(.585*s,.4,.83); car.add(mouth);
+  // bargeboard
+  const bb = box(.02,.3,.7,carbonMat,.79*s,.28,1.05); bb.rotation.y = .12*s; car.add(bb);
+  // mirror
+  car.add(box(.16,.06,.1,paintMat,.42*s,.76,.92));
+  car.add(tube(new THREE.Vector3(.2*s,.7,.86), new THREE.Vector3(.4*s,.75,.9), .015, carbonMat));
+});
+
+// ---- floor & diffuser ----
+car.add(box(1.55,.05,4.3,carbonMat,0,.075,-.15));
+const diff = new THREE.Mesh(taperedSolid(1.35,.3,.08,.75,z=>({x:1+.06*z,y:1,o:0}),16), darkMat);
+diff.position.set(0,.2,-2.25); car.add(diff);
+
+// ---- engine cover + shark fin ----
+const coverProf = z=>{
+  const r = THREE.MathUtils.smoothstep(-z,-.6,1.25);
+  const f = THREE.MathUtils.smoothstep(z,.6,1.25);
+  return { x: 1-.72*r-.25*f, y: 1-.55*r-.2*f, o:-.03*r };
+};
+const cover = new THREE.Mesh(taperedSolid(.72,.62,.22,2.5,coverProf,48), paintMat);
+cover.position.set(0,.62,-1.0); cover.castShadow=true; car.add(cover);
+const fin = new THREE.Mesh(new THREE.BoxGeometry(.02,.34,1.5), accentMat);
+fin.position.set(0,.86,-1.45); fin.castShadow=true; car.add(fin);
+
+// ---- airbox ----
+const airbox = new THREE.Mesh(taperedSolid(.42,.4,.15,1.0,z=>({x:1-.35*THREE.MathUtils.smoothstep(-z,-.4,.5),y:1-.3*THREE.MathUtils.smoothstep(-z,-.4,.5),o:0}),22), paintMat);
+airbox.position.set(0,.95,-.28); airbox.castShadow=true; car.add(airbox);
+const intake = new THREE.Mesh(new THREE.CylinderGeometry(.15,.15,.12,24), darkMat);
+intake.rotation.x = Math.PI/2; intake.position.set(0,.97,.2); car.add(intake);
+
+// ---- cockpit + halo + driver ----
+car.add(box(.52,.22,.95,darkMat,0,.69,.5));
+const halo = new THREE.Mesh(new THREE.TorusGeometry(.4,.036,14,44,Math.PI), carbonMat);
+halo.position.set(0,.7,.55); halo.castShadow=true; car.add(halo);
+car.add(tube(new THREE.Vector3(0,1.09,.55), new THREE.Vector3(0,.78,1.22), .034, carbonMat));
+const helmet = new THREE.Mesh(new THREE.SphereGeometry(.16,26,20), accentMat);
+helmet.position.set(0,.80,.42); helmet.scale.set(1,1.05,1.12); helmet.castShadow=true; car.add(helmet);
+const visor = new THREE.Mesh(new THREE.SphereGeometry(.161,26,20,Math.PI*.15,Math.PI*.7,Math.PI*.36,Math.PI*.24), glassMat);
+visor.position.copy(helmet.position); visor.scale.copy(helmet.scale); visor.rotation.y=Math.PI/2; car.add(visor);
+
+// ---- front wing ----
+const fw = new THREE.Group(); fw.position.set(0,0,2.68); car.add(fw);
+fw.add(box(1.94,.028,.46,carbonMat,0,.085,0,.1));
+fw.add(box(1.9 ,.026,.30,paintMat ,0,.185,-.05,.32));
+fw.add(box(1.86,.024,.22,accentMat,0,.275,-.11,.5));
+[-1,1].forEach(s=>{
+  const ep = box(.03,.34,.6,accentMat,.96*s,.2,-.02); ep.rotation.z = .07*s; fw.add(ep);
+  fw.add(tube(new THREE.Vector3(.12*s,.10,.06), new THREE.Vector3(.09*s,.33,-.35), .02, carbonMat));
+});
+
+// ---- rear wing ----
+const rw = new THREE.Group(); rw.position.set(0,0,-2.42); car.add(rw);
+rw.add(box(1.02,.035,.36,carbonMat,0,.88,0,-.26));
+const drsPivot = new THREE.Group(); drsPivot.position.set(0,1.03,-.08); rw.add(drsPivot);
+const drsFlap = box(1.02,.032,.24,paintMat,0,0,-.1); drsPivot.add(drsFlap);
+drsPivot.rotation.x = -.34;
+[-1,1].forEach(s=>{
+  const ep = box(.028,.56,.62,paintMat,.51*s,.86,-.03); rw.add(ep);
+  const stripe = box(.032,.1,.62,accentMat,.51*s,1.05,-.03); rw.add(stripe);
+});
+rw.add(box(.92,.03,.18,carbonMat,0,.5,-.06,-.16));
+rw.add(tube(new THREE.Vector3(0,.16,-.02), new THREE.Vector3(0,.86,-.02), .035, carbonMat));
+const rearLight = box(.09,.09,.05,lightMat,0,.55,-.16); rw.add(rearLight);
+
+// ---- exhaust ----
+const exh = new THREE.Mesh(new THREE.CylinderGeometry(.075,.09,.28,18), metalMat);
+exh.rotation.x = Math.PI/2; exh.position.set(0,.58,-2.42); car.add(exh);
+
+// ---- decals ----
+function decal(text,w,h,x,y,z,ry=0,rx=0,color='#fff'){
+  const m = new THREE.Mesh(new THREE.PlaneGeometry(w,h),
+    new THREE.MeshBasicMaterial({map:decalTexture(text,color), transparent:true, depthWrite:false, side:THREE.DoubleSide}));
+  m.position.set(x,y,z); m.rotation.set(rx,ry,0); car.add(m); return m;
+}
+decal('16',.34,.17,0,.505,1.55,0,-Math.PI/2);
+decal('16',.28,.14,.31,.63,-.9,Math.PI/2);
+decal('16',.28,.14,-.31,.63,-.9,-Math.PI/2);
+
+// ---- wheels ----
+const wheels = [];
+function makeWheel(radius,width,front){
+  const steer = new THREE.Group();
+  const spin  = new THREE.Group(); steer.add(spin);
+  const tire = new THREE.Mesh(new THREE.CylinderGeometry(radius,radius,width,44,1), rubberMat);
+  tire.rotation.z = Math.PI/2; tire.castShadow = true; spin.add(tire);
+  [-1,1].forEach(s=>{
+    const band = new THREE.Mesh(new THREE.TorusGeometry(radius*.9,.016,8,44), compoundMat);
+    band.rotation.y = Math.PI/2; band.position.x = s*width*.49; spin.add(band);
+  });
+  const rim = new THREE.Mesh(new THREE.CylinderGeometry(radius*.66,radius*.66,width*.92,32), metalMat);
+  rim.rotation.z = Math.PI/2; spin.add(rim);
+  for(let i=0;i<7;i++){
+    const sp = new THREE.Mesh(new THREE.BoxGeometry(width*.9,.05,radius*1.2), darkMat);
+    sp.rotation.x = i*Math.PI/7; spin.add(sp);
+  }
+  const disc = new THREE.Mesh(new THREE.CylinderGeometry(radius*.56,radius*.56,.05,28), brakeMat);
+  disc.rotation.z = Math.PI/2; steer.add(disc);
+  const cover = new THREE.Mesh(new THREE.CircleGeometry(radius*.63,32), metalMat);
+  cover.rotation.y = Math.PI/2; cover.position.x = width*.5; spin.add(cover);
+  steer.userData = {spin, radius, front, disc};
+  wheels.push(steer.userData); return steer;
+}
+const wheelPos = [[ .80,1.72,.34,.34,true],[-.80,1.72,.34,.34,true],[ .84,-1.74,.36,.44,false],[-.84,-1.74,.36,.44,false]];
+wheelPos.forEach(([x,z,r,w,front])=>{
+  const wh = makeWheel(r,w,front); wh.position.set(x,r,z); car.add(wh);
+  const sgn = Math.sign(x);
+  // suspension wishbones
+  car.add(tube(new THREE.Vector3(sgn*.3,.30,z+.28), new THREE.Vector3(x-sgn*.12,r-.06,z), .022, carbonMat));
+  car.add(tube(new THREE.Vector3(sgn*.3,.30,z-.28), new THREE.Vector3(x-sgn*.12,r-.06,z), .022, carbonMat));
+  car.add(tube(new THREE.Vector3(sgn*.3,.58,z+.20), new THREE.Vector3(x-sgn*.12,r+.10,z), .019, carbonMat));
+  car.add(tube(new THREE.Vector3(sgn*.3,.58,z-.20), new THREE.Vector3(x-sgn*.12,r+.10,z), .019, carbonMat));
+});
+
+/* ══════════════════ SPARKS ══════════════════ */
+const SP = 220;
+const spGeo = new THREE.BufferGeometry();
+const spPos = new Float32Array(SP*3), spVel = new Float32Array(SP*3), spLife = new Float32Array(SP);
+for(let i=0;i<SP;i++) spLife[i] = Math.random();
+spGeo.setAttribute('position', new THREE.BufferAttribute(spPos,3));
+const sparks = new THREE.Points(spGeo, new THREE.PointsMaterial({
+  color:0xffb347, size:.055, transparent:true, opacity:.95, blending:THREE.AdditiveBlending, depthWrite:false}));
+scene.add(sparks);
+function resetSpark(i){
+  spPos[i*3]   = (Math.random()-.5)*1.1;
+  spPos[i*3+1] = .05;
+  spPos[i*3+2] = -1.6 - Math.random()*.9;
+  spVel[i*3]   = (Math.random()-.5)*1.4;
+  spVel[i*3+1] = Math.random()*1.6+.4;
+  spVel[i*3+2] = -3.5 - Math.random()*5;
+  spLife[i]    = .35 + Math.random()*.5;
+}
+
+/* ══════════════════ ENGINE SOUND (WebAudio) ══════════════════ */
+let ac=null, oscA=null, oscB=null, gain=null, lp=null, soundOn=false;
+function initAudio(){
+  ac = new (window.AudioContext||window.webkitAudioContext)();
+  gain = ac.createGain(); gain.gain.value = 0;
+  lp = ac.createBiquadFilter(); lp.type='lowpass'; lp.frequency.value=2400; lp.Q.value=3;
+  const dist = ac.createWaveShaper();
+  const cur = new Float32Array(1024);
+  for(let i=0;i<1024;i++){ const x=i/512-1; cur[i]=Math.tanh(x*2.6); }
+  dist.curve = cur;
+  oscA = ac.createOscillator(); oscA.type='sawtooth';
+  oscB = ac.createOscillator(); oscB.type='square'; oscB.detune.value = 8;
+  const gB = ac.createGain(); gB.gain.value = .35;
+  oscA.connect(lp); oscB.connect(gB); gB.connect(lp);
+  lp.connect(dist); dist.connect(gain); gain.connect(ac.destination);
+  oscA.start(); oscB.start();
+}
+
+/* ══════════════════ STATE ══════════════════ */
+const state = { speed:210, drs:false, sparks:true, autoRotate:false, cinema:false };
+let tween=null, groundScroll=0;
+const clock = new THREE.Clock();
+
+/* ══════════════════ CINEMATIC PATH ══════════════════ */
+const shots = [
+  {p:[ 6.2, 2.3, 7.2], l:[0,.6,  .2], cap:'F1 3D SHOWROOM — Full carbon fibre monocoque'},
+  {p:[ 2.6, .45, 5.4], l:[0,.35, 1.9], cap:'FRONT WING — 4 elements · 2 tonnes of downforce'},
+  {p:[-2.4, .55, 3.1], l:[-.5,.4, 1.7], cap:'18-INCH SLICKS — surface up to 110 °C'},
+  {p:[-1.7, 1.55, .4], l:[0,.78,  .45], cap:'HALO — withstands 12 tonnes, ~15 kg titanium'},
+  {p:[-2.1, 1.15,-3.3], l:[0,.85,-2.2], cap:'REAR WING — DRS opens on the straights'},
+  {p:[  .1, .55,-5.0], l:[0,.62,-2.1], cap:'DIFFUSER — ground-effect venturi floor'},
+  {p:[ 3.9, .95,-3.1], l:[0,.6, -1.1], cap:'POWER UNIT — 1.6 L V6 turbo hybrid · 1000 hp'},
+  {p:[ 4.6, .35, 1.6], l:[0,.5,   .4], cap:'0–100 KM/H IN 2.6 s · TOP SPEED 360 KM/H'},
+  {p:[ 7.4, 3.0, 6.4], l:[0,.55,  0 ], cap:'LIGHTS OUT AND AWAY WE GO'}
+];
+const camPath  = new THREE.CatmullRomCurve3(shots.map(s=>new THREE.Vector3(...s.p)), false, 'catmullrom', .35);
+const lookPath = new THREE.CatmullRomCurve3(shots.map(s=>new THREE.Vector3(...s.l)), false, 'catmullrom', .35);
+const cine = { t:0, dur:28, playing:true };
+
+const capEl = document.getElementById('caption');
+let lastCap = -1;
+function applyCine(u){
+  u = THREE.MathUtils.clamp(u,0,.9999);
+  const p = camPath.getPointAt(u), l = lookPath.getPointAt(u);
+  const t = clock.elapsedTime;
+  camera.position.set(p.x + Math.sin(t*.9)*.02, p.y + Math.sin(t*1.3)*.015, p.z + Math.cos(t*.7)*.02);
+  camera.lookAt(l); controls.target.copy(l);
+  const idx = Math.min(shots.length-1, Math.floor(u*shots.length));
+  if(idx !== lastCap){
+    lastCap = idx; capEl.classList.remove('show');
+    setTimeout(()=>{ capEl.textContent = shots[idx].cap; capEl.classList.add('show'); },220);
+  }
+  scrub.value = u*1000;
+  const cur = u*cine.dur;
+  tcode.textContent = `${fmt(cur)} / ${fmt(cine.dur)}`;
+}
+const fmt = s => `${String(Math.floor(s/60)).padStart(2,'0')}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+
+/* ══════════════════ UI WIRING ══════════════════ */
+const $ = id => document.getElementById(id);
+const scrub=$('scrub'), tcode=$('tcode'), playBtn=$('playBtn');
+
+playBtn.onclick = ()=> setPlay(!cine.playing);
+function setPlay(v){
+  cine.playing = v; playBtn.innerHTML = v ? '❚❚' : '▶';
+  controls.enabled = !v;
+  if(!v) capEl.classList.remove('show');
+}
+scrub.oninput = ()=>{ setPlay(false); cine.t = (scrub.value/1000)*cine.dur; applyCine(scrub.value/1000); };
+
+$('cineBtn').onclick = e=>{
+  state.cinema = !state.cinema;
+  document.body.classList.toggle('cinema', state.cinema);
+  e.target.classList.toggle('on', state.cinema);
+  if(state.cinema) setPlay(true);
+};
+
+// camera presets
+const cams = {
+  hero:   [[6.2,2.3,7.2],[0,.6,.2]],
+  front:  [[0.2,1.0,7.4],[0,.45,1.4]],
+  side:   [[8.4,1.1,0.2],[0,.55,0]],
+  rear:   [[0.4,1.4,-7.2],[0,.7,-1.6]],
+  cockpit:[[0.0,1.35,1.55],[0,.75,-3]],
+  wheel:  [[2.1,0.42,3.1],[.75,.34,1.7]],
+  top:    [[0.01,9.5,0.02],[0,.4,0]]
+};
+document.querySelectorAll('[data-cam]').forEach(b=> b.onclick = ()=>{
+  setPlay(false); document.body.classList.remove('cinema'); state.cinema=false;
+  $('cineBtn').classList.remove('on');
+  const [p,t] = cams[b.dataset.cam];
+  flyTo(new THREE.Vector3(...p), new THREE.Vector3(...t));
+});
+function flyTo(p,t,d=1.25){ tween={f:camera.position.clone(),t2:p,ft:controls.target.clone(),tt:t,d,e:0}; }
+
+$('spinBtn').onclick = e=>{ state.autoRotate=!state.autoRotate; controls.autoRotate=state.autoRotate; e.target.classList.toggle('on',state.autoRotate); if(state.autoRotate) setPlay(false); };
+
+// liveries
+const liveries = [
+  ['#e10600','#ffffff','Ferrari red'], ['#ff8000','#0f1923','McLaren papaya'],
+  ['#c6cdd4','#00d2be','Silver arrow'], ['#0a1a4f','#ff1e00','Energy navy'],
+  ['#00a19c','#f4dc00','Petronas'],     ['#00594f','#cedc00','British green'],
+  ['#ff1493','#0b0b0b','Neon pink'],    ['#101418','#c9a227','Stealth gold']
+];
+const swWrap = $('swatches');
+liveries.forEach(([c,a,name])=>{
+  const d=document.createElement('div'); d.className='sw'; d.title=name;
+  d.style.background=`linear-gradient(135deg,${c} 60%,${a} 60%)`;
+  d.onclick=()=>{ paintMat.color.set(c); accentMat.color.set(a); $('paint').value=c; };
+  swWrap.appendChild(d);
+});
+$('paint').oninput = e => paintMat.color.set(e.target.value);
+
+// drive controls
+$('speed').oninput = e=>{ state.speed = +e.target.value; $('spdLbl').textContent = state.speed; };
+$('drsBtn').onclick = e=>{ state.drs=!state.drs; e.target.classList.toggle('on',state.drs); };
+$('sparkBtn').onclick = e=>{ state.sparks=!state.sparks; sparks.visible=state.sparks; e.target.classList.toggle('on',state.sparks); };
+$('sparkBtn').classList.add('on');
+$('reflBtn').classList.add('on');
+$('reflBtn').onclick = e=>{ reflector.visible=!reflector.visible; e.target.classList.toggle('on',reflector.visible); };
+$('sndBtn').onclick = e=>{
+  if(!ac) initAudio();
+  ac.resume(); soundOn = !soundOn; e.target.classList.toggle('on',soundOn);
+};
+
+// environments
+const envs = {
+  studio: ()=>{ scene.background = gradientTexture('#151b26','#0a0d14','#04060a'); scene.fog=null;
+    hemi.intensity=.55; key.intensity=3.1; rim.color.set(0x4fc8ff); rim.intensity=2.0; fill.color.set(0xff5a4a);
+    spotL.intensity=60; underGlow.intensity=0;
+    reflector.visible=true; gloss.visible=true; track.visible=false; kerbs.visible=false; blob.visible=true; },
+  track: ()=>{ scene.background = gradientTexture('#8fc3ff','#cfe4ff','#e9f2ff'); scene.fog=new THREE.Fog(0xcfe4ff,45,180);
+    hemi.intensity=1.1; key.intensity=3.6; rim.color.set(0xffffff); rim.intensity=.8; fill.color.set(0xffffff); fill.intensity=.5;
+    spotL.intensity=0; underGlow.intensity=0;
+    reflector.visible=false; gloss.visible=false; track.visible=true; kerbs.visible=true; blob.visible=true; },
+  night: ()=>{ scene.background = gradientTexture('#05070f','#04050a','#000000'); scene.fog=new THREE.FogExp2(0x03040a,.012);
+    hemi.intensity=.15; key.intensity=.5; rim.color.set(0x00e5ff); rim.intensity=4.5; fill.color.set(0xff1e5a); fill.intensity=3.4;
+    spotL.intensity=90; underGlow.intensity=9;
+    reflector.visible=true; gloss.visible=true; track.visible=false; kerbs.visible=false; blob.visible=true; },
+  sunset: ()=>{ scene.background = gradientTexture('#1b2a4a','#f0763a','#ffce7a'); scene.fog=new THREE.Fog(0xf0a060,50,200);
+    hemi.intensity=.7; key.intensity=3.4; key.color.set(0xffb066); rim.color.set(0x6699ff); rim.intensity=1.6;
+    fill.color.set(0xff7a3a); fill.intensity=1.6; spotL.intensity=0; underGlow.intensity=0;
+    reflector.visible=false; gloss.visible=false; track.visible=true; kerbs.visible=true; blob.visible=true; }
+};
+document.querySelectorAll('[data-env]').forEach(b=> b.onclick=()=>{
+  document.querySelectorAll('[data-env]').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); key.color.set(0xffffff); envs[b.dataset.env]();
+});
+envs.studio(); document.querySelector('[data-env="studio"]').classList.add('on');
+
+/* ---------- REAL PHOTO BACKDROP ---------- */
+const status = $('photoStatus');
+const rgbe = new RGBELoader(); rgbe.setCrossOrigin('anonymous');
+const texLoader = new THREE.TextureLoader(); texLoader.setCrossOrigin('anonymous');
+
+function applyPhoto(tex, hdr){
+  tex.mapping = THREE.EquirectangularReflectionMapping;
+  if(!hdr) tex.colorSpace = THREE.SRGBColorSpace;
+  scene.background = tex; scene.environment = tex;
+  scene.backgroundBlurriness = $('blur').value/100;
+  scene.fog = null;
+  status.innerHTML = '✅ Real photo loaded — it now lights &amp; reflects on the car.';
+}
+function loadPhoto(url){
+  status.textContent = 'Loading photo…';
+  const hdr = /\.hdr(\?|$)/i.test(url);
+  const loader = hdr ? rgbe : texLoader;
+  loader.load(url, t=>applyPhoto(t,hdr),
+    undefined,
+    ()=> status.innerHTML = '⚠️ Could not load that URL (offline or blocked by CORS).<br>Tip: upload a photo from your computer instead.');
+}
+document.querySelectorAll('[data-hdr]').forEach(b=> b.onclick = ()=>
+  loadPhoto(`https://threejs.org/examples/textures/equirectangular/${b.dataset.hdr}.hdr`));
+$('loadUrl').onclick = ()=>{ const u=$('imgUrl').value.trim(); if(u) loadPhoto(u); };
+$('clearBg').onclick = ()=>{ scene.environment = roomEnv; envs.studio(); status.textContent='Reset to procedural studio.'; };
+$('blur').oninput = e=> scene.backgroundBlurriness = e.target.value/100;
+
+const fileIn = document.createElement('input'); fileIn.type='file'; fileIn.accept='image/*,.hdr';
+$('drop').onclick = ()=> fileIn.click();
+fileIn.onchange = e=> e.target.files[0] && loadFile(e.target.files[0]);
+function loadFile(f){ loadPhoto(URL.createObjectURL(f) + (/\.hdr$/i.test(f.name)?'#.hdr':'')); }
+['dragover','drop'].forEach(ev=> document.addEventListener(ev, e=>{ e.preventDefault();
+  if(ev==='drop' && e.dataTransfer.files[0]){
+    const f = e.dataTransfer.files[0];
+    const url = URL.createObjectURL(f);
+    const hdr = /\.hdr$/i.test(f.name);
+    (hdr?rgbe:texLoader).load(url, t=>applyPhoto(t,hdr), undefined, ()=>status.textContent='⚠️ Unsupported file.');
+  }
+}));
+
+/* ---------- top bar utils ---------- */
+$('shotBtn').onclick = ()=>{
+  renderer.render(scene,camera);
+  const a=document.createElement('a'); a.download='f1-showroom.png'; a.href=canvas.toDataURL('image/png'); a.click();
+};
+$('fsBtn').onclick = ()=> document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+$('uiBtn').onclick = ()=> document.body.classList.toggle('hideui');
+
+addEventListener('keydown', e=>{
+  if(e.target.tagName==='INPUT') return;
+  const k = e.key.toLowerCase();
+  if(k===' '){ e.preventDefault(); setPlay(!cine.playing); }
+  if(k==='h') document.body.classList.toggle('hideui');
+  if(k==='d') $('drsBtn').click();
+  if(k==='r'){ setPlay(false); flyTo(new THREE.Vector3(6.2,2.3,7.2), new THREE.Vector3(0,.6,.2)); }
+  if(k==='c'){ const keys=Object.keys(cams); const n=keys[(Math.random()*keys.length)|0]; document.querySelector(`[data-cam="${n}"]`).click(); }
+});
+
+/* ══════════════════ RESIZE ══════════════════ */
+addEventListener('resize', ()=>{
+  camera.aspect = innerWidth/innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+});
+
+/* ══════════════════ MAIN LOOP ══════════════════ */
+prog(80,'Warming the tyres…');
+const spdEl=$('spd'), rpmEl=$('rpm'), rpmTxt=$('rpmTxt'), gearEl=$('gear'), drsTag=$('drsTag');
+
+function animate(){
+  requestAnimationFrame(animate);
+  const dt = Math.min(clock.getDelta(), .05), t = clock.elapsedTime;
+  const v  = state.speed / 3.6;                      // m/s
+
+  // wheels + steering + body motion
+  wheels.forEach(w=>{
+    w.spin.rotation.x -= (v/w.radius)*dt;
+    w.disc.material.emissive.setHex(0x000000);
+  });
+  const steerAng = Math.sin(t*.45)*.10*(state.speed>0?1:0);
+  car.children.forEach(()=>{});
+  wheels.filter(w=>w.front).forEach(w=> w.spin.parent.rotation.y = steerAng);
+  car.rotation.z = Math.sin(t*.45)*.012;
+  car.rotation.x = Math.sin(t*1.7)*.004 + (state.speed/340)*.006;
+  car.position.y = Math.sin(t*11)*.0035*(state.speed/340);
+
+  // DRS
+  const drsTarget = state.drs ? -1.32 : -.34;
+  drsPivot.rotation.x += (drsTarget - drsPivot.rotation.x)*Math.min(1,dt*6);
+  rearLight.material.emissiveIntensity = state.drs ? 3.4 : (1.6+Math.sin(t*9)*.6);
+
+  // scrolling ground
+  if(track.visible){
+    groundScroll += v*dt*.07;
+    asphalt.offset.y = -groundScroll;
+    kerbMat.map.offset.y = -groundScroll*2.1;
+  }
+
+  // sparks
+  if(state.sparks && state.speed>90){
+    for(let i=0;i<SP;i++){
+      spLife[i] -= dt;
+      if(spLife[i]<=0){ resetSpark(i); continue; }
+      spPos[i*3]   += spVel[i*3]*dt;
+      spPos[i*3+1] += spVel[i*3+1]*dt;
+      spPos[i*3+2] += spVel[i*3+2]*dt*(state.speed/240);
+      spVel[i*3+1] -= 5.5*dt;
+      if(spPos[i*3+1]<.02){ spPos[i*3+1]=.02; spVel[i*3+1]*=-.35; }
+    }
+    spGeo.attributes.position.needsUpdate = true;
+    sparks.visible = true;
+  } else sparks.visible = false;
+
+  // telemetry
+  const gear = state.speed<1?0:Math.min(8, Math.max(1, Math.ceil(state.speed/44)));
+  const rpm  = state.speed<1 ? 3500 : 5200 + (state.speed%44)/44*7300 + Math.sin(t*20)*180;
+  spdEl.innerHTML = Math.round(state.speed) + '<em>KM/H</em>';
+  rpmEl.style.width = Math.min(100,(rpm/13000)*100) + '%';
+  rpmTxt.textContent = Math.round(rpm).toLocaleString('en-US').replace(/,/g,' ');
+  gearEl.textContent = gear===0 ? 'N' : gear;
+  drsTag.textContent = state.drs ? 'OPEN' : 'CLOSED';
+  drsTag.style.color = state.drs ? '#7CFF00' : '#ff6b6b';
+
+  // engine audio
+  if(ac && gain){
+    const target = soundOn ? .075 : 0;
+    gain.gain.value += (target - gain.gain.value)*Math.min(1,dt*4);
+    const f = 42 + (rpm/60)*3;
+    oscA.frequency.value = f; oscB.frequency.value = f*.5;
+    lp.frequency.value = 700 + (rpm/13000)*4200;
+  }
+  underGlow.position.set(0,.12,0);
+
+  // camera
+  if(cine.playing){
+    cine.t += dt;
+    if(cine.t > cine.dur) cine.t = 0;
+    applyCine(cine.t/cine.dur);
+  } else {
+    if(tween){
+      tween.e += dt;
+      const k = Math.min(tween.e/tween.d,1);
+      const s = k<.5 ? 2*k*k : 1-Math.pow(-2*k+2,2)/2;
+      camera.position.lerpVectors(tween.f, tween.t2, s);
+      controls.target.lerpVectors(tween.ft, tween.tt, s);
+      if(k>=1) tween=null;
+    }
+    controls.update();
+  }
+
+  renderer.render(scene, camera);
+}
+animate();
+
+/* ══════════════════ READY ══════════════════ */
+prog(100,'Lights out!');
+setTimeout(()=>{ L.el.classList.add('hide'); setTimeout(()=>L.el.remove(),900); }, 700);
+</script>
+</body>
+</html>

@@ -6,6 +6,8 @@
 Create and run your first Bash script.
 
 ## Commands to Use
+Copy this into the file with `vi` or `nano`, then run it.
+
 ```bash
 cd ~/ncc-labs/day1
 touch hello.sh

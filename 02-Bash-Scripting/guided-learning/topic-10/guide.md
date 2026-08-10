@@ -6,9 +6,10 @@
 Combine your Bash skills into one interactive script.
 
 ## Commands to Use
+Copy this into the file with `vi` or `nano`, then run it.
+
 ```bash
 cd ~/ncc-labs/day1
-cat > backup_menu.sh << 'EOF'
 #!/bin/bash
 
 while true; do
@@ -27,7 +28,6 @@ while true; do
     *) echo "Invalid option" ;;
   esac
 done
-EOF
 chmod +x backup_menu.sh
 ./backup_menu.sh
 ```

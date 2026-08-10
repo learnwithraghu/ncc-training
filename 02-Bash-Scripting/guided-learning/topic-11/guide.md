@@ -6,9 +6,10 @@
 Read command-line arguments and show helpful usage output.
 
 ## Commands to Use
+Copy this into the file with `vi` or `nano`, then run it.
+
 ```bash
 cd ~/ncc-labs/day1
-cat > args_demo.sh << 'EOF'
 #!/bin/bash
 
 if [ $# -lt 2 ]; then
@@ -19,7 +20,6 @@ fi
 echo "Script name: $0"
 echo "First argument: $1"
 echo "Second argument: $2"
-EOF
 chmod +x args_demo.sh
 ./args_demo.sh apple banana
 ```

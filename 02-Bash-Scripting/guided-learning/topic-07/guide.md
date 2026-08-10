@@ -6,6 +6,8 @@
 Create the sample files used by the backup script.
 
 ## Commands to Use
+Copy this into the file with `vi` or `nano`, then run it.
+
 ```bash
 cd ~/ncc-labs/day1
 mkdir -p logs

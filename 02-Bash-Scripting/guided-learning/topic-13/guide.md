@@ -6,9 +6,10 @@
 Store multiple values in an array and loop over them.
 
 ## Commands to Use
+Copy this into the file with `vi` or `nano`, then run it.
+
 ```bash
 cd ~/ncc-labs/day1
-cat > array_demo.sh << 'EOF'
 #!/bin/bash
 
 files=(notes.txt todo.txt logs/app.log)
@@ -16,7 +17,6 @@ files=(notes.txt todo.txt logs/app.log)
 for file in "${files[@]}"; do
   echo "Item: $file"
 done
-EOF
 chmod +x array_demo.sh
 ./array_demo.sh
 ```

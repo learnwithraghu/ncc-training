@@ -12,12 +12,9 @@ The learner must create a simple backup/report workflow that copies selected fil
 - A script skeleton for basic automation
 
 ## Suggested engineer setup
+Copy this into `backup.sh` with `vi` or `nano`, save it, then run the setup commands below.
+
 ```bash
-mkdir -p ~/ncc-labs/day1/bash-lab-05/source ~/ncc-labs/day1/bash-lab-05/backup
-printf 'note 1\n' > ~/ncc-labs/day1/bash-lab-05/source/a.txt
-printf 'log 1\n' > ~/ncc-labs/day1/bash-lab-05/source/app.log
-printf 'ignore me\n' > ~/ncc-labs/day1/bash-lab-05/source/readme.md
-cat > ~/ncc-labs/day1/bash-lab-05/backup.sh <<'EOF'
 #!/usr/bin/env bash
 stamp=$(date +%F-%H%M%S)
 outdir="backup/$stamp"
@@ -27,7 +24,13 @@ for file in source/*.{txt,log}; do
   cp "$file" "$outdir/"
 done
 echo "backup created at $outdir"
-EOF
+```
+
+```bash
+mkdir -p ~/ncc-labs/day1/bash-lab-05/source ~/ncc-labs/day1/bash-lab-05/backup
+printf 'note 1\n' > ~/ncc-labs/day1/bash-lab-05/source/a.txt
+printf 'log 1\n' > ~/ncc-labs/day1/bash-lab-05/source/app.log
+printf 'ignore me\n' > ~/ncc-labs/day1/bash-lab-05/source/readme.md
 chmod +x ~/ncc-labs/day1/bash-lab-05/backup.sh
 ```
 

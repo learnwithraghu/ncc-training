@@ -6,9 +6,10 @@
 Combine the Bash skills from this module into one short workflow.
 
 ## Commands to Use
+Copy this into the file with `vi` or `nano`, then run it.
+
 ```bash
 cd ~/ncc-labs/day1
-cat > mini_workflow.sh << 'EOF'
 #!/bin/bash
 
 SOURCE_DIR="$HOME/ncc-labs/day1"
@@ -22,7 +23,6 @@ for file in "${FILES[@]}"; do
 done
 
 echo "Workflow completed at $STAMP"
-EOF
 chmod +x mini_workflow.sh
 ./mini_workflow.sh
 ```

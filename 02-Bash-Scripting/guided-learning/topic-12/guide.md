@@ -6,9 +6,10 @@
 Use `case` to simplify menu-driven scripts.
 
 ## Commands to Use
+Copy this into the file with `vi` or `nano`, then run it.
+
 ```bash
 cd ~/ncc-labs/day1
-cat > case_demo.sh << 'EOF'
 #!/bin/bash
 
 read -p "Choose 1, 2, or 3: " OPTION
@@ -19,7 +20,6 @@ case "$OPTION" in
   3) echo "You chose option 3" ;;
   *) echo "Invalid option" ;;
 esac
-EOF
 chmod +x case_demo.sh
 ./case_demo.sh
 ```

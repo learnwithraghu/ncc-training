@@ -6,9 +6,14 @@
 Use `if` statements and check command results.
 
 ## Commands to Use
+Copy this into the file with `vi` or `nano`, then run it.
+
 ```bash
 cd ~/ncc-labs/day1
-cat > check_number.sh << 'EOF'
+
+Copy this into `check_number.sh` with `vi` or `nano`, save, then run it.
+
+```bash
 #!/bin/bash
 read -p "Enter a number: " NUM
 
@@ -19,7 +24,8 @@ elif [ "$NUM" -eq 10 ]; then
 else
   echo "Less than 10"
 fi
-EOF
+```
+
 chmod +x check_number.sh
 ./check_number.sh
 echo $?

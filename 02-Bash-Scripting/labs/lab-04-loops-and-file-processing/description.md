@@ -12,18 +12,21 @@ The learner gets a folder with several text files and a script that must loop th
 - A simple output requirement for each file
 
 ## Suggested engineer setup
+Copy this into `count-files.sh` with `vi` or `nano`, save it, then run the setup commands below.
+
 ```bash
-mkdir -p ~/ncc-labs/day1/bash-lab-04/files
-printf 'alpha\n' > ~/ncc-labs/day1/bash-lab-04/files/a.txt
-printf 'beta\n' > ~/ncc-labs/day1/bash-lab-04/files/b.txt
-printf 'gamma\n' > ~/ncc-labs/day1/bash-lab-04/files/c.txt
-cat > ~/ncc-labs/day1/bash-lab-04/count-files.sh <<'EOF'
 #!/usr/bin/env bash
 for file in files/*.txt; do
   echo "processing $file"
   wc -l "$file"
 done
-EOF
+```
+
+```bash
+mkdir -p ~/ncc-labs/day1/bash-lab-04/files
+printf 'alpha\n' > ~/ncc-labs/day1/bash-lab-04/files/a.txt
+printf 'beta\n' > ~/ncc-labs/day1/bash-lab-04/files/b.txt
+printf 'gamma\n' > ~/ncc-labs/day1/bash-lab-04/files/c.txt
 chmod +x ~/ncc-labs/day1/bash-lab-04/count-files.sh
 ```
 

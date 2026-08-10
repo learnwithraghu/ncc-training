@@ -6,6 +6,8 @@
 Repeat actions across multiple values and files.
 
 ## Commands to Use
+Copy this into the file with `vi` or `nano`, then run it.
+
 ```bash
 cd ~/ncc-labs/day1
 for item in one two three; do echo "Item: $item"; done

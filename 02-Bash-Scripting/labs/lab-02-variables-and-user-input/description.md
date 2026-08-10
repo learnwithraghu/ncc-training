@@ -12,14 +12,17 @@ The learner is given a small script that asks for a name and a project code, the
 - No external dependencies
 
 ## Suggested engineer setup
+Copy this into `greet.sh` with `vi` or `nano`, save it, then run the permission command below.
+
 ```bash
-mkdir -p ~/ncc-labs/day1/bash-lab-02
-cat > ~/ncc-labs/day1/bash-lab-02/greet.sh <<'EOF'
 #!/usr/bin/env bash
 read -p "Enter your name: " name
 read -p "Enter project code: " code
 echo "Hello $name, welcome to project $code"
-EOF
+```
+
+```bash
+mkdir -p ~/ncc-labs/day1/bash-lab-02
 chmod +x ~/ncc-labs/day1/bash-lab-02/greet.sh
 ```
 

@@ -6,9 +6,10 @@
 Build a backup script that copies files into a timestamped folder.
 
 ## Commands to Use
+Copy this into the file with `vi` or `nano`, then run it.
+
 ```bash
 cd ~/ncc-labs/day1
-cat > backup.sh << 'EOF'
 #!/bin/bash
 set -e
 
@@ -29,7 +30,6 @@ for file in "$SOURCE_DIR"/*.txt "$SOURCE_DIR"/logs/*.log; do
 done
 
 echo "Backup complete at $DATE"
-EOF
 chmod +x backup.sh
 ./backup.sh
 ```

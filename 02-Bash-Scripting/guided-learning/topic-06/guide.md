@@ -6,16 +6,16 @@
 Organize repeated logic into functions.
 
 ## Commands to Use
+Copy this into the file with `vi` or `nano`, then run it.
+
 ```bash
 cd ~/ncc-labs/day1
-cat > function_demo.sh << 'EOF'
 #!/bin/bash
 greet() {
   echo "Hello, $1"
 }
 greet "Alice"
 greet "Bob"
-EOF
 chmod +x function_demo.sh
 ./function_demo.sh
 ```

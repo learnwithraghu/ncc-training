@@ -12,10 +12,9 @@ The learner is given a small validation script that checks whether a required fi
 - A clear pass/fail result
 
 ## Suggested engineer setup
+Copy this into `check-file.sh` with `vi` or `nano`, save it, then run the setup commands below.
+
 ```bash
-mkdir -p ~/ncc-labs/day1/bash-lab-03
-printf 'sample data\n' > ~/ncc-labs/day1/bash-lab-03/input.txt
-cat > ~/ncc-labs/day1/bash-lab-03/check-file.sh <<'EOF'
 #!/usr/bin/env bash
 file="$1"
 if [[ -f "$file" ]]; then
@@ -25,7 +24,11 @@ else
   echo "file missing"
   exit 1
 fi
-EOF
+```
+
+```bash
+mkdir -p ~/ncc-labs/day1/bash-lab-03
+printf 'sample data\n' > ~/ncc-labs/day1/bash-lab-03/input.txt
 chmod +x ~/ncc-labs/day1/bash-lab-03/check-file.sh
 ```
 

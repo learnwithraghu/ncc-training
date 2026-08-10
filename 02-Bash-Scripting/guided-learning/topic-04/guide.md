@@ -6,6 +6,8 @@
 Capture command output and quote variables safely.
 
 ## Commands to Use
+Copy this into the file with `vi` or `nano`, then run it.
+
 ```bash
 cd ~/ncc-labs/day1
 TODAY=$(date +%Y-%m-%d)

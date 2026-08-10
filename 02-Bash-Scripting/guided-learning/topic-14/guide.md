@@ -6,9 +6,10 @@
 Use Bash tracing to understand script behavior.
 
 ## Commands to Use
+Copy this into the file with `vi` or `nano`, then run it.
+
 ```bash
 cd ~/ncc-labs/day1
-cat > trace_demo.sh << 'EOF'
 #!/bin/bash
 set -x
 
@@ -16,7 +17,6 @@ NAME="student"
 echo "Hello, $NAME"
 set +x
 echo "Tracing stopped"
-EOF
 chmod +x trace_demo.sh
 ./trace_demo.sh
 ```

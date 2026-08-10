@@ -6,13 +6,19 @@
 Store values in variables and read input from the user.
 
 ## Commands to Use
+Copy this into the file with `vi` or `nano`, then run it.
+
 ```bash
 cd ~/ncc-labs/day1
-cat > greet.sh << 'EOF'
+
+Copy this into `greet.sh` with `vi` or `nano`, save, then run it.
+
+```bash
 #!/bin/bash
 read -p "Enter your name: " NAME
 echo "Hello, $NAME"
-EOF
+```
+
 chmod +x greet.sh
 ./greet.sh
 ```

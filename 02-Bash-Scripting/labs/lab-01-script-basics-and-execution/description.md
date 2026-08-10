@@ -12,12 +12,15 @@ The learner receives a simple script workspace with one script that does not run
 - A safe workspace for basic script execution
 
 ## Suggested engineer setup
+Copy this into `hello.sh` with `vi` or `nano`, save it, then run the permission command below.
+
 ```bash
-mkdir -p ~/ncc-labs/day1/bash-lab-01
-cat > ~/ncc-labs/day1/bash-lab-01/hello.sh <<'EOF'
 #!/usr/bin/env bash
 echo "hello from bash"
-EOF
+```
+
+```bash
+mkdir -p ~/ncc-labs/day1/bash-lab-01
 chmod 644 ~/ncc-labs/day1/bash-lab-01/hello.sh
 ```
 

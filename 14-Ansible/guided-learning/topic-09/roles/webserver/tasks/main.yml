@@ -1,0 +1,12 @@
+---
+- name: Ensure webserver marker directory exists
+  ansible.builtin.file:
+    path: /etc/ansible
+    state: directory
+    mode: '0755'
+
+- name: Write role marker file
+  ansible.builtin.copy:
+    dest: /etc/ansible/webserver-role.txt
+    content: "webserver role applied\n"
+    mode: '0644'

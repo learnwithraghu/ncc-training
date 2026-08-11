@@ -1,0 +1,48 @@
+# Guided Learning - Ansible
+
+This module uses one self-contained lesson per topic.
+
+Sandbox note: this lab runs Ansible 2.18.5 and provides `web1` and `web2` as root-accessible targets (`root` / `Passw0rd`).
+
+## Setup
+
+Use the provided lab hosts:
+
+- `web1` — `root` / `Passw0rd`
+- `web2` — `root` / `Passw0rd`
+- controller-side commands should use an inventory file in the working directory, such as `inventory.ini`
+
+## Structure
+
+- `topic-01/` through `topic-10/` hold the learning topics
+- `challenge-01/` through `challenge-05/` are inserted between topics as practice stops
+- each topic and challenge has a `guide.md` file and a starter `.yml` playbook
+- each stop is designed to take about 20 minutes
+
+## Recommended Flow
+
+Each topic tells a small story:
+
+1. Read the goal.
+2. Run the commands that solve it.
+3. Validate on `web1` or `web2`.
+4. Check the checkpoint prompt before moving on.
+5. Finish the topic in about 20 minutes before moving to the next one.
+
+## Topic List
+
+- Topic 01 - Meet the Lab and Check the Servers
+- Challenge 01 - Prove Both Servers Respond
+- Topic 02 - Build Your Server List and Ask Quick Questions
+- Challenge 02 - Install a Small Helper Tool
+- Topic 03 - Check What Each Server Looks Like
+- Challenge 03 - Place the Same File on Both Hosts
+- Topic 04 - Write Your First Playbook
+- Challenge 04 - Create a Service User
+- Topic 05 - Use One Template for Both Servers
+- Topic 06 - Install the Web Server and Keep It Running
+- Topic 07 - Put the Same File in the Right Place
+- Topic 08 - Do the Same Setup for a Small Group of Packages
+- Topic 09 - Pack the Web Server Steps into a Role
+- Topic 10 - Deploy the Small App Across Both Servers
+- Challenge 05 - Start a Service and Restart Only on Change

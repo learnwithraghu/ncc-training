@@ -1,0 +1,7 @@
+---
+- name: Challenge 01 - ping both hosts
+  hosts: web
+  gather_facts: false
+  tasks:
+    - name: Ping hosts
+      ansible.builtin.ping:

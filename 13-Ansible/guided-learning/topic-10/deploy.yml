@@ -1,0 +1,10 @@
+---
+- name: Deploy app across both hosts
+  hosts: web
+  become: true
+  tasks:
+    - name: Create app directory
+      ansible.builtin.file:
+        path: /opt/demo-app
+        state: directory
+        mode: "0755"

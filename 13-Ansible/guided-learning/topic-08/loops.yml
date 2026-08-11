@@ -1,0 +1,13 @@
+---
+- name: Loops conditions and tags
+  hosts: web
+  become: true
+  tasks:
+    - name: Install helper packages
+      ansible.builtin.package:
+        name:
+          - curl
+          - vim
+        state: present
+      tags:
+        - setup

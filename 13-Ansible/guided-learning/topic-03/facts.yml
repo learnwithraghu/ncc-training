@@ -1,0 +1,8 @@
+---
+- name: Collect facts from lab hosts
+  hosts: web
+  gather_facts: true
+  tasks:
+    - name: Show OS family
+      ansible.builtin.debug:
+        msg: "{{ inventory_hostname }} runs {{ ansible_os_family }}"

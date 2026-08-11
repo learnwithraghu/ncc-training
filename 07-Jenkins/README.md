@@ -44,21 +44,18 @@ About **4 hours**.
 - `guided-learning/` — 10 self-contained lessons
 - `lab-project/` — sample Python project for the jobs
 - `challenges/` — four simple PHP Jenkins challenges
+- `helper-scripts/` — one-command Jenkins bootstrap and guided-learning job seeding
 - `scripts/` — optional setup notes and command snippets
 
 ## Key Artifact
 
-A Jenkins instance on EC2 that runs Freestyle and Pipeline jobs against a small Python project.
+A Jenkins instance on EC2 that runs preconfigured jobs for the guided-learning lessons.
 
 ## Completion Checklist
 
-- [ ] Install Jenkins on Amazon Linux with commands
+- [ ] Run the helper bootstrap script
 - [ ] Open Jenkins in the browser
-- [ ] Clone this repo locally on EC2
-- [ ] Create a Freestyle job
-- [ ] Run Python syntax checks
-- [ ] Run Python unit tests
-- [ ] Create a simple Pipeline job
-- [ ] Trigger a job with Build Now
+- [ ] Confirm the guided-learning jobs already exist
+- [ ] Run the lesson 05-10 pipelines
 
 Start with [00-OVERVIEW.md](00-OVERVIEW.md).

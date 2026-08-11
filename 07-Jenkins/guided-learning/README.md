@@ -6,7 +6,7 @@ This module uses one self-contained lesson per folder.
 
 - Jenkins runs on an **Amazon Linux EC2** instance
 - Access Jenkins through the **Web UI**
-- Install Jenkins with commands on Amazon Linux EC2
+- Use the helper bootstrap script to install Jenkins and seed guided-learning jobs
 - Clone this repository locally so learners have all files
 - Use the Jenkins **Build Now** button to run each lesson
 - Load the Pipeline Jenkinsfile from the local cloned repo
@@ -28,7 +28,7 @@ This module uses one self-contained lesson per folder.
 ## Lesson List
 
 - Lesson 01 - EC2 Boot and Repo Clone
-- Lesson 02 - Command-Based Jenkins Install
+- Lesson 02 - Jenkins Bootstrap Script
 - Lesson 03 - Jenkins Web UI First Steps
 - Lesson 04 - Freestyle Hello Job
 - Lesson 05 - Python Syntax Check

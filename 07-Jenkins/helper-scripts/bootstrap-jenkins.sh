@@ -19,9 +19,9 @@ fi
 
 install_pkg_repo() {
   dnf update -y
-  dnf install -y java-17-amazon-corretto git python3 curl wget
+  dnf install -y --allowerasing java-17-amazon-corretto git python3 wget
   rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
-  curl -fsSL -o /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
+  wget -qO /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
   dnf install -y jenkins
 }
 
@@ -85,7 +85,7 @@ chown -R "${JENKINS_USER}:${JENKINS_GROUP}" /var/lib/jenkins/jobs
 
 create_job "lesson-01-ec2-boot-and-clone" "Lesson 01 - EC2 Boot and Repo Clone" "pipeline { agent any; stages { stage('Check Repo') { steps { sh 'test -d /home/ec2-user/ncc-training/07-Jenkins && echo Repo ready' } } } }"
 create_job "lesson-02-jenkins-install" "Lesson 02 - Command-Based Jenkins Install" "pipeline { agent any; stages { stage('Install Notes') { steps { sh 'echo Use the bootstrap script to install Jenkins' } } } }"
-create_job "lesson-03-first-login" "Lesson 03 - Jenkins Web UI First Steps" "pipeline { agent any; stages { stage('Login Step') { steps { sh 'echo Open Jenkins at http://<EC2-PUBLIC-IP>:'"${JENKINS_PORT}""' } } } }"
+create_job "lesson-03-first-login" "Lesson 03 - Jenkins Web UI First Steps" "pipeline { agent any; stages { stage('Login Step') { steps { sh 'echo Open Jenkins at http://<EC2-PUBLIC-IP>:${JENKINS_PORT}' } } } }"
 create_job "lesson-04-freestyle-hello" "Lesson 04 - Freestyle Hello Job" "node { stage('Hello') { sh 'echo Hello from Freestyle' } }"
 create_job "lesson-05-python-syntax" "Lesson 05 - Python Syntax Check" "pipeline { agent any; stages { stage('Syntax') { steps { dir('lab-project/python-app') { sh 'python3 -m py_compile app.py test_app.py' } } } } }"
 create_job "lesson-06-python-tests" "Lesson 06 - Python Unit Test Job" "pipeline { agent any; stages { stage('Tests') { steps { dir('lab-project/python-app') { sh 'python3 -m unittest -v' } } } } }"

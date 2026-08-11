@@ -5,6 +5,8 @@ Install Jenkins on Amazon Linux EC2 with direct commands.
 ## Learn
 
 - Install Java and Jenkins from the official repo
+- Handle package conflicts with `--allowerasing` when needed
+- Use `wget` to fetch the Jenkins repo file if `curl` conflicts on Amazon Linux
 - Enable the Jenkins service
 - Start Jenkins with systemd
 
@@ -12,11 +14,12 @@ Install Jenkins on Amazon Linux EC2 with direct commands.
 
 ```bash
 sudo dnf update -y
-sudo dnf install -y java-17-amazon-corretto git python3
+sudo dnf install -y --allowerasing java-17-amazon-corretto git python3 wget
 sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
-sudo curl -o /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
+sudo wget -qO /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
 sudo dnf install -y jenkins
-sudo systemctl enable --now jenkins
+sudo systemctl enable jenkins
+sudo systemctl start jenkins
 ```
 
 ## Checkpoint

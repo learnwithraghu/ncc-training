@@ -5,10 +5,10 @@ set -euo pipefail
 # Run as root or with sudo.
 
 sudo dnf update -y
-sudo dnf install -y java-17-amazon-corretto git python3
+sudo dnf install -y --allowerasing java-17-amazon-corretto git python3 wget
 
 sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
-sudo curl -o /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
+sudo wget -qO /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
 sudo dnf install -y jenkins
 
 sudo systemctl enable jenkins

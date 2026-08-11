@@ -54,6 +54,7 @@ A Jenkins instance on EC2 that runs preconfigured jobs for the guided-learning l
 ## Completion Checklist
 
 - [ ] Run the helper bootstrap script
+- [ ] Use the updated manual install commands if you install by hand
 - [ ] Open Jenkins in the browser
 - [ ] Confirm the guided-learning jobs already exist
 - [ ] Run the lesson 05-10 pipelines

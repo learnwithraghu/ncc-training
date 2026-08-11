@@ -1,6 +1,6 @@
-# Lambda: Currency Rates Email Sender
+# Lambda: S3 Bill VAT Processor
 
-This Lambda function runs on invocation, fetches the top 10 currency rates against USD, and sends the result through Amazon SNS email subscription.
+This Lambda runs when a CSV file lands in S3. It reads the bill data, calculates VAT, and stores the result in another S3 bucket.
 
 ## 1) What you upload
 
@@ -9,17 +9,24 @@ Upload these files from your laptop into the Lambda zip:
 - `lambda_function.py` - Lambda entry point
 - `requirements.txt` - required package list
 
-## 2) Install packages locally
+## 2) Sample CSV file
 
-If you are packaging on your laptop:
+Use this one-line CSV as the input file:
 
-```bash
-pip install -r requirements.txt -t .
+```csv
+bill_id,customer,amount
+BILL-1001,Acme Corp,100.00
 ```
 
-Then zip the folder contents and upload the zip to Lambda.
+## 3) How it works
 
-## 3) Configure Lambda
+- A CSV file is uploaded to the input S3 bucket
+- S3 triggers the Lambda function
+- Lambda reads the bill amount
+- Lambda calculates VAT and total amount
+- Lambda saves the result to the output S3 bucket
+
+## 4) Configure Lambda
 
 Set:
 
@@ -27,30 +34,40 @@ Set:
 - Handler: `lambda_function.lambda_handler`
 - Timeout: at least 10 seconds
 
-## 4) Add environment variables
+## 5) Add environment variables
 
-- `SNS_TOPIC_ARN` - the SNS topic ARN to publish to
+- `OUTPUT_BUCKET` - bucket where processed results are stored
+- `VAT_RATE` - optional VAT rate, default is `0.15`
 
-## 5) Create the SNS email subscription
+## 6) Create the S3 trigger
 
-1. Open Amazon SNS in the AWS console.
-2. Create a topic.
-3. Add an email subscription to that topic.
-4. Confirm the subscription from the email you receive.
+1. Open the input bucket in the S3 console.
+2. Go to **Properties**.
+3. Scroll to **Event notifications**.
+4. Create a notification for `ObjectCreated` events.
+5. Set the destination to the Lambda function.
 
-SNS will handle the email delivery after that.
+## 7) Give Lambda permissions
 
-## 6) Invoke the function
+Lambda needs permission to:
 
-Trigger the function manually from the Lambda console or CLI.
+- read from the input bucket
+- write to the output bucket
+- be invoked by S3
 
-## 7) What the function does
+## 8) Invoke the flow
 
-- Gets currency rates from a public rates API
-- Picks the top 10 currencies
-- Sends the list to SNS
-- SNS delivers the email to subscribed recipients
+Upload the sample CSV to the input bucket.
 
-## Output
+The Lambda will process it automatically and write the calculation to the output bucket.
 
-If `SNS_TOPIC_ARN` is not set, the function returns the rates as text instead of sending a notification.
+## Output example
+
+```text
+bill_id,BILL-1001
+customer,Acme Corp
+amount,100.00
+vat_rate,0.15
+vat_amount,15.00
+total_amount,115.00
+```

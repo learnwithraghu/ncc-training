@@ -19,9 +19,9 @@ fi
 install_pkg_repo() {
   apt-get update -y
   apt-get install -y openjdk-17-jre git python3 wget curl gnupg ca-certificates
-  mkdir -p /etc/apt/keyrings
-  wget -qO- https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | gpg --dearmor | tee /etc/apt/keyrings/jenkins-keyring.gpg >/dev/null
-  echo "deb [signed-by=/etc/apt/keyrings/jenkins-keyring.gpg] https://pkg.jenkins.io/debian-stable binary/" > /etc/apt/sources.list.d/jenkins.list
+  mkdir -p /etc/apt/trusted.gpg.d
+  wget -qO- https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | gpg --dearmor -o /etc/apt/trusted.gpg.d/jenkins.gpg
+  echo "deb https://pkg.jenkins.io/debian-stable binary/" > /etc/apt/sources.list.d/jenkins.list
   apt-get update -y
   apt-get install -y jenkins
 }

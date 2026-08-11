@@ -27,14 +27,12 @@ install_pkg_repo() {
 
 configure_jenkins() {
   mkdir -p /etc/sysconfig
-  if [[ ! -f /etc/sysconfig/jenkins ]]; then
-    cat >/etc/sysconfig/jenkins <<EOF
+  cat >/etc/sysconfig/jenkins <<EOF
 JENKINS_PORT=${JENKINS_PORT}
 JENKINS_JAVA_CMD=/usr/bin/java
 EOF
-  else
-    grep -q '^JENKINS_PORT=' /etc/sysconfig/jenkins && sed -i "s/^JENKINS_PORT=.*/JENKINS_PORT=${JENKINS_PORT}/" /etc/sysconfig/jenkins || echo "JENKINS_PORT=${JENKINS_PORT}" >> /etc/sysconfig/jenkins
-  fi
+  chown root:root /etc/sysconfig/jenkins
+  chmod 0644 /etc/sysconfig/jenkins
   systemctl enable jenkins
 }
 

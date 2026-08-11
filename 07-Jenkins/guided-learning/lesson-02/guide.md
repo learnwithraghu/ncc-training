@@ -7,6 +7,7 @@ Install Jenkins on Amazon Linux EC2 with direct commands.
 - Install Java and Jenkins from the official repo
 - Handle package conflicts with `--allowerasing` when needed
 - Use `wget` to fetch the Jenkins repo file if `curl` conflicts on Amazon Linux
+- Let Jenkins use the package defaults for its service config
 - Enable the Jenkins service
 - Start Jenkins with systemd
 

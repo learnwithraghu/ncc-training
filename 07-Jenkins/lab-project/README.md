@@ -1,31 +1,19 @@
 # Jenkins Lab Project
 
-This is a tiny sample project used in the NCC Jenkins module.
-
-It contains a small shell script, a test, and a `Jenkinsfile` so learners can practice:
-
-- Freestyle jobs
-- Declarative pipelines
-- Interactive pipeline input
-- Gitea integration
-- Local Docker image builds
-- Build-on-push webhooks
+This folder contains a tiny Python project for the Jenkins lessons.
 
 ## Files
 
-- `app.sh` — prints a greeting and the build number
-- `run.sh` — runs `app.sh` and saves the output
-- `test.sh` — checks that the output is correct
-- `Jenkinsfile` — declarative pipeline used in the Jenkins lessons
-- `docker-example/Dockerfile` — small image used by the Docker build lesson
-- `docker-example/Jenkinsfile` — pipeline used to build the image
-- `docker-example/README.md` — Docker example notes
+- `python-app/app.py` — tiny Python module
+- `python-app/test_app.py` — unit tests
+- `python-app/check_syntax.sh` — syntax check helper
+- `python-app/requirements.txt` — empty on purpose for the simple lab
+- `Jenkinsfile` — simple pipeline example
 
-## Run locally
+## Use in Jenkins
 
-```bash
-./run.sh
-./test.sh
-```
+Typical steps for the jobs:
 
-The Docker example is built by Jenkins in Topic 13. It is intentionally built locally and is not pushed to a registry.
+- run `python3 -m py_compile app.py`
+- run `python3 -m unittest -v`
+- archive a small text artifact if needed

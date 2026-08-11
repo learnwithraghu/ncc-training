@@ -1,78 +1,63 @@
-# Module 7: Jenkins CI/CD
+# Module 7: Jenkins on EC2
 
-This module introduces Jenkins as a CI/CD server. You will learn how to run Jenkins, create jobs, write pipelines, install plugins, build Docker images, connect Jenkins to Gitea, and trigger builds automatically.
+This module shows how to run Jenkins on **Amazon Linux EC2** and use the **Jenkins Web UI** for all job work.
 
 ## What You Will Learn
 
-By the end of this module, you will be able to:
-
-- Run Jenkins locally with Docker
-- Navigate the Jenkins web interface
-- Create and run Freestyle jobs
-- Write declarative pipelines with Groovy
-- Pause a pipeline for interactive user input
-- Install and manage Jenkins plugins
-- Build a Docker image from source
-- Connect Jenkins to a Gitea repository
-- Trigger builds on code push
+- Set up Jenkins on EC2 with commands
+- Access Jenkins through the browser, not Docker
+- Clone this repo locally on EC2 for all lesson material
+- Build simple **Freestyle** and **Pipeline** jobs
+- Trigger jobs with the **Build Now** button
+- Run basic **Python syntax checks** and **Python unit tests** in Jenkins
+- Keep the exercises simple and repeatable
 
 ## Time Estimate
 
-Approximately **4 hours** including hands-on exercises.
+About **4 hours**.
 
 ## Prerequisites
 
-- Basic Linux command line skills
-- Basic Git knowledge
-- A running Gitea server (lab environment or instructor-provided)
+- EC2 instance running Amazon Linux
+- SSH access to the EC2 host
+- Open ports for Jenkins web access
+- Basic Linux, Git, and Python knowledge
 
-## Guided Learning Topics
+## Guided Learning Lessons
 
-Work through the topics in `guided-learning/` in order:
-
-| Topic | Folder | Focus | Duration |
-|-------|--------|-------|----------|
-| 1 | [guided-learning/topic-01/](guided-learning/topic-01/) | Jenkins Docker setup | 20 min |
-| 2 | [guided-learning/topic-02/](guided-learning/topic-02/) | Jenkins UI overview | 20 min |
-| 3 | [guided-learning/topic-03/](guided-learning/topic-03/) | Freestyle job | 20 min |
-| 4 | [guided-learning/topic-04/](guided-learning/topic-04/) | Pipeline basics | 20 min |
-| 5 | [guided-learning/topic-05/](guided-learning/topic-05/) | Pipeline stages | 20 min |
-| 6 | [guided-learning/topic-06/](guided-learning/topic-06/) | Groovy basics | 20 min |
-| 7 | [guided-learning/topic-07/](guided-learning/topic-07/) | More Groovy | 20 min |
-| 8 | [guided-learning/topic-08/](guided-learning/topic-08/) | Interactive user input | 20 min |
-| 9 | [guided-learning/topic-09/](guided-learning/topic-09/) | General plugin installation | 20 min |
-| 10 | [guided-learning/topic-10/](guided-learning/topic-10/) | Docker Pipeline plugin | 20 min |
-| 11 | [guided-learning/topic-11/](guided-learning/topic-11/) | Docker Hello World pipeline | 20 min |
-| 12 | [guided-learning/topic-12/](guided-learning/topic-12/) | Gitea integration | 20 min |
-| 13 | [guided-learning/topic-13/](guided-learning/topic-13/) | Docker build from Gitea | 20 min |
-| 14 | [guided-learning/topic-14/](guided-learning/topic-14/) | Jenkins features | 20 min |
-| 15 | [guided-learning/topic-15/](guided-learning/topic-15/) | Build on push | 20 min |
+| Lesson | Name | Focus |
+|---|---|---|
+| 1 | [guided-learning/lesson-01/](guided-learning/lesson-01/) | EC2 prep and repo clone |
+| 2 | [guided-learning/lesson-02/](guided-learning/lesson-02/) | Install Jenkins with commands |
+| 3 | [guided-learning/lesson-03/](guided-learning/lesson-03/) | First login and setup wizard |
+| 4 | [guided-learning/lesson-04/](guided-learning/lesson-04/) | Freestyle job basics |
+| 5 | [guided-learning/lesson-05/](guided-learning/lesson-05/) | Python syntax check job |
+| 6 | [guided-learning/lesson-06/](guided-learning/lesson-06/) | Python unit test job |
+| 7 | [guided-learning/lesson-07/](guided-learning/lesson-07/) | Pipeline with simple stages |
+| 8 | [guided-learning/lesson-08/](guided-learning/lesson-08/) | Parameters and workspace files |
+| 9 | [guided-learning/lesson-09/](guided-learning/lesson-09/) | Local repo job setup |
+| 10 | [guided-learning/lesson-10/](guided-learning/lesson-10/) | Final mini CI flow |
 
 ## Module Structure
 
-- `00-OVERVIEW.md` — Theory and concepts
-- `guided-learning/topic-01/` through `topic-15/` — Hands-on topics
-- `lab-project/` — Sample repository, including the Docker build example, to upload to Gitea
-- `scripts/jenkins-plugins.txt` — Plugin reference list
+- `00-OVERVIEW.md` — Jenkins overview for this EC2-based workflow
+- `guided-learning/` — 10 self-contained lessons
+- `lab-project/` — sample Python project for the jobs
+- `scripts/` — optional setup notes and command snippets
 
 ## Key Artifact
 
-A Jenkins pipeline connected to a Gitea repository that builds a local Docker image and can build automatically on push to `main`.
+A Jenkins instance on EC2 that runs Freestyle and Pipeline jobs against a small Python project.
 
 ## Completion Checklist
 
-Before moving to the next module, ensure you can:
-
-- [ ] Run Jenkins in Docker
+- [ ] Install Jenkins on Amazon Linux with commands
+- [ ] Open Jenkins in the browser
+- [ ] Clone this repo locally on EC2
 - [ ] Create a Freestyle job
-- [ ] Create a declarative pipeline
-- [ ] Use Groovy in a pipeline
-- [ ] Use interactive input in a pipeline
-- [ ] Install Jenkins plugins
-- [ ] Build a Docker image without pushing it
-- [ ] Connect Jenkins to Gitea
-- [ ] Trigger a build by pushing to `main`
+- [ ] Run Python syntax checks
+- [ ] Run Python unit tests
+- [ ] Create a simple Pipeline job
+- [ ] Trigger a job with Build Now
 
-## Next Steps
-
-Start with the overview in [00-OVERVIEW.md](00-OVERVIEW.md), then work through the topics in order.
+Start with [00-OVERVIEW.md](00-OVERVIEW.md).

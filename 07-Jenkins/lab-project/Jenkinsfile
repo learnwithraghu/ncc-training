@@ -1,42 +1,21 @@
 pipeline {
     agent any
 
-    environment {
-        APP_NAME = 'jenkins-lab-app'
-    }
-
     stages {
-        stage('Checkout') {
+        stage('Syntax Check') {
             steps {
-                checkout scm
+                dir('python-app') {
+                    sh 'python3 -m py_compile app.py test_app.py'
+                }
             }
         }
 
-        stage('Build') {
+        stage('Unit Tests') {
             steps {
-                echo "Building ${env.APP_NAME}..."
-                sh 'bash run.sh'
+                dir('python-app') {
+                    sh 'python3 -m unittest -v'
+                }
             }
-        }
-
-        stage('Test') {
-            steps {
-                echo 'Running tests...'
-                sh 'bash test.sh'
-            }
-        }
-    }
-
-    post {
-        always {
-            echo 'Pipeline finished.'
-            archiveArtifacts artifacts: 'output.txt', allowEmptyArchive: true
-        }
-        success {
-            echo 'Build succeeded!'
-        }
-        failure {
-            echo 'Build failed!'
         }
     }
 }

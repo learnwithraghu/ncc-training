@@ -8,3 +8,8 @@
 
 - [aws-cli/guide-01-basic-aws-cli-commands.md](./aws-cli/guide-01-basic-aws-cli-commands.md)
 - [aws-cli/guide-02-launch-ec2-with-cli.md](./aws-cli/guide-02-launch-ec2-with-cli.md)
+
+## Module: Auto Scaling Group
+
+- [ASG/README.md](./ASG/README.md)
+- [ASG/user-data.sh](./ASG/user-data.sh)

@@ -43,6 +43,7 @@ About **4 hours**.
 - `00-OVERVIEW.md` — Jenkins overview for this EC2-based workflow
 - `guided-learning/` — 10 self-contained lessons
 - `lab-project/` — sample Python project for the jobs
+- `challenges/` — four simple PHP Jenkins challenges
 - `scripts/` — optional setup notes and command snippets
 
 ## Key Artifact

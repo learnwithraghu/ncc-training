@@ -4,7 +4,7 @@ This module uses one self-contained lesson per folder.
 
 ## Lab Setup
 
-- Jenkins runs on an **Amazon Linux EC2** instance
+- Jenkins runs on an **Ubuntu Server EC2** instance
 - Access Jenkins through the **Web UI**
 - Use the helper bootstrap script to install Jenkins and seed guided-learning jobs
 - Clone this repository locally so learners have all files

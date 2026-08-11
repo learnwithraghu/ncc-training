@@ -1,24 +1,23 @@
 # Lesson 02 - Command-Based Jenkins Install
 
-Install Jenkins on Amazon Linux EC2 with direct commands.
+Install Jenkins on Ubuntu Server with direct commands.
 
 ## Learn
 
-- Install Java and Jenkins from the official repo
-- Handle package conflicts with `--allowerasing` when needed
-- Use `wget` to fetch the Jenkins repo file if `curl` conflicts on Amazon Linux
-- Let Jenkins use the package defaults for its service config
+- Install Java and Jenkins from the official Ubuntu repo
+- Add the Jenkins apt key and repository
 - Enable the Jenkins service
 - Start Jenkins with systemd
 
 ## Practice
 
 ```bash
-sudo dnf update -y
-sudo dnf install -y --allowerasing java-17-amazon-corretto git python3 wget
-sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
-sudo wget -qO /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
-sudo dnf install -y jenkins
+sudo apt-get update -y
+sudo apt-get install -y openjdk-17-jre git python3 wget curl gnupg
+curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | sudo gpg --dearmor -o /usr/share/keyrings/jenkins-keyring.gpg
+echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.gpg] https://pkg.jenkins.io/debian-stable binary/" | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
+sudo apt-get update -y
+sudo apt-get install -y jenkins
 sudo systemctl enable jenkins
 sudo systemctl start jenkins
 ```

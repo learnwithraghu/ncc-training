@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Full Jenkins bootstrap for Amazon Linux.
+# Full Jenkins bootstrap for Ubuntu.
 # - Installs Jenkins
-# - Disables the setup wizard
 # - Seeds jobs for the guided-learning lessons
 
 JENKINS_PORT="${JENKINS_PORT:-8080}"
@@ -18,11 +17,12 @@ if [[ ${EUID} -ne 0 ]]; then
 fi
 
 install_pkg_repo() {
-  dnf update -y
-  dnf install -y --allowerasing java-17-amazon-corretto git python3 wget
-  rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
-  wget -qO /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
-  dnf install -y jenkins
+  apt-get update -y
+  apt-get install -y openjdk-17-jre git python3 wget curl gnupg
+  curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | gpg --dearmor -o /usr/share/keyrings/jenkins-keyring.gpg
+  echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.gpg] https://pkg.jenkins.io/debian-stable binary/" > /etc/apt/sources.list.d/jenkins.list
+  apt-get update -y
+  apt-get install -y jenkins
 }
 
 configure_jenkins() {
@@ -70,7 +70,9 @@ create_job "lesson-08-parameters" "Lesson 08 - Parameters and Workspace Notes" "
 create_job "lesson-09-local-repo-pipeline" "Lesson 09 - Local Repo Pipeline Job" "pipeline { agent any; stages { stage('Load Jenkinsfile') { steps { sh 'echo Use Pipeline script from SCM with /home/ec2-user/ncc-training and script path 07-Jenkins/lab-project/Jenkinsfile' } } } }"
 create_job "lesson-10-build-now-ci" "Lesson 10 - Build Now CI Flow" "pipeline { agent any; stages { stage('Syntax Check') { steps { dir('lab-project/python-app') { sh 'python3 -m py_compile app.py test_app.py' } } } stage('Unit Tests') { steps { dir('lab-project/python-app') { sh 'python3 -m unittest -v' } } } } }"
 
-systemctl start jenkins
+systemctl daemon-reload
+systemctl enable jenkins
+systemctl restart jenkins
 
 for _ in {1..60}; do
   if wget -qO- "http://127.0.0.1:${JENKINS_PORT}/login" >/dev/null 2>&1; then

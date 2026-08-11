@@ -1,15 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Jenkins setup for Amazon Linux EC2
+# Jenkins setup for Ubuntu Server
 # Run as root or with sudo.
 
-sudo dnf update -y
-sudo dnf install -y --allowerasing java-17-amazon-corretto git python3 wget
+sudo apt-get update -y
+sudo apt-get install -y openjdk-17-jre git python3 wget curl gnupg
 
-sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
-sudo wget -qO /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
-sudo dnf install -y jenkins
+curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | sudo gpg --dearmor -o /usr/share/keyrings/jenkins-keyring.gpg
+echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.gpg] https://pkg.jenkins.io/debian-stable binary/" | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
+sudo apt-get update -y
+sudo apt-get install -y jenkins
 
 sudo systemctl enable jenkins
 sudo systemctl start jenkins

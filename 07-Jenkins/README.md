@@ -1,6 +1,6 @@
 # Module 7: Jenkins on EC2
 
-This module shows how to run Jenkins on **Amazon Linux EC2** and use the **Jenkins Web UI** for all job work.
+This module shows how to run Jenkins on **Ubuntu Server** and use the **Jenkins Web UI** for all job work.
 
 ## What You Will Learn
 
@@ -18,7 +18,7 @@ About **4 hours**.
 
 ## Prerequisites
 
-- EC2 instance running Amazon Linux
+- Ubuntu Server instance on EC2
 - SSH access to the EC2 host
 - Open ports for Jenkins web access
 - Basic Linux, Git, and Python knowledge
@@ -49,7 +49,7 @@ About **4 hours**.
 
 ## Key Artifact
 
-A Jenkins instance on EC2 that runs preconfigured jobs for the guided-learning lessons.
+A Jenkins instance on EC2 that runs preconfigured jobs for the guided-learning lessons on Ubuntu.
 
 ## Completion Checklist
 

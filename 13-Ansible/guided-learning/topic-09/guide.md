@@ -1,6 +1,6 @@
-# Topic 09 - Roles and Reusable Automation
+# Topic 09 - Pack the Web Server Steps into a Role
 
-Organize automation into roles so it is reusable, readable, and easy to extend in this lab.
+The setup is getting repeated, so you bundle it into a reusable role instead of copying tasks around.
 
 ## Learn
 

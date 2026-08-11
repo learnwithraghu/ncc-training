@@ -15,27 +15,34 @@ Use the provided lab hosts:
 ## Structure
 
 - `topic-01/` through `topic-10/` hold the learning topics
-- each topic has a `guide.md` file and a starter `.yml` playbook
-- each topic is designed to take about 20 minutes
+- `challenge-01/` through `challenge-05/` are inserted between topics as practice stops
+- each topic and challenge has a `guide.md` file and a starter `.yml` playbook
+- each stop is designed to take about 20 minutes
 
 ## Recommended Flow
 
-1. Open the topic guide.
-2. Read the explanation and commands.
-3. Run the commands as you go.
+Each topic tells a small story:
+
+1. Read the goal.
+2. Run the commands that solve it.
+3. Validate on `web1` or `web2`.
 4. Check the checkpoint prompt before moving on.
 5. Finish the topic in about 20 minutes before moving to the next one.
 
 ## Topic List
 
-- Topic 01 - What Ansible Is and Why It Matters
-- Topic 02 - Inventory and Ad-Hoc Commands
-- Topic 03 - SSH Connectivity and Facts
-- Topic 04 - Playbooks and YAML Basics
-- Topic 05 - Variables, Templates, and Debug
-- Topic 06 - Packages, Services, and Handlers
-- Topic 07 - Files, Copy, and Permissions
-- Topic 08 - Loops, Conditionals, and Tags
-- Topic 09 - Roles and Reusable Automation
-- Topic 10 - Multi-Host App Deployment
-- Challenge folder - five practice playbook prompts with starter playbooks
+- Topic 01 - Meet the Lab and Check the Servers
+- Challenge 01 - Prove Both Servers Respond
+- Topic 02 - Build Your Server List and Ask Quick Questions
+- Challenge 02 - Install a Small Helper Tool
+- Topic 03 - Check What Each Server Looks Like
+- Challenge 03 - Place the Same File on Both Hosts
+- Topic 04 - Write Your First Playbook
+- Challenge 04 - Create a Service User
+- Topic 05 - Use One Template for Both Servers
+- Topic 06 - Install the Web Server and Keep It Running
+- Topic 07 - Put the Same File in the Right Place
+- Topic 08 - Do the Same Setup for a Small Group of Packages
+- Topic 09 - Pack the Web Server Steps into a Role
+- Topic 10 - Deploy the Small App Across Both Servers
+- Challenge 05 - Start a Service and Restart Only on Change

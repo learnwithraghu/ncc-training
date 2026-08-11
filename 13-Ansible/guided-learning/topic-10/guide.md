@@ -1,6 +1,6 @@
-# Topic 10 - Multi-Host App Deployment
+# Topic 10 - Deploy the Small App Across Both Servers
 
-Deploy a simple app flow across web1 and web2 to show inventory, variables, roles, and orchestration together in this lab.
+You are doing the first simple rollout and want both servers prepared the same way.
 
 ## Learn
 

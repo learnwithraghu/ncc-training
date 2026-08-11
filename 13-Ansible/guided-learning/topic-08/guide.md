@@ -1,6 +1,6 @@
-# Topic 08 - Loops, Conditionals, and Tags
+# Topic 08 - Do the Same Setup for a Small Group of Packages
 
-Scale tasks up with loops and control execution with when clauses and tags in this lab.
+You have a few common tools to install and want one task to handle them cleanly.
 
 ## Learn
 

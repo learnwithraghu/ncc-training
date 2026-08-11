@@ -1,6 +1,6 @@
-# Topic 04 - Playbooks and YAML Basics
+# Topic 04 - Write Your First Playbook
 
-Write your first playbook with tasks, plays, and clear structure for this lab.
+You have a small repeat job and want it written down so the same steps can run every time.
 
 ## Learn
 

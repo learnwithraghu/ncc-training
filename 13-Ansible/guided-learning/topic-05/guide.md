@@ -1,6 +1,6 @@
-# Topic 05 - Variables, Templates, and Debug
+# Topic 05 - Use One Template for Both Servers
 
-Use variables and Jinja2 templates to personalize configuration and inspect values in this lab.
+The app team gives you one config pattern, but the values may change later, so you make it flexible.
 
 ## Learn
 

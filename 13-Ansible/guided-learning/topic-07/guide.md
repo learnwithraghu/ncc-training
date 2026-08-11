@@ -1,6 +1,6 @@
-# Topic 07 - Files, Copy, and Permissions
+# Topic 07 - Put the Same File in the Right Place
 
-Push config files, set ownership and mode, and verify the result on both servers in this lab.
+You need the same small config file on both servers and want the permissions to be correct every time.
 
 ## Learn
 

@@ -1,6 +1,6 @@
-# Topic 03 - SSH Connectivity and Facts
+# Topic 03 - Check What Each Server Looks Like
 
-Verify remote access and gather host facts to understand the managed machines in this lab.
+Before making changes, you want to learn basic details about each machine so you do not guess.
 
 ## Learn
 

@@ -1,6 +1,6 @@
-# Topic 02 - Inventory and Ad-Hoc Commands
+# Topic 02 - Build Your Server List and Ask Quick Questions
 
-Build a simple inventory for web1 and web2 and run quick one-line commands across both hosts in this lab.
+Your team wants a fast way to talk to both web servers without logging in separately.
 
 ## Learn
 

@@ -1,6 +1,6 @@
-# Topic 01 - What Ansible Is and Why It Matters
+# Topic 01 - Meet the Lab and Check the Servers
 
-Learn the control-node model, idempotence, and why Ansible is great for repeatable infrastructure changes in this lab.
+You are the engineer on call and need to confirm both web servers are reachable before you touch anything.
 
 ## Learn
 

@@ -1,6 +1,6 @@
-# Topic 06 - Packages, Services, and Handlers
+# Topic 06 - Install the Web Server and Keep It Running
 
-Install software, manage services, and trigger handlers only when changes happen in this lab.
+Your web app needs nginx on both servers, but you only want a restart when something actually changes.
 
 ## Learn
 

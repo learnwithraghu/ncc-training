@@ -1,17 +1,28 @@
-# Challenge 01 - Prove Both Servers Respond
+# Challenge 01 - Meet the Lab and Ping Both Servers
 
-You need a quick confidence check before a rollout, so you ask both servers to answer a simple ping.
+This challenge matches Topic 01. Set up the inventory and prove both servers answer a ping.
 
 ## Task
 
-Write a playbook that:
-- pings `web1` and `web2`
-- uses the `ping` module
-- prints a short success message
-- stays idempotent
+Do the same flow you learned in Topic 01:
+- create `inventory.ini`
+- target `web1` and `web2`
+- use the `ping` module
+- confirm both hosts respond
+
+## Practice
+
+```bash
+cat > inventory.ini <<'EOF'
+[web]
+web1 ansible_host=web1 ansible_user=root ansible_password=Passw0rd
+web2 ansible_host=web2 ansible_user=root ansible_password=Passw0rd
+EOF
+ansible all -i inventory.ini -m ping
+```
 
 ## Validate
 
 ```bash
-ansible web1 -i inventory.ini -m ping
+ansible all -i inventory.ini -m ping
 ```

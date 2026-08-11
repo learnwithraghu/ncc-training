@@ -1,7 +1,10 @@
 ---
-- name: Challenge 01 - ping both hosts
+- name: Topic 01 - ping both hosts
   hosts: web
   gather_facts: false
   tasks:
     - name: Ping hosts
       ansible.builtin.ping:
+    - name: Show success message
+      ansible.builtin.debug:
+        msg: "Both servers responded"

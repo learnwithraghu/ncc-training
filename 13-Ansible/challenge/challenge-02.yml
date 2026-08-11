@@ -1,0 +1,9 @@
+---
+- name: Challenge 02 - install a package
+  hosts: web
+  become: true
+  tasks:
+    - name: Install a package
+      ansible.builtin.package:
+        name: htop
+        state: present

@@ -1,0 +1,29 @@
+---
+- name: Challenge 05 - service with handler
+  hosts: web
+  become: true
+  tasks:
+    - name: Install nginx
+      ansible.builtin.package:
+        name: nginx
+        state: present
+
+    - name: Deploy nginx config
+      ansible.builtin.copy:
+        dest: /etc/nginx/nginx.conf
+        content: |
+          events {}
+          http { server { listen 80; return 200 'ok'; } }
+      notify: Restart nginx
+
+    - name: Ensure nginx is started
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: true
+
+  handlers:
+    - name: Restart nginx
+      ansible.builtin.service:
+        name: nginx
+        state: restarted

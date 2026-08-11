@@ -1,0 +1,12 @@
+---
+- name: Challenge 03 - create a file
+  hosts: web
+  become: true
+  tasks:
+    - name: Write a file in /tmp
+      ansible.builtin.copy:
+        dest: /tmp/challenge-03.txt
+        content: "challenge 3\n"
+        owner: root
+        group: root
+        mode: "0644"

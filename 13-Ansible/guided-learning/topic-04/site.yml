@@ -1,0 +1,9 @@
+---
+- name: Basic playbook skeleton
+  hosts: web
+  become: true
+  tasks:
+    - name: Ensure a demo file exists
+      ansible.builtin.file:
+        path: /tmp/ansible-demo.txt
+        state: touch

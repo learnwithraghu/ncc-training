@@ -1,0 +1,11 @@
+---
+- name: Challenge 04 - create a user
+  hosts: web
+  become: true
+  tasks:
+    - name: Ensure demo user exists
+      ansible.builtin.user:
+        name: demo_user
+        state: present
+        shell: /bin/bash
+        create_home: true

@@ -2,17 +2,20 @@
 
 This module uses one self-contained lesson per topic.
 
+Sandbox note: this lab runs Ansible 2.18.5 and provides `web1` and `web2` as root-accessible targets (`root` / `Passw0rd`).
+
 ## Setup
 
 Use the provided lab hosts:
 
 - `web1` — `root` / `Passw0rd`
 - `web2` — `root` / `Passw0rd`
+- controller-side commands should use an inventory file in the working directory, such as `inventory.ini`
 
 ## Structure
 
 - `topic-01/` through `topic-10/` hold the learning topics
-- each topic has a single `guide.md` file
+- each topic has a `guide.md` file and a starter `.yml` playbook
 - each topic is designed to take about 20 minutes
 
 ## Recommended Flow
@@ -35,3 +38,4 @@ Use the provided lab hosts:
 - Topic 08 - Loops, Conditionals, and Tags
 - Topic 09 - Roles and Reusable Automation
 - Topic 10 - Multi-Host App Deployment
+- Challenge folder - five practice playbook prompts with starter playbooks

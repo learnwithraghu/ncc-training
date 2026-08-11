@@ -31,13 +31,9 @@ configure_jenkins() {
     cat >/etc/sysconfig/jenkins <<EOF
 JENKINS_PORT=${JENKINS_PORT}
 JENKINS_JAVA_CMD=/usr/bin/java
-JAVA_ARGS="-Djenkins.install.runSetupWizard=false"
 EOF
   else
     grep -q '^JENKINS_PORT=' /etc/sysconfig/jenkins && sed -i "s/^JENKINS_PORT=.*/JENKINS_PORT=${JENKINS_PORT}/" /etc/sysconfig/jenkins || echo "JENKINS_PORT=${JENKINS_PORT}" >> /etc/sysconfig/jenkins
-    if ! grep -q 'runSetupWizard=false' /etc/sysconfig/jenkins; then
-      echo 'JAVA_ARGS="-Djenkins.install.runSetupWizard=false"' >> /etc/sysconfig/jenkins
-    fi
   fi
   systemctl enable jenkins
 }
@@ -45,18 +41,18 @@ EOF
 write_security_groovy() {
   mkdir -p /var/lib/jenkins/init.groovy.d
   cat >/var/lib/jenkins/init.groovy.d/basic-security.groovy <<GROOVY
-import jenkins.model.*
-import hudson.security.*
+import jenkins.model.Jenkins
+import hudson.security.HudsonPrivateSecurityRealm
+import hudson.security.FullControlOnceLoggedInAuthorizationStrategy
+
 def instance = Jenkins.get()
-if (instance.getSecurityRealm() == null) {
-  def realm = new HudsonPrivateSecurityRealm(false)
-  realm.createAccount('${ADMIN_USER}', '${ADMIN_PASS}')
-  instance.setSecurityRealm(realm)
-  def strategy = new FullControlOnceLoggedInAuthorizationStrategy()
-  strategy.setAllowAnonymousRead(false)
-  instance.setAuthorizationStrategy(strategy)
-  instance.save()
-}
+def realm = new HudsonPrivateSecurityRealm(false)
+realm.createAccount('${ADMIN_USER}', '${ADMIN_PASS}')
+instance.setSecurityRealm(realm)
+def strategy = new FullControlOnceLoggedInAuthorizationStrategy()
+strategy.setAllowAnonymousRead(false)
+instance.setAuthorizationStrategy(strategy)
+instance.save()
 GROOVY
   chown -R "${JENKINS_USER}:${JENKINS_GROUP}" /var/lib/jenkins/init.groovy.d
 }

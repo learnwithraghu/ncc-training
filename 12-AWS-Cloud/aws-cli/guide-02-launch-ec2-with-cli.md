@@ -29,8 +29,7 @@ Replace `ami-xxxxxxxx` with the AMI from step 2.
 aws ec2 run-instances \
   --image-id ami-xxxxxxxx \
   --instance-type t2.micro \
-  --min-count 1 \
-  --max-count 1
+  --count 1
 ```
 
 ## 4) Check the instance
@@ -45,10 +44,26 @@ aws ec2 describe-instances \
   --output text
 ```
 
+## 6) Terminate the instance
+Replace `i-xxxxxxxxxxxxxxxxx` with the instance ID from step 5.
+
+```bash
+aws ec2 terminate-instances \
+  --instance-ids i-xxxxxxxxxxxxxxxxx
+```
+
+## 7) Confirm it is terminating
+```bash
+aws ec2 describe-instances \
+  --instance-ids i-xxxxxxxxxxxxxxxxx
+```
+
 ## Notes
 - This is the simplest CLI-based launch flow.
 - It uses default VPC/subnet behavior if your account supports it.
 - You may still need a key pair or security group later for SSH access.
+- Always terminate test instances when you are done to avoid charges.
+- If your AWS CLI version does not accept `--count`, check `aws ec2 run-instances help` and use the launch syntax your installed version expects.
 
 ## Checkpoint
 - What AMI ID did you use?

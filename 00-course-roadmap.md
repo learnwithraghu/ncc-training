@@ -70,7 +70,7 @@ Day 5: Kubernetes + Helm + Capstone
 
 | Module | Guides | What You Build |
 |--------|--------|----------------|
-| [07-Jenkins](07-Jenkins/README.md) | 6 guides | Jenkins pipeline that builds and pushes Docker image |
+| [07-Jenkins](07-Jenkins/README.md) | 15 guided topics | Jenkins pipeline that builds and pushes Docker image |
 | [08-GitHub-Actions](08-GitHub-Actions/README.md) | 2 guides | GitHub Actions workflow for the same pipeline |
 
 **Artifact:** CI/CD pipeline pushing the Day 3 image to Amazon ECR.

@@ -1,39 +1,35 @@
-# Guided Learning - Jenkins on EC2
+# Guided Learning - Jenkins
 
-This module uses one self-contained lesson per folder.
-
-## Lab Setup
-
-- Jenkins runs on an **Ubuntu Server EC2** instance
-- Access Jenkins through the **Web UI**
-- Use the helper bootstrap script to install Jenkins and seed guided-learning jobs
-- Clone this repository locally so learners have all files
-- Use the Jenkins **Build Now** button to run each lesson
-- Load the Pipeline Jenkinsfile from the local cloned repo
+This module uses one self-contained lesson per topic.
 
 ## Structure
 
-- `lesson-01/` through `lesson-10/` hold the learning lessons
-- each lesson has a single `guide.md` file
-- each lesson is designed to take about 20 minutes
+- `topic-01/` through `topic-15/` hold the learning topics
+- each topic has a single `guide.md` file
+- each topic is designed to take about 20 minutes
 
 ## Recommended Flow
 
-1. Open the lesson guide.
+1. Open the topic guide.
 2. Read the explanation and commands.
-3. Run the commands as you go.
+3. Run the commands / click through the console as you go.
 4. Check the checkpoint prompt before moving on.
-5. Finish the lesson in about 20 minutes before moving to the next one.
+5. Finish the topic in about 20 minutes before moving to the next one.
 
-## Lesson List
+## Topic List
 
-- Lesson 01 - EC2 Boot and Repo Clone
-- Lesson 02 - Jenkins Bootstrap Script
-- Lesson 03 - Jenkins Web UI First Steps
-- Lesson 04 - Freestyle Hello Job
-- Lesson 05 - Python Syntax Check
-- Lesson 06 - Python Unit Test Job
-- Lesson 07 - Simple Pipeline Stages
-- Lesson 08 - Parameters and Workspace Notes
-- Lesson 09 - Local Repo Pipeline Job
-- Lesson 10 - Build Now CI Flow
+- Topic 01 - Manual Jenkins Install on EC2 Amazon Linux - and Why It Fails
+- Topic 02 - Run Jenkins in Docker (Quickstart)
+- Topic 03 - Don't Lose Your Data (Named Volume)
+- Topic 04 - Build a Custom Jenkins Image
+- Topic 05 - Bake the Lab Project into the Image
+- Topic 06 - Your First Pipeline Job from the Console
+- Topic 07 - A Real Jenkinsfile for the Lab Project
+- Topic 08 - The Rebuild Loop
+- Topic 09 - Bind-Mount Instead of Rebuild
+- Topic 10 - Add a Test Stage (pytest + JUnit)
+- Topic 11 - Multi-Stage Pipeline: Lint -> Test -> Package
+- Topic 12 - Parameterized Builds
+- Topic 13 - Jenkins Credentials Store
+- Topic 14 - Docker-in-Jenkins: Build the App's Own Image
+- Topic 15 - Capstone: Full Rebuild-Bake-Run Cycle

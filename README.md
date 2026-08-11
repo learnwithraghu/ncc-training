@@ -33,7 +33,7 @@ By the end of this course, you will:
 
 ## 📚 Course Structure
 
-The course is organized into 11 progressive modules across 5 days:
+The course is organized into 12 progressive modules across 5 days:
 
 ```
 ncc-training/
@@ -50,6 +50,7 @@ ncc-training/
 ├── 10-Helm/                 Day 5 — Kubernetes package manager
 ├── 11-Capstone-Document-Search/  Day 5 — End-to-end project
 ├── 12-AWS-Cloud/            AWS cloud notes and EC2 practice
+├── 13-Ansible/              Infrastructure automation with Ansible
 ├── 99-quiz-challenge/       MCQ quiz across all topics
 ├── COURSE_PLAN.md           Implementation progress tracker
 └── README.md                This file

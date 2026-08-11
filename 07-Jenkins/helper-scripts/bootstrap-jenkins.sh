@@ -26,9 +26,18 @@ install_pkg_repo() {
 }
 
 configure_jenkins() {
-  sed -i "s/^JENKINS_PORT=.*/JENKINS_PORT=${JENKINS_PORT}/" /etc/sysconfig/jenkins || true
-  if ! grep -q 'runSetupWizard=false' /etc/sysconfig/jenkins; then
-    echo 'JAVA_ARGS="-Djenkins.install.runSetupWizard=false ${JAVA_ARGS}"' >> /etc/sysconfig/jenkins
+  mkdir -p /etc/sysconfig
+  if [[ ! -f /etc/sysconfig/jenkins ]]; then
+    cat >/etc/sysconfig/jenkins <<EOF
+JENKINS_PORT=${JENKINS_PORT}
+JENKINS_JAVA_CMD=/usr/bin/java
+JAVA_ARGS="-Djenkins.install.runSetupWizard=false"
+EOF
+  else
+    grep -q '^JENKINS_PORT=' /etc/sysconfig/jenkins && sed -i "s/^JENKINS_PORT=.*/JENKINS_PORT=${JENKINS_PORT}/" /etc/sysconfig/jenkins || echo "JENKINS_PORT=${JENKINS_PORT}" >> /etc/sysconfig/jenkins
+    if ! grep -q 'runSetupWizard=false' /etc/sysconfig/jenkins; then
+      echo 'JAVA_ARGS="-Djenkins.install.runSetupWizard=false"' >> /etc/sysconfig/jenkins
+    fi
   fi
   systemctl enable jenkins
 }
@@ -97,7 +106,7 @@ create_job "lesson-10-build-now-ci" "Lesson 10 - Build Now CI Flow" "pipeline { 
 systemctl start jenkins
 
 for _ in {1..60}; do
-  if curl -fsS "http://127.0.0.1:${JENKINS_PORT}/login" >/dev/null 2>&1; then
+  if wget -qO- "http://127.0.0.1:${JENKINS_PORT}/login" >/dev/null 2>&1; then
     break
   fi
   sleep 5

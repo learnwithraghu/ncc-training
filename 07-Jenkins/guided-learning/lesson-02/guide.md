@@ -13,9 +13,10 @@ Install Jenkins on Ubuntu Server with direct commands.
 
 ```bash
 sudo apt-get update -y
-sudo apt-get install -y openjdk-17-jre git python3 wget curl gnupg
-curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key | sudo gpg --dearmor -o /usr/share/keyrings/jenkins-keyring.gpg
-echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.gpg] https://pkg.jenkins.io/debian-stable binary/" | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
+sudo apt-get install -y openjdk-17-jre git python3 wget curl gnupg ca-certificates
+sudo mkdir -p /etc/apt/keyrings
+sudo wget -qO /etc/apt/keyrings/jenkins-keyring.asc https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+echo "deb [signed-by=/etc/apt/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/" | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
 sudo apt-get update -y
 sudo apt-get install -y jenkins
 sudo systemctl enable jenkins

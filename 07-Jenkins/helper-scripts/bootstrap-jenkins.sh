@@ -38,25 +38,6 @@ EOF
   systemctl enable jenkins
 }
 
-write_security_groovy() {
-  mkdir -p /var/lib/jenkins/init.groovy.d
-  cat >/var/lib/jenkins/init.groovy.d/basic-security.groovy <<GROOVY
-import jenkins.model.Jenkins
-import hudson.security.HudsonPrivateSecurityRealm
-import hudson.security.FullControlOnceLoggedInAuthorizationStrategy
-
-def instance = Jenkins.get()
-def realm = new HudsonPrivateSecurityRealm(false)
-realm.createAccount('${ADMIN_USER}', '${ADMIN_PASS}')
-instance.setSecurityRealm(realm)
-def strategy = new FullControlOnceLoggedInAuthorizationStrategy()
-strategy.setAllowAnonymousRead(false)
-instance.setAuthorizationStrategy(strategy)
-instance.save()
-GROOVY
-  chown -R "${JENKINS_USER}:${JENKINS_GROUP}" /var/lib/jenkins/init.groovy.d
-}
-
 create_job() {
   local job_name="$1"
   local description="$2"
@@ -83,7 +64,6 @@ XML
 
 install_pkg_repo
 configure_jenkins
-write_security_groovy
 
 mkdir -p /var/lib/jenkins/jobs
 chown -R "${JENKINS_USER}:${JENKINS_GROUP}" /var/lib/jenkins/jobs

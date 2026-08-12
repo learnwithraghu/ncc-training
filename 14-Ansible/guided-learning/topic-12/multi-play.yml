@@ -1,0 +1,23 @@
+---
+- name: Install pandas on web1
+  hosts: web1
+  become: true
+  tasks:
+    - name: Ensure pip is installed
+      ansible.builtin.package:
+        name: python3-pip
+        state: present
+
+    - name: Install pandas
+      ansible.builtin.pip:
+        name: pandas
+        state: present
+
+- name: Install nginx on web2
+  hosts: web2
+  become: true
+  tasks:
+    - name: Install nginx
+      ansible.builtin.package:
+        name: nginx
+        state: present

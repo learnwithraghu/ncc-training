@@ -14,7 +14,7 @@ Use the provided lab hosts:
 
 ## Structure
 
-- `topic-01/` through `topic-11/` hold the learning topics
+- `topic-01/` through `topic-12/` hold the learning topics
 - `challenge-01/` through `challenge-05/` are inserted between topics as practice stops
 - each topic and challenge has a `guide.md` file and a starter `.yml` playbook, except Topic 01 (builds the inventory) and Topic 03 (ad-hoc `ansible -m command` only, no playbook)
 - each stop is designed to take about 20 minutes
@@ -47,3 +47,4 @@ Each topic tells a small story:
 - Topic 10 - Pack the Web Server Steps into a Role
 - Topic 11 - Deploy the Small App Across Both Servers
 - Challenge 05 - Start a Service and Restart Only on Change
+- Topic 12 - Install Different Things on Different Hosts, One Playbook

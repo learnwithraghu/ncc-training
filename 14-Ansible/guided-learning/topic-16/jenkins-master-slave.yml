@@ -1,0 +1,43 @@
+---
+- name: Install and run Jenkins on web1 (master)
+  hosts: web1
+  become: true
+  vars:
+    jenkins_repo_url: https://pkg.jenkins.io/redhat-stable/jenkins.repo
+    jenkins_key_url: https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
+  tasks:
+    - name: Install Java 17 (Amazon Corretto)
+      ansible.builtin.dnf:
+        name: java-17-amazon-corretto
+        state: present
+
+    - name: Add the Jenkins yum repo
+      ansible.builtin.get_url:
+        url: "{{ jenkins_repo_url }}"
+        dest: /etc/yum.repos.d/jenkins.repo
+        mode: "0644"
+
+    - name: Import the Jenkins repo signing key
+      ansible.builtin.rpm_key:
+        key: "{{ jenkins_key_url }}"
+        state: present
+
+    - name: Install Jenkins
+      ansible.builtin.dnf:
+        name: jenkins
+        state: present
+
+    - name: Enable and start Jenkins
+      ansible.builtin.systemd:
+        name: jenkins
+        enabled: true
+        state: started
+
+- name: Prepare web2 as a Jenkins agent (slave)
+  hosts: web2
+  become: true
+  tasks:
+    - name: Install Java 17 (Amazon Corretto) for the agent
+      ansible.builtin.dnf:
+        name: java-17-amazon-corretto
+        state: present

@@ -39,7 +39,8 @@ for playbook in \
   guided-learning/topic-11/deploy.yml \
   guided-learning/topic-12/multi-play.yml \
   guided-learning/topic-13/node-check.yml \
-  guided-learning/topic-14/google-check.yml
+  guided-learning/topic-14/google-check.yml \
+  guided-learning/topic-16/jenkins-master-slave.yml
   do
     echo "--> $playbook"
     ansible-playbook -i "$INVENTORY" "$playbook"

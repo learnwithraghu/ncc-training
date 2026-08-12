@@ -7,7 +7,8 @@ from flask import Flask, render_template_string, request
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024
 
-rekognition = boto3.client("rekognition")
+region = os.getenv("AWS_REGION") or os.getenv("AWS_DEFAULT_REGION") or "us-east-1"
+rekognition = boto3.client("rekognition", region_name=region)
 
 PAGE = """
 <!doctype html>

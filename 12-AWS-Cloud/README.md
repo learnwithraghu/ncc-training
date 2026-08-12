@@ -31,6 +31,12 @@
 
 - [rekognition-image-to-text-app/README.md](./rekognition-image-to-text-app/README.md)
 
+## Module: ECS Simple Web + ALB
+
+- [ecs-simple-web/README.md](./ecs-simple-web/README.md)
+- [ecs-simple-web/demo-infra-requirement.md](./ecs-simple-web/demo-infra-requirement.md)
+- [ecs-simple-web/guide-01-ecs-nginx-with-alb.md](./ecs-simple-web/guide-01-ecs-nginx-with-alb.md)
+
 ## Module: ECS Jenkins
 
 - [ecs-jenkins/README.md](./ecs-jenkins/README.md)

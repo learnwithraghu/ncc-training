@@ -1,40 +1,43 @@
-# Topic 11: Multi-Stage Pipeline: Lint -> Test -> Package
+# Topic 11: Archiving Artifacts & Build History
 
 **Time:** 20 minutes
 
 ## Goal
-Add a Package stage that archives a build artifact, downloadable from the Jenkins console.
+Keep evidence of what each build actually tested: archive the test
+report and a snapshot of the code alongside every build, and cap how many
+old builds Jenkins keeps around.
 
-## Pipeline Script
-Add this stage after `Test`, and this `post` block at the pipeline level (same level as `stages`):
-```groovy
-        stage('Package') {
-            steps {
-                sh 'cd app && tar -czf lab-app.tar.gz app.py requirements.txt'
-            }
-        }
-    }
+## Files Provided
+- `files/code/app.py`, `files/code/test_app.py`, `files/code/requirements.txt`
+- `files/Jenkinsfile` - adds an `Archive` stage on top of Topic 10's
+  `Syntax Check` and `Unit Tests`, plus a `buildDiscarder` retention
+  policy.
 
-    post {
-        success {
-            archiveArtifacts artifacts: 'app/lab-app.tar.gz', fingerprint: true
-        }
-    }
-}
-```
+## Prerequisites
+`python3` and `pytest` installed in the container (Topics 7 and 10).
 
 ## Guided Steps
-1. Open `lab-pipeline` -> **Configure** and add the `Package` stage plus the top-level `post` block
-   shown above (it goes after `stages { ... }`, not inside it).
-2. Save, then **Build Now**.
-3. Notice `tar` runs inside `app/` (the workspace copy from Topic 7's Prepare stage), and
-   `archiveArtifacts` refers to `app/lab-app.tar.gz` - a path **relative to the workspace**, not
-   the absolute `/opt/lab-project/...` path. `archiveArtifacts` only understands workspace-relative
-   paths, which is exactly why everything got copied into `app/` in Topic 7.
-4. On the build's page, find the **Build Artifacts** link and download `lab-app.tar.gz` straight
-   from the browser.
-5. Run the pipeline a second time and confirm each build keeps its own archived artifact.
+1. Copy this topic's `files/code/*` onto `~/jenkins-code`.
+2. Create a Pipeline job, e.g. `python-tested-and-archived`, paste in
+   this topic's `files/Jenkinsfile`, and save.
+3. Click **Build Now** a few times (feel free to tweak `app.py` slightly
+   between runs, e.g. change the `fizzbuzz` boundary). After each build,
+   open the build page and click **Archived Artifacts** - you'll find
+   `app-snapshot.py` and `build-info.txt` for that specific run.
+4. Compare `app-snapshot.py` across two different build numbers. Because
+   Jenkins keeps each build's artifacts separately, you have a record of
+   exactly which version of the code produced each pass/fail result -
+   even though there's no git history backing any of this.
+5. Look at **Test Result Trend** on the job's main page - it charts pass
+   counts across recent builds, built entirely from the JUnit XML each
+   build archived via the `junit` step in Topic 10.
+6. Read the `options { buildDiscarder(logRotator(numToKeepStr: '10')) }`
+   block. It tells Jenkins to keep only the 10 most recent builds (and
+   their artifacts), so a job you run for months doesn't quietly fill the
+   `jenkins_home` volume.
 
 ## Checkpoint
-Why archive the artifact with `archiveArtifacts` instead of just leaving `lab-app.tar.gz` sitting
-in the workspace?
+`archiveArtifacts` and `junit` both read from paths under `${WORKSPACE}`,
+never from `/var/jenkins_code`. Given what Topic 10 said about
+workspace-vs-source, why would archiving files straight from
+`/var/jenkins_code` be the wrong instinct here?

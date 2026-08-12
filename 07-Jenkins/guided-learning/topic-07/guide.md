@@ -1,49 +1,48 @@
-# Topic 7: A Real Jenkinsfile for the Lab Project
+# Topic 7: Testing Python Syntax With py_compile
 
 **Time:** 20 minutes
 
 ## Goal
-Replace the "Hello" script with a real `Jenkinsfile` for the lab project, and learn the
-copy-into-workspace pattern the rest of the module builds on.
+Give the Jenkins container Python, then build a pipeline stage that fails
+the build the moment a `.py` file on the mounted volume has a syntax
+error - and watch it turn green once you fix the file.
 
-## Pipeline Script
-```groovy
-pipeline {
-    agent any
+## Files Provided
+- `files/code/app.py` (valid), `files/code/broken.py` (syntax error) -
+  drop onto `~/jenkins-code` on the host.
+- `files/Jenkinsfile` - loops over every `.py` file in `/var/jenkins_code`
+  and runs `python3 -m py_compile` on it.
 
-    environment {
-        LAB_SRC = '/opt/lab-project/application'
-    }
-
-    stages {
-        stage('Prepare') {
-            steps {
-                sh 'rm -rf app && mkdir -p app'
-                sh "cp -r ${LAB_SRC}/. app/"
-            }
-        }
-
-        stage('Build') {
-            steps {
-                sh 'cd app && python3 --version'
-                sh 'cd app && pip3 install -r requirements.txt --user'
-            }
-        }
-    }
-}
+## Commands to Use
+```bash
+# one-time: give the Jenkins container a Python interpreter
+docker exec -u root jenkins bash -c "apt-get update && apt-get install -y python3"
+docker exec jenkins python3 --version
 ```
 
 ## Guided Steps
-1. Create a new Pipeline job named `lab-pipeline` (New Item -> Pipeline).
-2. Paste the script above as an inline **Pipeline script**, same as Topic 6.
-3. Notice the new **Prepare** stage: it copies everything from `/opt/lab-project/application`
-   (baked into the image, owned by root, effectively read-only to the `jenkins` user) into an
-   `app/` folder inside the job's own **workspace** (writable, and cleaned/reused per job).
-4. Every later stage - Lint, Test, Package, Docker Build - works against `app/`, never against
-   `/opt/lab-project/application` directly. Keep this pattern in mind for the rest of the module.
-5. Save and click **Build Now**.
-6. Open **Console Output** and confirm `python3 --version` and the `pip3 install` both succeed.
+1. The official `jenkins/jenkins:lts-jdk17` image does not ship Python.
+   Install it once, as root, inside the running container with the
+   command above. This survives container restarts (it's baked into the
+   writable container layer, not the volumes) but **not** `docker rm -f`
+   - if you recreate the container later, repeat this step.
+2. Copy this topic's `files/code/app.py` and `files/code/broken.py` onto
+   `~/jenkins-code` on the host.
+3. Create a Pipeline job, e.g. `python-syntax-check`, and paste in this
+   topic's `files/Jenkinsfile`.
+4. Click **Build Now**. The build should **fail (red)** - read the
+   console output and find the exact line where `py_compile` reports the
+   `SyntaxError` in `broken.py`.
+5. On the host, fix `broken.py` (add the missing colon after
+   `def broken_function(a, b):`) or simply delete it from
+   `~/jenkins-code`.
+6. Click **Build Now** again. The build should now **pass (green)**.
+7. Notice the pipeline didn't need to know the filenames in advance - the
+   `for f in *.py` loop picks up whatever is currently on the mounted
+   volume. Drop in a third `.py` file and rebuild to prove it.
 
 ## Checkpoint
-Why copy the baked-in code into the workspace instead of running pip/pytest/tar directly against
-`/opt/lab-project/application`?
+`py_compile` only catches syntax errors - it will happily accept code
+with an unused import or a line that's 200 characters long. What kind of
+problem would you need a *different* tool to catch, and which stage will
+Topic 8 add for that?

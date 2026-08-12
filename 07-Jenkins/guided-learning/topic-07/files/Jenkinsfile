@@ -1,0 +1,24 @@
+pipeline {
+    agent any
+
+    environment {
+        CODE_DIR = '/var/jenkins_code'
+    }
+
+    stages {
+        stage('Syntax Check') {
+            steps {
+                sh '''
+                    set -e
+                    cd "${CODE_DIR}"
+                    echo "Checking syntax of every .py file in ${CODE_DIR}"
+                    for f in *.py; do
+                        echo "-- python3 -m py_compile ${f}"
+                        python3 -m py_compile "${f}"
+                    done
+                    echo "All files compiled cleanly."
+                '''
+            }
+        }
+    }
+}

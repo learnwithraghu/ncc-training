@@ -1,0 +1,35 @@
+pipeline {
+    agent any
+
+    parameters {
+        choice(
+            name: 'TARGET_FILE',
+            choices: ['app.py', 'messy.py', 'broken.py'],
+            description: 'Which file under /var/jenkins_code to check'
+        )
+    }
+
+    environment {
+        CODE_DIR = '/var/jenkins_code'
+    }
+
+    stages {
+        stage('Syntax Check') {
+            steps {
+                sh '''
+                    cd "${CODE_DIR}"
+                    echo "Checking ${TARGET_FILE}"
+                    python3 -m py_compile "${TARGET_FILE}"
+                '''
+            }
+        }
+        stage('Lint') {
+            steps {
+                sh '''
+                    cd "${CODE_DIR}"
+                    flake8 --max-line-length=100 "${TARGET_FILE}"
+                '''
+            }
+        }
+    }
+}

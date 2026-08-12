@@ -1,35 +1,36 @@
-# Topic 3: Don't Lose Your Data (Named Volume)
+# Topic 3: Unlock and First Login
 
 **Time:** 20 minutes
 
 ## Goal
-See what happens to Jenkins configuration when a container is removed, then fix it with a named
-volume for `JENKINS_HOME`.
+Finish the Jenkins setup wizard: retrieve the initial admin password from
+inside the container, install the suggested plugins, and create a real
+admin user so you stop relying on the one-time password.
 
 ## Commands to Use
 ```bash
-docker stop jenkins-quickstart && docker rm jenkins-quickstart
-docker run -d --name jenkins-noviolume -p 8080:8080 -p 50000:50000 jenkins/jenkins:lts-jdk17
-docker stop jenkins-noviolume && docker rm jenkins-noviolume
-docker volume create jenkins_home
-docker run -d --name jenkins -p 8080:8080 -p 50000:50000 \
-  -v jenkins_home:/var/jenkins_home \
-  jenkins/jenkins:lts-jdk17
+docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
+docker exec jenkins jenkins-plugin-cli --list
 ```
 
 ## Guided Steps
-1. Remove the `jenkins-quickstart` container from Topic 2 (its admin user and setup are about to
-   be gone with it).
-2. Start a brand-new container with no volume attached, unlock it, and create an admin user again.
-3. Stop and remove that container, then start another one the exact same way (still no volume).
-4. Open the browser again - you're back at "Unlock Jenkins" from scratch. All configuration lived
-   only inside the removed container's writable layer, and it's gone.
-5. Now create a Docker named volume and mount it at `/var/jenkins_home`, the directory where
-   Jenkins keeps everything: users, jobs, plugins, credentials.
-6. Unlock and set up this instance once.
-7. Stop and remove the container, then start a new one with the **same** `-v jenkins_home:...`
-   flag. Confirm your admin user and setup are still there - no setup wizard this time.
+1. Browse to `http://<public-ip>:8080`. Jenkins asks for an "unlock" code.
+2. Get that code by reading it from inside the running container - this
+   is the `jenkins_home` named volume from Topic 2, mounted at
+   `/var/jenkins_home` - not from anywhere on the host filesystem, since
+   nothing was bind-mounted there.
+3. Paste the password in and click "Install suggested plugins." Watch the
+   plugin install screen; this is downloading and unpacking `.hpi` files
+   into the same `jenkins_home` volume.
+4. Create your first real admin user (username, password, name, email)
+   when prompted. Do **not** skip this and keep using the admin token -
+   you want a normal login for the rest of the module.
+5. Accept the default Jenkins URL on the final wizard screen, then click
+   "Start using Jenkins."
+6. From the Jenkins dashboard, go to **Manage Jenkins → Plugins →
+   Installed plugins** and confirm `git`, `pipeline`, and `junit` are
+   present (they come from the suggested set).
 
 ## Checkpoint
-What would happen to your jobs and credentials if you forgot the
-`-v jenkins_home:/var/jenkins_home` flag the next time you recreate this container?
+Why did the initial admin password come from a `docker exec` into the
+container instead of a file you could open directly on the EC2 host?

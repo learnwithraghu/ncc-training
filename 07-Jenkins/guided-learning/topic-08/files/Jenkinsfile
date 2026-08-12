@@ -1,0 +1,31 @@
+pipeline {
+    agent any
+
+    environment {
+        CODE_DIR = '/var/jenkins_code'
+    }
+
+    stages {
+        stage('Syntax Check') {
+            steps {
+                sh '''
+                    set -e
+                    cd "${CODE_DIR}"
+                    for f in *.py; do
+                        echo "-- python3 -m py_compile ${f}"
+                        python3 -m py_compile "${f}"
+                    done
+                '''
+            }
+        }
+        stage('Lint') {
+            steps {
+                sh '''
+                    cd "${CODE_DIR}"
+                    echo "Running flake8 on every .py file"
+                    flake8 --max-line-length=100 *.py
+                '''
+            }
+        }
+    }
+}

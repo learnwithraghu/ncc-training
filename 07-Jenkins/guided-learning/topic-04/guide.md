@@ -1,39 +1,59 @@
-# Topic 4: Build a Custom Jenkins Image
+# Topic 4: The Local Volume - Where Your Code Lives
 
 **Time:** 20 minutes
 
 ## Goal
-Move from `docker run` against the stock image to a `Dockerfile` so the plugins this module needs
-are baked in and reproducible, instead of clicked through the Plugin Manager by hand.
+Understand the bind mount you created in Topic 2 well enough to use it as
+a working "drop zone": files you edit on the EC2 host appear instantly
+inside the Jenkins container, and every job you build from here on reads
+its code from that folder.
 
-## Files
-- `../../jenkins/Dockerfile`
-- `../../jenkins/plugins.txt`
+## Files Provided
+This topic's `files/code/` folder contains the two files you'll drop onto
+the volume: `app.py` (valid) and `broken.py` (has a syntax error, on
+purpose). Copy both to the host.
 
 ## Commands to Use
 ```bash
-cd /workspaces/ncc-training/07-Jenkins/jenkins
-docker build -t ncc-jenkins:topic04 .
-docker stop jenkins && docker rm jenkins
-docker run -d --name jenkins -p 8080:8080 -p 50000:50000 \
-  -v jenkins_home:/var/jenkins_home \
-  ncc-jenkins:topic04
+# on the EC2 host, outside any container
+ls -la ~/jenkins-code
+cp files/code/app.py ~/jenkins-code/
+cp files/code/broken.py ~/jenkins-code/
+
+docker exec jenkins ls -la /var/jenkins_code
+docker exec jenkins cat /var/jenkins_code/app.py
+
+echo "print('added from inside the container')" | \
+  docker exec -i jenkins tee -a /var/jenkins_code/scratch.py
+cat ~/jenkins-code/scratch.py
 ```
 
 ## Guided Steps
-1. Open `jenkins/Dockerfile` and read it top to bottom. At this point in the module, only the
-   `FROM`, the `apt-get install python3 ...` layer, and the `plugins.txt` / `jenkins-plugin-cli`
-   layer matter - ignore the Docker CLI and `COPY application` lines, they belong to later topics.
-2. Open `jenkins/plugins.txt` and read the plugin list: `git`, `workflow-aggregator` (Pipeline),
-   `pipeline-stage-view`, `junit`, `credentials-binding`, `docker-workflow`.
-3. Build the image and tag it `ncc-jenkins:topic04`.
-4. Stop and remove the running `jenkins` container - the volume from Topic 3 keeps your admin user
-   and setup safe.
-5. Run a new container from your custom image, same volume.
-6. In the browser, go to **Manage Jenkins -> Plugins -> Installed plugins** and confirm the
-   Pipeline-related plugins are already there - you never opened the Plugin Manager's "Available"
-   tab to install them.
+1. Confirm `~/jenkins-code` exists on the host (created in Topic 2) and
+   copy this topic's `files/code/app.py` and `files/code/broken.py` into
+   it.
+2. From inside the container, list `/var/jenkins_code` - the same two
+   files should already be there. No restart, no rebuild, nothing to
+   sync: the bind mount makes the host folder and the container path the
+   *same* directory on disk.
+3. Write a file from **inside** the container and confirm it shows up on
+   the **host**. This is the direction that matters for Jenkins: a
+   pipeline running inside the container can write reports, logs, or
+   built artifacts that you can inspect from the host without an extra
+   `docker cp`.
+4. Contrast this with the `jenkins_home` **named volume** from Topic 2:
+   that one is managed by Docker, lives under
+   `/var/lib/docker/volumes/...`, and you generally don't touch it by
+   hand. `~/jenkins-code` is a **bind mount** - a real folder you own and
+   edit directly. That's exactly why it's the right choice for "code I'm
+   actively working on," while a named volume is the right choice for
+   "state I want Docker to manage for me" (like `jenkins_home`).
+5. Every remaining topic in this module assumes `~/jenkins-code` on the
+   host = `/var/jenkins_code` inside the container. Keep that path in
+   mind - pipeline stages will reference it directly.
 
 ## Checkpoint
-Why is baking plugins into the image with `plugins.txt` better than installing them by hand every
-time you start a fresh Jenkins container?
+If you deleted the `jenkins` container right now with `docker rm -f
+jenkins` and started a brand-new one with the same two `-v` flags, which
+files would still be there, and which would come back automatically vs.
+need to be recreated?

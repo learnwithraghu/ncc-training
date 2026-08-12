@@ -1,67 +1,47 @@
-# Topic 10: Add a Test Stage (pytest + JUnit)
+# Topic 10: Unit Tests With pytest + JUnit Reports
 
 **Time:** 20 minutes
 
 ## Goal
-Add Lint and Test stages to `lab-pipeline`, and publish pytest results with the JUnit plugin baked
-into the image back in Topic 4.
+Add a real test stage: run `pytest` against `test_app.py`, produce a
+JUnit-format XML report, and have Jenkins parse it into a visual pass/fail
+breakdown per test.
 
-## Pipeline Script
-```groovy
-pipeline {
-    agent any
+## Files Provided
+- `files/code/app.py`, `files/code/test_app.py`, `files/code/requirements.txt`
+- `files/Jenkinsfile` - `Syntax Check` stage, then a `Unit Tests` stage
+  that runs `pytest --junitxml=...` and publishes it with the `junit`
+  step.
 
-    environment {
-        LAB_SRC = '/opt/lab-project/application'
-    }
-
-    stages {
-        stage('Prepare') {
-            steps {
-                sh 'rm -rf app && mkdir -p app'
-                sh "cp -r ${LAB_SRC}/. app/"
-            }
-        }
-
-        stage('Build') {
-            steps {
-                sh 'cd app && python3 --version'
-                sh 'cd app && pip3 install -r requirements.txt --user'
-            }
-        }
-
-        stage('Lint') {
-            steps {
-                sh 'cd app && bash check_syntax.sh'
-            }
-        }
-
-        stage('Test') {
-            steps {
-                sh 'cd app && python3 -m pytest --junitxml=results.xml'
-            }
-            post {
-                always {
-                    junit 'app/results.xml'
-                }
-            }
-        }
-    }
-}
+## Commands to Use
+```bash
+docker exec -u root jenkins pip install --break-system-packages pytest
+docker exec jenkins python3 -m pytest --version
 ```
 
 ## Guided Steps
-1. Open `lab-pipeline` -> **Configure** and replace the script with the one above.
-2. Save, then **Build Now**.
-3. Open **Console Output** and watch the Lint stage run `check_syntax.sh` (py_compile + flake8).
-4. Watch the Test stage run pytest, writing `results.xml` in JUnit XML format.
-5. Back on the job's build page, look for the **Test Result** link/graph - this comes from the
-   `junit` step in `post { always { ... } }`, which runs whether the tests pass or fail.
-6. Break a test on purpose: edit `application/test_app.py` on the host to assert something false,
-   rebuild the image (Topic 8's loop), recreate the container, and run the pipeline again. Confirm
-   the build goes red and the Test Result page shows the failing test. Revert your change and
-   rebuild once more before moving on.
+1. Install `pytest` in the container (in addition to `python3` from
+   Topic 7).
+2. Copy this topic's `files/code/*` onto `~/jenkins-code`.
+3. Create a Pipeline job, e.g. `python-unit-tests`, paste in this topic's
+   `files/Jenkinsfile`, and save.
+4. Click **Build Now**. Read the `Unit Tests` console output: pytest
+   lists each test function in `test_app.py` with pass/fail.
+5. Open the finished build page. You'll see a **Test Result** link with a
+   pass count - click it to see each test broken out individually,
+   generated from the `results.xml` the `junit` step parsed.
+6. Notice the `Jenkinsfile` writes the XML report to
+   `${WORKSPACE}/reports/results.xml`, **not** into
+   `/var/jenkins_code`. The pipeline's own workspace (managed by Jenkins,
+   one per job) is where build **outputs** belong; the bind-mounted
+   `/var/jenkins_code` is where your **source** lives. Keeping those
+   separate is why the `junit` step can find the report using a path
+   relative to the workspace.
+7. Break a test on purpose - edit `test_app.py` on the host so
+   `test_fizzbuzz` asserts the wrong value - and rebuild. The stage still
+   completes (pytest ran and produced a report) but the build goes red
+   and the Test Result trend shows one failure.
 
 ## Checkpoint
-Why does `junit` sit inside `post { always { ... } }` instead of directly inside the `Test` stage's
-`steps` block?
+Why does the `Unit Tests` stage still succeed at *running* pytest even
+when a test fails, but the overall build still reports red?

@@ -1,34 +1,64 @@
-# Topic 2: Run Jenkins in Docker (Quickstart)
+# Topic 2: Meet Jenkins in Docker
 
 **Time:** 20 minutes
 
 ## Goal
-Launch the official Jenkins image in Docker and complete the setup wizard from the browser -
-compare this to how long Topic 1 took.
+Launch a **second, fresh** EC2 instance, install Docker and git on it, and
+run Jenkins as a container with its web port exposed. This is the machine
+you will use for the rest of the module.
+
+## Prerequisites
+- Launch a fresh **Amazon Linux 2023** EC2 instance (`t2.micro` or
+  `t3.micro`), security group open on port 22 (SSH) and 8080 (Jenkins UI)
+  from your IP.
+- SSH into it: `ssh -i your-key.pem ec2-user@<public-ip>`
 
 ## Commands to Use
 ```bash
+sudo dnf update -y
+sudo dnf install -y docker git
+sudo systemctl enable docker
+sudo systemctl start docker
+sudo usermod -aG docker ec2-user
+# log out and back in so the group change applies
 docker --version
-docker run -d --name jenkins-quickstart -p 8080:8080 -p 50000:50000 jenkins/jenkins:lts-jdk17
-docker logs -f jenkins-quickstart
+git --version
+
+mkdir -p ~/jenkins-code
+docker run -d --name jenkins \
+  -p 8080:8080 -p 50000:50000 \
+  -v jenkins_home:/var/jenkins_home \
+  -v ~/jenkins-code:/var/jenkins_code \
+  jenkins/jenkins:lts-jdk17
+
+docker ps
+docker logs -f jenkins
 ```
 
 ## Guided Steps
-1. Confirm Docker is available on this machine.
-2. Start the official `jenkins/jenkins:lts-jdk17` image, publishing the web UI port (8080) and the
-   agent port (50000).
-3. Watch the container logs until you see the initial admin password printed between two lines of
-   asterisks. Stop following logs with `Ctrl+C`.
-4. Open `http://<host>:8080` in a browser.
-5. Retrieve the password another way too, so you know both options exist:
-   ```bash
-   docker exec jenkins-quickstart cat /var/jenkins_home/secrets/initialAdminPassword
-   ```
-6. Paste the password into "Unlock Jenkins".
-7. Choose "Install suggested plugins" and wait for it to finish.
-8. Create your first admin user and confirm the Jenkins URL.
-9. Land on the Jenkins dashboard.
+1. Install Docker and git with `dnf`, enable the Docker service, and add
+   `ec2-user` to the `docker` group so you don't need `sudo` for every
+   `docker` command. Log out and back in (or run `newgrp docker`) for the
+   group change to take effect.
+2. Create a folder on the host, `~/jenkins-code`, before you start the
+   container. This is the **local volume** you will keep coming back to
+   in later topics - it is where you will drop Python files for Jenkins
+   pipelines to read.
+3. Run `jenkins/jenkins:lts-jdk17` with two `-v` mounts:
+   - `jenkins_home` (a **named volume**) → `/var/jenkins_home`, so
+     Jenkins's own configuration, jobs, and plugins survive a container
+     restart.
+   - `~/jenkins-code` (a **bind mount**) → `/var/jenkins_code`, so files
+     you edit on the host EC2 instance are immediately visible inside the
+     container, and files the container writes show up on the host.
+4. Publish both ports: `8080` is the web UI, `50000` is used for Jenkins
+   agents to connect (you won't use it yet, but it costs nothing to
+   expose now).
+5. Watch `docker logs -f jenkins` until you see "Jenkins is fully up and
+   running." Then browse to `http://<public-ip>:8080`.
+6. Compare this to Topic 1: one `docker run` command replaced a JDK
+   install, a Yum repo, a signing key import, and a systemd service.
 
 ## Checkpoint
-How long did this take compared to Topic 1's manual install, and what did you *not* have to think
-about this time (Java version, OS package manager, repo keys)?
+Which of the two `-v` mounts would lose data if you ran
+`docker rm -f jenkins` right now, and which one wouldn't? Why?

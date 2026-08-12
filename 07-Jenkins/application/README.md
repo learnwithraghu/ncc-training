@@ -1,29 +1,28 @@
-# Jenkins Lab Project
+# Sample Application
 
-A tiny, dependency-light Python CLI used by every guided-learning topic in `07-Jenkins`. It exists
-so the pipelines have something real to lint, test, package, and containerize — the point is the
-Jenkins/Docker workflow, not the app.
+This is the small stdlib-only Python project the whole module tests, lints,
+unit-tests, and eventually containerizes from inside Jenkins pipelines.
 
-## Files
+| File | Purpose |
+|------|---------|
+| `app.py` | Valid CLI: `add`, `is_prime`, `fizzbuzz` subcommands |
+| `broken.py` | Deliberately has a syntax error - used to prove a pipeline's syntax-check stage can fail a build |
+| `test_app.py` | pytest unit tests for `app.py` |
+| `requirements.txt` | `pytest` + `flake8`, installed inside the pipeline (not baked into the Jenkins image) |
+| `Dockerfile` | Built by the pipeline in Topic 12, once tests pass |
 
-- `app.py` — a small CLI (`calc`, `is-prime`, `fizzbuzz` subcommands)
-- `test_app.py` — pytest unit tests
-- `check_syntax.sh` — `py_compile` + `flake8` lint check
-- `requirements.txt` — `pytest` and `flake8`
-- `Dockerfile` — used in Topic 14 when a pipeline stage builds this app's own image
+This folder is the "final answer key" version. Each `guided-learning/topic-NN/`
+folder that needs these files carries its **own copy** under `files/code/`
+(and its own `files/Jenkinsfile`), so you can start from any topic without
+depending on work left over from a previous one. See
+[Guided Learning Focus](../README.md#guided-learning-focus) for why.
 
-## Run It Directly
+Run it directly with Python if you want to see it work before it ever
+touches Jenkins:
 
 ```bash
-cd /workspaces/ncc-training/07-Jenkins/application
-pip install -r requirements.txt
 python3 app.py fizzbuzz 15
-python3 -m pytest
-bash check_syntax.sh
+python3 -m pytest test_app.py -v
+python3 -m py_compile app.py      # passes
+python3 -m py_compile broken.py   # fails - this is the point
 ```
-
-## How Jenkins Uses This Folder
-
-This folder is `COPY`'d into the custom Jenkins image (see `../jenkins/Dockerfile`) at
-`/opt/lab-project/application`. Pipelines copy it from there into their own workspace at the start
-of each run — see `../jenkins/Jenkinsfile` and Topic 7 for why.

@@ -1,68 +1,66 @@
-# Topic 1: Manual Jenkins Install on EC2 Amazon Linux - and Why It Fails
+# Topic 1: The Manual Way - Jenkins on EC2
 
 **Time:** 20 minutes
 
 ## Goal
-Install Jenkins directly on an EC2 Amazon Linux host using the commands a typical tutorial gives
-you, hit a real failure, and diagnose it. This is the "why" for the rest of the module.
+Install Jenkins by hand on a plain Amazon Linux EC2 instance, and feel the
+pain of manual setup: OS packages, a JDK version, a Yum repo, a systemd
+service, and a security group - all before you have created a single job.
+This instance is **disposable**. You will not use it again after this
+topic.
 
-## Environment
-This topic only: an EC2 instance running Amazon Linux, with `sudo` access. You will not use this
-host again after this topic - Topic 2 onward moves to Docker on whatever machine has it installed.
+## Prerequisites
+- Launch a fresh **Amazon Linux 2023** EC2 instance (`t2.micro` or
+  `t3.micro` is enough), with a security group that allows inbound SSH
+  (port 22) and port 8080 from your IP.
+- SSH into it: `ssh -i your-key.pem ec2-user@<public-ip>`
 
 ## Commands to Use
 ```bash
 sudo dnf update -y
-sudo dnf install -y java-11-amazon-corretto wget
-sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
+sudo dnf install -y java-17-amazon-corretto
+java -version
+
+sudo wget -O /etc/yum.repos.d/jenkins.repo \
+  https://pkg.jenkins.io/redhat-stable/jenkins.repo
 sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key
 sudo dnf install -y jenkins
+
 sudo systemctl daemon-reload
 sudo systemctl enable jenkins
 sudo systemctl start jenkins
 sudo systemctl status jenkins
+sudo journalctl -u jenkins --no-pager -n 50
 ```
 
 ## Guided Steps
-1. SSH into the EC2 Amazon Linux instance.
-2. Run the update, Java, and Jenkins repo commands above exactly as shown - this is what many
-   older guides still tell you to do.
-3. Install and start Jenkins, then check its status. It fails.
-4. Read the real error:
-   ```bash
-   sudo journalctl -u jenkins -n 50 --no-pager
-   ```
-   Look for a message like `UnsupportedClassVersionError` or Jenkins refusing to start because the
-   Java runtime is too old. Current Jenkins LTS requires Java 17+, but the command above installed
-   Java 11 - a very plausible copy-paste mistake from an outdated doc.
-5. Try to fix it live: install Java 17 and point Jenkins at it.
-   ```bash
-   sudo dnf install -y java-17-amazon-corretto
-   sudo alternatives --config java
-   sudo systemctl restart jenkins
-   sudo systemctl status jenkins
-   ```
-6. Notice what you just did: hand-patched the host's Java version to match what one piece of
-   software expects. Ask what happens the next time a different tool on this same host needs
-   Java 11.
-7. Clean up so this host doesn't fight with anything later in the course:
-   ```bash
-   sudo systemctl stop jenkins
-   sudo systemctl disable jenkins
-   sudo dnf remove -y jenkins java-11-amazon-corretto java-17-amazon-corretto
-   ```
+1. Update the OS and install a JDK. Jenkins needs a specific Java major
+   version - if you install the wrong one, Jenkins will fail to start and
+   the error only shows up in `journalctl`, not in a friendly message.
+2. Add the official Jenkins Yum repo and import its signing key. Notice
+   how many manual, easy-to-mistype steps this is compared to
+   `docker run`.
+3. Install Jenkins with `dnf`, then enable and start the systemd service.
+4. Open the security group for port 8080 from your IP, then browse to
+   `http://<public-ip>:8080`. If it does not load, go back to
+   `journalctl -u jenkins` and read the actual failure.
+5. Once you have it running (or once you have spent ~10 minutes
+   fighting it), stop and think about everything this required: choosing
+   a JDK version, a package repo, a systemd unit, a firewall rule, and an
+   EC2 instance you now have to remember to terminate. None of that had
+   anything to do with building software.
+6. Terminate this EC2 instance (or note it down to terminate at the end
+   of the module). Every topic from here on runs Jenkins in Docker on a
+   **different** EC2 instance - Topic 2 sets that up.
 
 ## Why We Switch to Docker
-- The failure came from a **host-level dependency conflict** (Java version), not from Jenkins
-  itself - and it's exactly the kind of thing that's invisible until it isn't.
-- Fixing it meant **mutating the host** (installing/removing packages, switching `alternatives`).
-  That fix is not written down anywhere reproducible.
-- A different app on the same host, or a teammate following the same "working" doc a month later
-  with a newer OS image, can hit a completely different failure.
-- Docker fixes this by pinning the entire runtime - OS packages, Java version, Jenkins version -
-  inside one image. `docker run jenkins/jenkins:lts-jdk17` gives every student the exact same,
-  already-correct environment, and you already have the Docker skills from Day 3 to build on it.
+Everything you just did - the JDK version, the repo, the service file -
+is baked into a single official image: `jenkins/jenkins:lts`. Docker
+turns "match the exact JDK Jenkins expects" into "pull an image that
+already has it." That is the whole motivation for the rest of this
+module.
 
 ## Checkpoint
-Why did commands that "look right" fail here, and what does that tell you about installing
-software directly on a shared, long-lived host instead of inside a container?
+What is the exact error (from `journalctl -u jenkins`) if you point
+Jenkins at the wrong Java version, and why does Docker make that class of
+problem disappear entirely?

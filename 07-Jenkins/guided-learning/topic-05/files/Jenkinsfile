@@ -1,0 +1,14 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Hello') {
+            steps {
+                echo 'Hello from a Jenkins Pipeline job.'
+                sh 'whoami'
+                sh 'pwd'
+                sh 'date'
+            }
+        }
+    }
+}

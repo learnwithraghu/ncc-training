@@ -1,0 +1,49 @@
+pipeline {
+    agent any
+
+    options {
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+    }
+
+    environment {
+        CODE_DIR = '/var/jenkins_code'
+    }
+
+    stages {
+        stage('Syntax Check') {
+            steps {
+                sh '''
+                    cd "${CODE_DIR}"
+                    for f in app.py test_app.py; do
+                        python3 -m py_compile "${f}"
+                    done
+                '''
+            }
+        }
+        stage('Unit Tests') {
+            steps {
+                sh '''
+                    cd "${CODE_DIR}"
+                    mkdir -p "${WORKSPACE}/reports"
+                    python3 -m pytest test_app.py -v \
+                        --junitxml="${WORKSPACE}/reports/results.xml"
+                '''
+            }
+            post {
+                always {
+                    junit 'reports/results.xml'
+                }
+            }
+        }
+        stage('Archive') {
+            steps {
+                sh '''
+                    cp "${CODE_DIR}/app.py" "${WORKSPACE}/reports/app-snapshot.py"
+                    echo "Built from commit-free bind mount at $(date)" \
+                        > "${WORKSPACE}/reports/build-info.txt"
+                '''
+                archiveArtifacts artifacts: 'reports/**', fingerprint: true
+            }
+        }
+    }
+}

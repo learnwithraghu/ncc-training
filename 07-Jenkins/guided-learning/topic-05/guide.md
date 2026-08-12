@@ -1,38 +1,37 @@
-# Topic 5: Bake the Lab Project into the Image
+# Topic 5: Your First Pipeline Job
 
 **Time:** 20 minutes
 
 ## Goal
-`COPY` the lab project's code and a reference `Jenkinsfile` into the image so pipelines can use
-them without any Git checkout step.
+Create a Jenkins **Pipeline** job from the console, paste in an inline
+pipeline script, run it with "Build Now," and read the console output.
 
-## Commands to Use
-```bash
-cd /workspaces/ncc-training/07-Jenkins/jenkins
-docker build -t ncc-jenkins:topic05 .
-docker stop jenkins && docker rm jenkins
-docker run -d --name jenkins -p 8080:8080 -p 50000:50000 \
-  -v jenkins_home:/var/jenkins_home \
-  ncc-jenkins:topic05
-docker exec jenkins ls -la /opt/lab-project/application
-docker exec jenkins cat /opt/lab-project/Jenkinsfile
-```
+## Files Provided
+`files/Jenkinsfile` - a minimal one-stage pipeline you'll paste into the
+job configuration.
 
 ## Guided Steps
-1. In `jenkins/Dockerfile`, find the two `COPY` lines near the bottom:
-   ```dockerfile
-   COPY application /opt/lab-project/application
-   COPY Jenkinsfile /opt/lab-project/Jenkinsfile
-   ```
-   These copy `../application/` (the lab app) and `../Jenkinsfile` (the reference pipeline) into
-   the image at build time.
-2. Rebuild the image and recreate the container as shown above.
-3. Exec into the running container and list `/opt/lab-project/application` - confirm `app.py`,
-   `test_app.py`, `requirements.txt`, and `check_syntax.sh` are all there.
-4. Cat the baked-in `Jenkinsfile` - you'll build this up stage by stage starting in Topic 7.
-5. Notice this code arrived with the **image**, not with a `git clone` inside a job. There is no
-   SCM configured on this Jenkins instance yet.
+1. From the Jenkins dashboard, click **New Item**.
+2. Enter a name, e.g. `hello-pipeline`, select **Pipeline**, click OK.
+3. Scroll to the **Pipeline** section at the bottom of the job
+   configuration page. Set **Definition** to **Pipeline script** (not
+   "Pipeline script from SCM" - you are not using git for this job yet).
+4. Open this topic's `files/Jenkinsfile`, copy its contents, and paste
+   them into the script box.
+5. Click **Save**, then click **Build Now** on the job page.
+6. Click the build number (e.g. `#1`) in the build history, then
+   **Console Output**. Read through it - you should see each `sh` step
+   run in order, with its output inline.
+7. Click **Build Now** again to create build `#2`. Notice Jenkins keeps a
+   history of every run, each with its own console output.
+
+## Guided Explanation
+A `pipeline { agent any { ... } }` block is the smallest valid Jenkins
+Pipeline. `agent any` tells Jenkins to run the stages on any available
+executor (here, the Jenkins container itself, since you haven't
+configured any external agents). Each `stage` groups related `steps`; a
+`sh` step runs a shell command inside the container.
 
 ## Checkpoint
-Where does the "code" a Jenkins pipeline is about to run actually live right now, and how did it
-get there?
+Where does `pwd` say the pipeline is running, and why does that matter
+for the next topic, where you'll read files from `/var/jenkins_code`?

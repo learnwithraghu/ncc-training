@@ -6,13 +6,11 @@ set -uo pipefail
 readonly SCRIPT_NAME="NCC Docker Training - ECR Lab Runner"
 readonly SEP="============================================================"
 readonly SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-readonly DEFAULT_APP_DIR=$(cd "${SCRIPT_DIR}/../../application" && pwd)
-readonly DEFAULT_REGION="us-east-1"
+readonly APP_DIR=$(cd "${SCRIPT_DIR}/../../application" && pwd)
+readonly REGION="us-east-1"
 readonly CONTAINER_NAME="ncc-ecr-lab-app"
 readonly LOCAL_TAG="ncc-training-app:lab"
 
-REGION="$DEFAULT_REGION"
-APP_DIR="$DEFAULT_APP_DIR"
 ECR_IMAGE_URI=""
 
 PASS=0
@@ -27,15 +25,18 @@ NC='\033[0m'
 
 usage() {
     cat <<EOF
-Usage: $0 --ecr-image-uri <uri> [--region us-east-1] [--app-dir <path>]
+Usage: $0
+       $0 --ecr-image-uri <uri>
 
-  --ecr-image-uri   Required. Example:
-                    123456789012.dkr.ecr.us-east-1.amazonaws.com/ncc-training-app:lab
-  --region          AWS region (default: us-east-1)
-  --app-dir         Path to the sample app with Dockerfile
-                    (default: 05-Docker/application)
+Validates the new-style Docker lab on Amazon Linux 2 EC2:
+install Docker, build the sample app, curl /health, push to ECR.
 
-Run this on a fresh Amazon Linux 2 EC2 instance before teaching the lab.
+Region is us-east-1 (N. Virginia). The app path is 05-Docker/application.
+
+If you do not pass --ecr-image-uri, the script asks for it.
+
+Example URI:
+  123456789012.dkr.ecr.us-east-1.amazonaws.com/ncc-training-app:lab
 EOF
 }
 
@@ -45,20 +46,13 @@ while [[ $# -gt 0 ]]; do
             ECR_IMAGE_URI="${2:-}"
             shift 2
             ;;
-        --region)
-            REGION="${2:-}"
-            shift 2
-            ;;
-        --app-dir)
-            APP_DIR="${2:-}"
-            shift 2
-            ;;
         -h|--help)
             usage
             exit 0
             ;;
         *)
             echo "Unknown argument: $1" >&2
+            echo "Only --ecr-image-uri is accepted. Region is us-east-1." >&2
             usage
             exit 2
             ;;
@@ -66,8 +60,14 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ -z "$ECR_IMAGE_URI" ]]; then
-    echo "Missing required --ecr-image-uri" >&2
-    usage
+    echo "ECR image URI (us-east-1), for example:"
+    echo "  123456789012.dkr.ecr.us-east-1.amazonaws.com/ncc-training-app:lab"
+    printf "ECR image URI: "
+    read -r ECR_IMAGE_URI
+fi
+
+if [[ -z "$ECR_IMAGE_URI" ]]; then
+    echo "ECR image URI is required." >&2
     exit 2
 fi
 

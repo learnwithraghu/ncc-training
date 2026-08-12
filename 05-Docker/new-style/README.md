@@ -39,11 +39,10 @@ Before teaching, run the full lab on a fresh Amazon Linux 2 EC2 instance:
 
 ```bash
 cd ~/ncc-training/05-Docker/new-style/helpers
-chmod +x run-ecr-lab.sh
-./run-ecr-lab.sh --ecr-image-uri <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/<repo>:<tag>
+bash run-ecr-lab.sh
 ```
 
-The script installs Docker, builds the sample app, smoke-tests `/health`, and pushes to the ECR URI you pass in.
+The script asks only for the ECR image URI. Region is us-east-1. It installs Docker, builds the sample app, smoke-tests `/health`, and pushes to ECR.
 
 ## Scope Boundary
 

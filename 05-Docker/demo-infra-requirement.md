@@ -42,12 +42,11 @@ docker run --rm hello-world
 
 ## Instructor Lab Runner
 
-Prove the full student path before class. Pass the ECR image URI (repository plus tag):
+Prove the full student path before class. The script asks only for the ECR image URI (region is us-east-1):
 
 ```bash
 cd ~/ncc-training/05-Docker/new-style/helpers
-chmod +x run-ecr-lab.sh
-./run-ecr-lab.sh --ecr-image-uri <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/<repo>:<tag>
+bash run-ecr-lab.sh
 ```
 
 The script installs Docker on Amazon Linux 2, builds `application/`, curls `/health`, and pushes to ECR. Exit code 0 means the lab is ready to teach.

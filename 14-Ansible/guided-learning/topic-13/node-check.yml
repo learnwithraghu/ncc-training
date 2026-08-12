@@ -1,0 +1,21 @@
+---
+- name: Install Node.js, run a script, and verify it works
+  hosts: web
+  become: true
+  tasks:
+    - name: Install Node.js
+      ansible.builtin.package:
+        name: nodejs
+        state: present
+
+    - name: Run a small JavaScript check
+      ansible.builtin.command: node -e "console.log(2 + 2)"
+      register: node_result
+      changed_when: false
+
+    - name: Verify the script printed the right answer
+      ansible.builtin.assert:
+        that:
+          - node_result.stdout == "4"
+        fail_msg: "Node.js did not compute 2 + 2 correctly on {{ inventory_hostname }}"
+        success_msg: "Node.js is installed and working on {{ inventory_hostname }}"

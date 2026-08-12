@@ -29,16 +29,20 @@ Before deploying anything else, you want to know how much CPU and disk space eac
 
 - Turns on `gather_facts: true` and prints `ansible_processor_vcpus` -
   a fact Ansible already collected, no command needed.
-- Runs `df -h /` with the `command` module, `register`s the output, then
-  prints it with `debug`. Same idea as the ad-hoc commands from earlier
-  topics, just written down as a playbook so it runs the same way every
-  time.
+- Runs `df -h /` with the `command` module. No `register`, no `debug`
+  task - Ansible normally hides a command's output to keep playbook runs
+  short, so you ask to see it instead with `-v` (below) rather than
+  wiring up a variable just to print it back out.
 
 ## Practice
 
 ```bash
-ansible-playbook capacity.yml -i inventory.ini
+ansible-playbook capacity.yml -i inventory.ini -v
 ```
+
+`-v` makes Ansible print each task's result in full, including
+`stdout` for the `df -h /` task - that's the whole trick, no extra
+task needed.
 
 ## Validate
 
@@ -54,4 +58,7 @@ should match.
 
 The playbook never ran `nproc`. Where did `ansible_processor_vcpus`
 actually come from, and what would you lose if you set
-`gather_facts: false` instead?
+`gather_facts: false` instead? If a later task needed to reuse the
+`df -h /` output (say, to fail the build when a disk is nearly full),
+would running with `-v` still be enough, or would you need `register`
+after all?

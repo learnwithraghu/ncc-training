@@ -9,9 +9,4 @@
 
     - name: Check disk space
       ansible.builtin.command: df -h /
-      register: disk_space
       changed_when: false
-
-    - name: Show disk space
-      ansible.builtin.debug:
-        var: disk_space.stdout_lines

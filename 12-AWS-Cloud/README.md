@@ -30,3 +30,10 @@
 ## Module: Rekognition Image to Text
 
 - [rekognition-image-to-text-app/README.md](./rekognition-image-to-text-app/README.md)
+
+## Module: ECS Jenkins
+
+- [ecs-jenkins/README.md](./ecs-jenkins/README.md)
+- [ecs-jenkins/demo-infra-requirement.md](./ecs-jenkins/demo-infra-requirement.md)
+- [ecs-jenkins/guide-01-jenkins-ecs-public-image.md](./ecs-jenkins/guide-01-jenkins-ecs-public-image.md)
+- [ecs-jenkins/guide-02-jenkins-ecs-ecr-pull-through.md](./ecs-jenkins/guide-02-jenkins-ecs-ecr-pull-through.md)

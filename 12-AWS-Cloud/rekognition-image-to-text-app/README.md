@@ -55,10 +55,10 @@ aws sts get-caller-identity
 aws configure get region
 ```
 
-If no Region is configured, set one before starting:
+The app defaults to `us-east-1`. To use another Region, set it before starting:
 
 ```bash
-export AWS_DEFAULT_REGION=us-east-1
+export AWS_DEFAULT_REGION=us-west-2
 python app.py
 ```
 

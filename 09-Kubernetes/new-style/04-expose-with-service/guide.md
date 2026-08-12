@@ -2,6 +2,14 @@
 
 **Time:** ~20 minutes
 
+## What You'll Learn (and Solve)
+
+1. Give the Deployment a stable network identity with a Service.
+2. Route traffic to Pods by label selector, not by Pod name.
+3. Confirm live backends with `kubectl get endpoints`.
+4. Reach the app via Service/`NodePort` (or Service `port-forward`).
+5. Solve "replicas exist, but I still curl one Pod at a time."
+
 ## Goal
 Give the Orbital Relay Deployment a stable network identity with a
 Service, so you reach it without `port-forward` and without caring which
@@ -45,3 +53,12 @@ after you delete and let one Pod be replaced.
 The Service's `selector` is `app: orbital-relay` - what happens to routing
 if you edit the Deployment's Pod template labels but forget to update the
 Service's selector to match?
+
+## What's Next?
+This is good, but we still need:
+
+1. A way to ship a new site version without deleting the whole Deployment.
+2. Zero-downtime updates so traffic keeps flowing during the change.
+3. Visibility into whether the rollout finished successfully.
+4. A fast undo if the new version is wrong.
+5. Controlled releases — **Topic 5: Rolling Update and Rollback**.

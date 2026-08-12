@@ -2,6 +2,14 @@
 
 **Time:** ~20 minutes
 
+## What You'll Learn (and Solve)
+
+1. Read container logs with `kubectl logs` (and follow them live).
+2. Open a shell in a running Pod with `kubectl exec`.
+3. Break a mount on purpose and watch the site serve the wrong page.
+4. Diagnose with `describe`/`exec` instead of guessing from YAML.
+5. Solve "the Deployment is up, but something inside is wrong."
+
 ## Goal
 Practice the two tools you reach for first when a Pod misbehaves -
 `kubectl logs` and `kubectl exec` - by deliberately breaking this
@@ -50,3 +58,12 @@ reading the YAML) exactly what changed, then restore it.
 `kubectl logs` showed nothing wrong the whole time you had this broken -
 why not, and what does that tell you about what application logs can and
 can't diagnose?
+
+## What's Next?
+This is good, but we still need:
+
+1. Automatic detection when a container is alive but not ready for traffic.
+2. Restarts when a process is stuck, not only when you notice by hand.
+3. CPU/memory requests so the scheduler places Pods fairly.
+4. Hard limits so one bad container can't starve the node.
+5. Production hardening — **Topic 8: Health Checks and Limits**.

@@ -13,9 +13,10 @@ build or registry required anywhere in this module.
 ## Recommended Flow
 
 1. Open the topic folder.
-2. Apply the manifests in the order the guide lists.
-3. Complete the **Task**.
-4. Answer the checkpoint before moving on.
+2. Read **What You'll Learn (and Solve)** — five points on the goal.
+3. Apply the manifests in the order the guide lists.
+4. Complete the **Task** and answer the **Checkpoint**.
+5. Read **What's Next?** — five "this is good, but…" points that lead to the next topic.
 
 ## Topic List
 

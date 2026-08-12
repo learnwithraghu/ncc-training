@@ -2,6 +2,14 @@
 
 **Time:** ~20 minutes
 
+## What You'll Learn (and Solve)
+
+1. Inject non-sensitive station settings via a ConfigMap as env vars.
+2. Inject a sensitive token via a Secret the same way.
+3. Prove values reached the container with `kubectl exec ... -- env`.
+4. See that Secret data is base64-encoded, not encrypted.
+5. Solve "I need per-station config without rebuilding the image."
+
 ## Goal
 Inject station-specific configuration into the Orbital Relay Deployment
 without changing the container image: a plain ConfigMap for non-sensitive
@@ -52,3 +60,12 @@ inside a running container via `kubectl exec ... -- env`.
 Given that `kubectl get secret -o yaml` can be decoded by anyone with read
 access, what does a Kubernetes `Secret` actually protect against, and what
 doesn't it protect against?
+
+## What's Next?
+This is good, but we still need:
+
+1. A first response when the site looks wrong or Pods misbehave.
+2. Application logs from the container without SSH to a node.
+3. A shell inside the running container to inspect files and mounts.
+4. Practice diagnosing a break you caused on purpose.
+5. Day-2 ops skills — **Topic 7: Logs and Exec**.

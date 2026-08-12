@@ -2,6 +2,14 @@
 
 **Time:** ~20 minutes
 
+## What You'll Learn (and Solve)
+
+1. Add readiness probes so unhealthy Pods stop receiving Service traffic.
+2. Add liveness probes so stuck containers get restarted by the kubelet.
+3. Set CPU/memory requests for scheduling and limits as a hard ceiling.
+4. Break readiness on purpose and watch endpoints drop while Pods stay Running.
+5. Solve "Pods look up, but traffic shouldn't reach them yet / forever."
+
 ## Goal
 Give the Orbital Relay Deployment liveness/readiness probes and CPU/memory
 limits, then watch what happens when a probe fails or a limit is hit. This
@@ -49,3 +57,12 @@ A Pod failing its liveness probe gets restarted; a Pod failing its
 readiness probe does not. Why does Kubernetes treat these two failures so
 differently, and what would go wrong if `livenessProbe` and
 `readinessProbe` were merged into one?
+
+## What's Next?
+This Kubernetes fundamentals track is good, but we still need:
+
+1. A cleaner way to package many YAML files as one installable unit.
+2. Versioned releases of the same app without copying folders by hand.
+3. Values you can change per environment without editing raw manifests.
+4. Upgrade/rollback of a whole chart, not only one Deployment rollout.
+5. Templated packaging — continue in **[10-Helm](../../10-Helm/README.md)**.

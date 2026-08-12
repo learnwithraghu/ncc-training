@@ -23,10 +23,12 @@ ansible-inventory -i "$INVENTORY" --list >/dev/null
 echo "==> Testing SSH reachability"
 ansible all -i "$INVENTORY" -m ping
 
+echo "==> Checking Topic 03 (ad-hoc command, no playbook)"
+ansible all -i "$INVENTORY" -m command -a 'uname -a'
+
 echo "==> Running topic playbooks"
 for playbook in \
   guided-learning/topic-02/ping.yml \
-  guided-learning/topic-03/command.yml \
   guided-learning/topic-04/facts.yml \
   guided-learning/topic-05/site.yml \
   guided-learning/topic-06/vars.yml \

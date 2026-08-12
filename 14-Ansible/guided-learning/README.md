@@ -16,7 +16,7 @@ Use the provided lab hosts:
 
 - `topic-01/` through `topic-11/` hold the learning topics
 - `challenge-01/` through `challenge-05/` are inserted between topics as practice stops
-- each topic and challenge has a `guide.md` file and (except Topic 01, which builds the inventory itself) a starter `.yml` playbook
+- each topic and challenge has a `guide.md` file and a starter `.yml` playbook, except Topic 01 (builds the inventory) and Topic 03 (ad-hoc `ansible -m command` only, no playbook)
 - each stop is designed to take about 20 minutes
 
 ## Recommended Flow

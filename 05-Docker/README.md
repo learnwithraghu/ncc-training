@@ -1,75 +1,59 @@
 # Day 3, Part 1: Docker
 
-This module covers containerization with Docker.
+This module covers containerization with Docker. You work entirely on an Amazon Linux 2 EC2 instance: install Docker, master `docker build`, run and debug a container, then push the image to Amazon ECR.
+
+This module stops after ECR push.
 
 ## What You Will Learn
 
 By the end of this module, you will be able to:
 
-- Explain what containers are and why they matter
-- Build Docker images from Dockerfiles
-- Run, stop, and inspect containers
-- Manage container networking and volumes
-- Apply Docker best practices
+- Install Docker on Amazon Linux 2 EC2
+- Build an image from a Dockerfile with `docker build`
+- Run a container and publish ports
+- Read logs and exec into a running container
+- Tag images and inspect what you built
+- Push an image from EC2 to Amazon ECR
 
 ## Time Estimate
 
-Approximately **6-7 hours** total, split into 20 guided topics at about 20 minutes each.
+Approximately **2 hours** total, split into 6 topics at about 20 minutes each.
 
 ## Prerequisites
 
 - Completion of [Day 2](../00-course-roadmap.md#day-2-git-and-github-basics)
-- Docker installed (`docker --version`)
+- An Amazon Linux 2 EC2 instance you can SSH into as `ec2-user`
+- AWS credentials on that instance (instance IAM role or `~/.aws/credentials`) with permission to push to ECR
+- An ECR repository already created in `us-east-1` (instructor creates this in the AWS Console)
+
+See [demo-infra-requirement.md](demo-infra-requirement.md) for the full checklist.
 
 ## Guided Learning Topics
 
-Work through the topics in `guided-learning/` in order:
+Work through the topics in `new-style/` in order. Each topic teaches a few commands, then gives you a **Task** to try on your own.
 
 | Topic | Folder | Focus |
 |-------|--------|-------|
-| Topic 1 | [guided-learning/topic-01/](guided-learning/topic-01/) | Container mindset and quick test |
-| Topic 2 | [guided-learning/topic-02/](guided-learning/topic-02/) | Images and layers |
-| Topic 3 | [guided-learning/topic-03/](guided-learning/topic-03/) | Run containers and publish ports |
-| Topic 4 | [guided-learning/topic-04/](guided-learning/topic-04/) | Environment variables and inspect |
-| Topic 5 | [guided-learning/topic-05/](guided-learning/topic-05/) | Logs and exec |
-| Topic 6 | [guided-learning/topic-06/](guided-learning/topic-06/) | Volumes and data persistence |
-| Topic 7 | [guided-learning/topic-07/](guided-learning/topic-07/) | Bind mounts and app state |
-| Topic 8 | [guided-learning/topic-08/](guided-learning/topic-08/) | Build the sample app image |
-| Topic 9 | [guided-learning/topic-09/](guided-learning/topic-09/) | Image tagging and lifecycle |
-| Topic 10 | [guided-learning/topic-10/](guided-learning/topic-10/) | Healthchecks and restart behavior |
-| Topic 11 | [guided-learning/topic-11/](guided-learning/topic-11/) | Docker networking basics |
-| Topic 12 | [guided-learning/topic-12/](guided-learning/topic-12/) | Docker Compose basics |
-| Topic 13 | [guided-learning/topic-13/](guided-learning/topic-13/) | Compose with the sample app |
-| Topic 14 | [guided-learning/topic-14/](guided-learning/topic-14/) | Dockerfile best practices |
-| Topic 15 | [guided-learning/topic-15/](guided-learning/topic-15/) | Security and non-root users |
-| Topic 16 | [guided-learning/topic-16/](guided-learning/topic-16/) | Multi-stage builds |
-| Topic 17 | [guided-learning/topic-17/](guided-learning/topic-17/) | Saving and loading images |
-| Topic 18 | [guided-learning/topic-18/](guided-learning/topic-18/) | Troubleshooting containers |
-| Topic 19 | [guided-learning/topic-19/](guided-learning/topic-19/) | Full app workflow |
-| Topic 20 | [guided-learning/topic-20/](guided-learning/topic-20/) | Docker mini workflow |
+| 01 Setup Docker on EC2 | [new-style/01-setup-docker-on-ec2/](new-style/01-setup-docker-on-ec2/) | SSH to Amazon Linux 2, install Docker, run `hello-world` |
+| 02 Docker Build | [new-style/02-docker-build/](new-style/02-docker-build/) | Read the Dockerfile and master `docker build` |
+| 03 Docker Run and Ports | [new-style/03-docker-run-and-ports/](new-style/03-docker-run-and-ports/) | Run the image and publish ports |
+| 04 Docker Logs and Exec | [new-style/04-docker-logs-and-exec/](new-style/04-docker-logs-and-exec/) | Read logs and exec into a container |
+| 05 Docker Tag and Images | [new-style/05-docker-tag-and-images/](new-style/05-docker-tag-and-images/) | Tag images and inspect metadata |
+| 06 Push to ECR | [new-style/06-push-to-ecr/](new-style/06-push-to-ecr/) | Login, tag, and push from EC2 to ECR |
 
 ## Getting Started
 
-Verify Docker is installed:
+SSH to your Amazon Linux 2 EC2 instance, clone this repository, and open the first topic:
 
 ```bash
-docker --version
-docker info
+ssh -i your-key.pem ec2-user@<EC2_PUBLIC_IP>
+git clone <REPO_URL> ~/ncc-training
+cd ~/ncc-training/05-Docker/new-style/01-setup-docker-on-ec2
 ```
 
-If Docker is not installed, ask your instructor to help you get it running before starting the topics.
+Follow [new-style/README.md](new-style/README.md) for the full topic order.
 
-### Quick Docker Test
-
-Verify your Docker installation:
-
-```bash
-docker run hello-world
-```
-
-If this works, you're ready to start the guided topics.
-
-## 🛠️ Sample Application
+## Sample Application
 
 This module uses a Python Flask web application to demonstrate Docker concepts. The app provides:
 
@@ -80,71 +64,45 @@ This module uses a Python Flask web application to demonstrate Docker concepts. 
 - `/write` - Write data to demonstrate volumes
 - `/read` - Read persisted data
 
-**Purpose:**
-- Simple enough to understand quickly
-- Complex enough to demonstrate real Docker features
-- Includes logging, health checks, and data persistence
-
 **Location:** `application/` directory
 
-## 📚 Additional Resources
+You build this app on EC2 in every topic after setup. Compose, volumes, and networking beyond port publish are covered in later modules.
+
+## Additional Resources
 
 ### Official Documentation
 - [Docker Documentation](https://docs.docker.com/)
 - [Dockerfile Reference](https://docs.docker.com/engine/reference/builder/)
-- [Docker Best Practices](https://docs.docker.com/develop/dev-best-practices/)
+- [Amazon ECR User Guide](https://docs.aws.amazon.com/ecr/)
 
 ### Quick References
 - [QUICK_REFERENCE.md](./reference/QUICK_REFERENCE.md) - Common Docker commands
 - [TROUBLESHOOTING.md](./reference/TROUBLESHOOTING.md) - Common issues and solutions
 
-### Guided Learning
-- [guided-learning/](guided-learning/) - 20 self-contained Docker topics
+### Instructor Helper
+- [new-style/helpers/run-ecr-lab.sh](new-style/helpers/run-ecr-lab.sh) - Installs Docker, builds the app, smoke-tests `/health`, and pushes to an ECR URI you pass in
 
 ### Next Steps After This Module
-- **Container Orchestration**: Kubernetes, Docker Swarm
-- **CI/CD Integration**: Jenkins, GitHub Actions, GitLab CI
-- **Cloud Platforms**: AWS ECS, Google Cloud Run, Azure Container Instances
-- **Advanced Topics**: Multi-stage builds, BuildKit, Docker Compose
+- **Docker Compose**: [06-Docker-Compose](../06-Docker-Compose/README.md)
+- **CI/CD Integration**: Jenkins, GitHub Actions
+- **Cloud runtimes**: AWS ECS (later in the course)
 
-## 💡 Tips for Success
+## Tips for Success
 
-**Practice Regularly:**
-- Run through examples multiple times
-- Experiment with modifications
-- Break things and fix them (best way to learn!)
+**Stay on EC2:**
+- Build, run, and push from the instance, not from your laptop
+- If `docker` asks for sudo, log out of SSH and log back in after `usermod -a -G docker ec2-user`
 
 **Use Reference Materials:**
 - Keep QUICK_REFERENCE.md open while practicing
 - Consult TROUBLESHOOTING.md when stuck
 - Use `docker <command> --help` for quick help
 
-**Build Real Projects:**
-- Containerize your own applications
-- Start simple (static websites, basic APIs)
-- Gradually increase complexity
+**Practice the build:**
+- Every task after setup starts with `docker build`
+- Rebuild after small Dockerfile edits so you see layer cache
 
-**Join the Community:**
-- Docker Community Forums
-- Stack Overflow `docker` tag
-- DevOps community discussions
-
-## 🎓 Certification & Further Learning
-
-After mastering this module, consider:
-
-**Certifications:**
-- Docker Certified Associate (DCA)
-- Certified Kubernetes Application Developer (CKAD)
-- AWS Certified DevOps Engineer
-
-**Advanced Topics:**
-- Docker Compose for multi-container applications
-- Docker Swarm for clustering
-- Kubernetes for production orchestration
-- Service mesh technologies (Istio, Linkerd)
-
-## 🤝 Getting Help
+## Getting Help
 
 **During the Module:**
 1. Check [TROUBLESHOOTING.md](./reference/TROUBLESHOOTING.md) first
@@ -155,15 +113,11 @@ After mastering this module, consider:
 
 **Common Commands for Help:**
 ```bash
-# Get help for any command
 docker <command> --help
-
-# Examples
 docker run --help
 docker build --help
-docker volume --help
 ```
 
 ## Guided Learning Focus
 
-The topic guides replace the old guide, exercise, solution, and lab flow. Each lesson is self-contained and designed to take about 20 minutes.
+Each topic is self-contained and designed to take about 20 minutes. Teach a few commands, then complete the Task before moving on.

@@ -36,7 +36,7 @@ Each topic tells a small story:
 - Challenge 01 - Prove Both Servers Respond
 - Topic 03 - Build Your Server List and Ask Quick Questions
 - Challenge 02 - Install a Small Helper Tool
-- Topic 04 - Check What Each Server Looks Like
+- Topic 04 - Check CPU and Disk Space on Each Server
 - Challenge 03 - Place the Same File on Both Hosts
 - Topic 05 - Write Your First Playbook
 - Challenge 04 - Create a Service User

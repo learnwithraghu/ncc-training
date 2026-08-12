@@ -1,8 +1,18 @@
 ---
-- name: Collect facts from lab hosts
+- name: Report CPU and disk space on lab hosts
   hosts: web
   gather_facts: true
   tasks:
-    - name: Show OS family
+    - name: Show CPU count
       ansible.builtin.debug:
-        msg: "{{ inventory_hostname }} runs {{ ansible_os_family }}"
+        msg: "{{ inventory_hostname }} has {{ ansible_processor_vcpus }} vCPUs"
+
+    - name: Show disk space per mount
+      ansible.builtin.debug:
+        msg: >-
+          {{ inventory_hostname }} {{ item.mount }}:
+          {{ item.size_available | filesizeformat }} free of
+          {{ item.size_total | filesizeformat }}
+      loop: "{{ ansible_mounts }}"
+      loop_control:
+        label: "{{ item.mount }}"

@@ -1,6 +1,6 @@
-# Topic 04 - Check What Each Server Looks Like
+# Topic 04 - Check CPU and Disk Space on Each Server
 
-Before making changes, you want to learn basic details about each machine so you do not guess.
+Before deploying anything else, you want to know how much CPU and disk space each server actually has, instead of guessing.
 
 ## Learn
 
@@ -23,19 +23,35 @@ Before making changes, you want to learn basic details about each machine so you
 9. `register:` saves output for later tasks.
 10. `when:` and `tags:` help control when tasks run.
 
+## The Playbook
+
+`facts.yml` turns on `gather_facts: true`, then reads two facts Ansible
+already collected instead of running any shell command:
+
+- `ansible_processor_vcpus` - how many vCPUs the host has.
+- `ansible_mounts` - a list of every mounted filesystem, each with
+  `mount`, `size_total`, and `size_available` (in bytes). The playbook
+  loops over it and formats the sizes with the `filesizeformat` filter so
+  the output reads in GB instead of raw bytes.
+
 ## Practice
 
 ```bash
-ansible all -i inventory.ini -m setup -u root --ask-pass
-ansible all -i inventory.ini -m ping -u root --ask-pass
+ansible-playbook facts.yml -i inventory.ini
 ```
 
 ## Validate
 
 ```bash
-ansible web1 -i inventory.ini -m setup -u root --ask-pass | head
+ansible web1 -i inventory.ini -m setup -a 'filter=ansible_processor_vcpus'
+ansible web2 -i inventory.ini -m command -a 'df -h /'
 ```
+
+Compare the `df -h /` numbers against what the playbook printed for the
+`/` mount - they should match.
 
 ## Checkpoint
 
-Which facts are most useful for deciding what a playbook should do?
+The playbook never ran `nproc` or `df` itself. Where did
+`ansible_processor_vcpus` and `ansible_mounts` actually come from, and
+what would you lose if you set `gather_facts: false` instead?

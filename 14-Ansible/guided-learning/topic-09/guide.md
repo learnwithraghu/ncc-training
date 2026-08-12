@@ -1,6 +1,6 @@
-# Topic 09 - Pack the Web Server Steps into a Role
+# Topic 09 - Do the Same Setup for a Small Group of Packages
 
-The setup is getting repeated, so you bundle it into a reusable role instead of copying tasks around.
+You have a few common tools to install and want one task to handle them cleanly.
 
 ## Learn
 
@@ -26,16 +26,15 @@ The setup is getting repeated, so you bundle it into a reusable role instead of 
 ## Practice
 
 ```bash
-ansible-galaxy init roles/webserver
-ansible-playbook role-site.yml -i inventory.ini
+ansible-playbook loops.yml -i inventory.ini --tags setup
 ```
 
 ## Validate
 
 ```bash
-ansible web1 -i inventory.ini -m command -a 'test -d /etc/ansible || echo role-ran'
+ansible web1 -i inventory.ini -m command -a 'rpm -q curl vim || dpkg -l curl vim'
 ```
 
 ## Checkpoint
 
-What parts of your automation should become a role?
+When would you use a tag instead of running the whole playbook?

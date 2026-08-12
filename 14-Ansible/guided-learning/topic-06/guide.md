@@ -1,6 +1,6 @@
-# Topic 06 - Install the Web Server and Keep It Running
+# Topic 06 - Use One Template for Both Servers
 
-Your web app needs nginx on both servers, but you only want a restart when something actually changes.
+The app team gives you one config pattern, but the values may change later, so you make it flexible.
 
 ## Learn
 
@@ -26,15 +26,16 @@ Your web app needs nginx on both servers, but you only want a restart when somet
 ## Practice
 
 ```bash
-ansible-playbook web.yml -i inventory.ini
+ansible-playbook vars.yml -i inventory.ini
+ansible web1 -i inventory.ini -m debug -a 'var=ansible_hostname'
 ```
 
 ## Validate
 
 ```bash
-ansible web1 -i inventory.ini -m command -a 'systemctl is-active nginx'
+ansible web2 -i inventory.ini -m command -a 'cat /tmp/demo-app.conf'
 ```
 
 ## Checkpoint
 
-Why are handlers better than restarting a service after every task?
+Where would you store values that change between environments?

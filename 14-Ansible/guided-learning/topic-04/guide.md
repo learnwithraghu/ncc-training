@@ -1,6 +1,6 @@
-# Topic 04 - Write Your First Playbook
+# Topic 04 - Check What Each Server Looks Like
 
-You have a small repeat job and want it written down so the same steps can run every time.
+Before making changes, you want to learn basic details about each machine so you do not guess.
 
 ## Learn
 
@@ -26,15 +26,16 @@ You have a small repeat job and want it written down so the same steps can run e
 ## Practice
 
 ```bash
-ansible-playbook site.yml -i inventory.ini
+ansible all -i inventory.ini -m setup -u root --ask-pass
+ansible all -i inventory.ini -m ping -u root --ask-pass
 ```
 
 ## Validate
 
 ```bash
-ansible web1 -i inventory.ini -m command -a 'test -f /tmp/ansible-demo.txt && echo present'
+ansible web1 -i inventory.ini -m setup -u root --ask-pass | head
 ```
 
 ## Checkpoint
 
-What makes a playbook easier to maintain than a shell script?
+Which facts are most useful for deciding what a playbook should do?

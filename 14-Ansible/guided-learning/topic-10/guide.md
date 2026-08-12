@@ -1,6 +1,6 @@
-# Topic 10 - Deploy the Small App Across Both Servers
+# Topic 10 - Pack the Web Server Steps into a Role
 
-You are doing the first simple rollout and want both servers prepared the same way.
+The setup is getting repeated, so you bundle it into a reusable role instead of copying tasks around.
 
 ## Learn
 
@@ -26,15 +26,16 @@ You are doing the first simple rollout and want both servers prepared the same w
 ## Practice
 
 ```bash
-ansible-playbook deploy.yml -i inventory.ini
+ansible-galaxy init roles/webserver
+ansible-playbook role-site.yml -i inventory.ini
 ```
 
 ## Validate
 
 ```bash
-ansible web2 -i inventory.ini -m command -a 'test -d /opt/demo-app && echo deployed'
+ansible web1 -i inventory.ini -m command -a 'test -d /etc/ansible || echo role-ran'
 ```
 
 ## Checkpoint
 
-What did Ansible simplify compared to managing each server by hand?
+What parts of your automation should become a role?

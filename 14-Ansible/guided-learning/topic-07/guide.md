@@ -1,6 +1,6 @@
-# Topic 07 - Put the Same File in the Right Place
+# Topic 07 - Install the Web Server and Keep It Running
 
-You need the same small config file on both servers and want the permissions to be correct every time.
+Your web app needs nginx on both servers, but you only want a restart when something actually changes.
 
 ## Learn
 
@@ -26,15 +26,15 @@ You need the same small config file on both servers and want the permissions to 
 ## Practice
 
 ```bash
-ansible-playbook files.yml -i inventory.ini
+ansible-playbook web.yml -i inventory.ini
 ```
 
 ## Validate
 
 ```bash
-ansible web2 -i inventory.ini -m command -a 'ls -l /tmp/lab-config.txt'
+ansible web1 -i inventory.ini -m command -a 'systemctl is-active nginx'
 ```
 
 ## Checkpoint
 
-How does Ansible help avoid inconsistent file permissions?
+Why are handlers better than restarting a service after every task?

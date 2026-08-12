@@ -1,6 +1,6 @@
-# Topic 08 - Put the Same File in the Right Place
+# Topic 11 - Deploy the Small App Across Both Servers
 
-You need the same small config file on both servers and want the permissions to be correct every time.
+You are doing the first simple rollout and want both servers prepared the same way.
 
 ## Learn
 
@@ -26,15 +26,15 @@ You need the same small config file on both servers and want the permissions to 
 ## Practice
 
 ```bash
-ansible-playbook files.yml -i inventory.ini
+ansible-playbook deploy.yml -i inventory.ini
 ```
 
 ## Validate
 
 ```bash
-ansible web2 -i inventory.ini -m command -a 'ls -l /tmp/lab-config.txt'
+ansible web2 -i inventory.ini -m command -a 'test -d /opt/demo-app && echo deployed'
 ```
 
 ## Checkpoint
 
-How does Ansible help avoid inconsistent file permissions?
+What did Ansible simplify compared to managing each server by hand?

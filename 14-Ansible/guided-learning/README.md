@@ -10,13 +10,13 @@ Use the provided lab hosts:
 
 - `web1` — `root` / `Passw0rd`
 - `web2` — `root` / `Passw0rd`
-- controller-side commands should use an inventory file in the working directory, such as `inventory.ini`
+- controller-side commands should use an inventory file in the working directory, such as `inventory.ini` — Topic 01 builds it
 
 ## Structure
 
-- `topic-01/` through `topic-10/` hold the learning topics
+- `topic-01/` through `topic-11/` hold the learning topics
 - `challenge-01/` through `challenge-05/` are inserted between topics as practice stops
-- each topic and challenge has a `guide.md` file and a starter `.yml` playbook
+- each topic and challenge has a `guide.md` file and (except Topic 01, which builds the inventory itself) a starter `.yml` playbook
 - each stop is designed to take about 20 minutes
 
 ## Recommended Flow
@@ -31,18 +31,19 @@ Each topic tells a small story:
 
 ## Topic List
 
-- Topic 01 - Meet the Lab and Check the Servers
+- Topic 01 - Build the Inventory
+- Topic 02 - Meet the Lab and Check the Servers
 - Challenge 01 - Prove Both Servers Respond
-- Topic 02 - Build Your Server List and Ask Quick Questions
+- Topic 03 - Build Your Server List and Ask Quick Questions
 - Challenge 02 - Install a Small Helper Tool
-- Topic 03 - Check What Each Server Looks Like
+- Topic 04 - Check What Each Server Looks Like
 - Challenge 03 - Place the Same File on Both Hosts
-- Topic 04 - Write Your First Playbook
+- Topic 05 - Write Your First Playbook
 - Challenge 04 - Create a Service User
-- Topic 05 - Use One Template for Both Servers
-- Topic 06 - Install the Web Server and Keep It Running
-- Topic 07 - Put the Same File in the Right Place
-- Topic 08 - Do the Same Setup for a Small Group of Packages
-- Topic 09 - Pack the Web Server Steps into a Role
-- Topic 10 - Deploy the Small App Across Both Servers
+- Topic 06 - Use One Template for Both Servers
+- Topic 07 - Install the Web Server and Keep It Running
+- Topic 08 - Put the Same File in the Right Place
+- Topic 09 - Do the Same Setup for a Small Group of Packages
+- Topic 10 - Pack the Web Server Steps into a Role
+- Topic 11 - Deploy the Small App Across Both Servers
 - Challenge 05 - Start a Service and Restart Only on Change

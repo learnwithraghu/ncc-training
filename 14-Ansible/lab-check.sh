@@ -25,16 +25,16 @@ ansible all -i "$INVENTORY" -m ping
 
 echo "==> Running topic playbooks"
 for playbook in \
-  guided-learning/topic-01/ping.yml \
-  guided-learning/topic-02/command.yml \
-  guided-learning/topic-03/facts.yml \
-  guided-learning/topic-04/site.yml \
-  guided-learning/topic-05/vars.yml \
-  guided-learning/topic-06/web.yml \
-  guided-learning/topic-07/files.yml \
-  guided-learning/topic-08/loops.yml \
-  guided-learning/topic-09/role-site.yml \
-  guided-learning/topic-10/deploy.yml
+  guided-learning/topic-02/ping.yml \
+  guided-learning/topic-03/command.yml \
+  guided-learning/topic-04/facts.yml \
+  guided-learning/topic-05/site.yml \
+  guided-learning/topic-06/vars.yml \
+  guided-learning/topic-07/web.yml \
+  guided-learning/topic-08/files.yml \
+  guided-learning/topic-09/loops.yml \
+  guided-learning/topic-10/role-site.yml \
+  guided-learning/topic-11/deploy.yml
   do
     echo "--> $playbook"
     ansible-playbook -i "$INVENTORY" "$playbook"

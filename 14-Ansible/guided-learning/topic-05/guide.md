@@ -1,6 +1,6 @@
-# Topic 05 - Use One Template for Both Servers
+# Topic 05 - Write Your First Playbook
 
-The app team gives you one config pattern, but the values may change later, so you make it flexible.
+You have a small repeat job and want it written down so the same steps can run every time.
 
 ## Learn
 
@@ -26,16 +26,15 @@ The app team gives you one config pattern, but the values may change later, so y
 ## Practice
 
 ```bash
-ansible-playbook vars.yml -i inventory.ini
-ansible web1 -i inventory.ini -m debug -a 'var=ansible_hostname'
+ansible-playbook site.yml -i inventory.ini
 ```
 
 ## Validate
 
 ```bash
-ansible web2 -i inventory.ini -m command -a 'cat /tmp/demo-app.conf'
+ansible web1 -i inventory.ini -m command -a 'test -f /tmp/ansible-demo.txt && echo present'
 ```
 
 ## Checkpoint
 
-Where would you store values that change between environments?
+What makes a playbook easier to maintain than a shell script?

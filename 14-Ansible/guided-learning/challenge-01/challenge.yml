@@ -1,5 +1,5 @@
 ---
-- name: Topic 01 - ping both hosts
+- name: Topic 02 - ping both hosts
   hosts: web
   gather_facts: false
   tasks:

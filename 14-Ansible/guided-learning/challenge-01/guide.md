@@ -1,10 +1,10 @@
 # Challenge 01 - Meet the Lab and Ping Both Servers
 
-This challenge matches Topic 01. Set up the inventory and prove both servers answer a ping.
+This challenge matches Topic 02. Set up the inventory and prove both servers answer a ping.
 
 ## Task
 
-Do the same flow you learned in Topic 01:
+Do the same flow you learned in Topics 01-02:
 - create `inventory.ini`
 - target `web1` and `web2`
 - use the `ping` module

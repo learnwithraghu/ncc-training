@@ -1,6 +1,6 @@
-# Topic 02 - Build Your Server List and Ask Quick Questions
+# Topic 02 - Meet the Lab and Check the Servers
 
-Your team wants a fast way to talk to both web servers without logging in separately.
+You are the engineer on call and need to confirm both web servers are reachable before you touch anything.
 
 ## Learn
 
@@ -26,21 +26,21 @@ Your team wants a fast way to talk to both web servers without logging in separa
 ## Practice
 
 ```bash
+ansible --version
 cat > inventory.ini <<'EOF'
 [web]
 web1 ansible_host=web1 ansible_user=root ansible_password=Passw0rd
 web2 ansible_host=web2 ansible_user=root ansible_password=Passw0rd
 EOF
-ansible all -i inventory.ini -m command -a 'uname -a'
-ansible web1 -i inventory.ini -m command -a 'hostname'
+ansible all -i inventory.ini -m ping
 ```
 
 ## Validate
 
 ```bash
-ansible web2 -i inventory.ini -m command -a 'uptime'
+ansible web1 -i inventory.ini -m command -a 'hostname'
 ```
 
 ## Checkpoint
 
-Can you target one host and then both hosts with the same inventory?
+What problems does Ansible solve better than manual SSH?

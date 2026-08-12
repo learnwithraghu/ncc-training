@@ -1,6 +1,6 @@
-# Topic 03 - Check What Each Server Looks Like
+# Topic 03 - Build Your Server List and Ask Quick Questions
 
-Before making changes, you want to learn basic details about each machine so you do not guess.
+Your team wants a fast way to talk to both web servers without logging in separately.
 
 ## Learn
 
@@ -26,16 +26,21 @@ Before making changes, you want to learn basic details about each machine so you
 ## Practice
 
 ```bash
-ansible all -i inventory.ini -m setup -u root --ask-pass
-ansible all -i inventory.ini -m ping -u root --ask-pass
+cat > inventory.ini <<'EOF'
+[web]
+web1 ansible_host=web1 ansible_user=root ansible_password=Passw0rd
+web2 ansible_host=web2 ansible_user=root ansible_password=Passw0rd
+EOF
+ansible all -i inventory.ini -m command -a 'uname -a'
+ansible web1 -i inventory.ini -m command -a 'hostname'
 ```
 
 ## Validate
 
 ```bash
-ansible web1 -i inventory.ini -m setup -u root --ask-pass | head
+ansible web2 -i inventory.ini -m command -a 'uptime'
 ```
 
 ## Checkpoint
 
-Which facts are most useful for deciding what a playbook should do?
+Can you target one host and then both hosts with the same inventory?

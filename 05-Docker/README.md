@@ -58,9 +58,7 @@ Follow [new-style/README.md](new-style/README.md) for the full topic order.
 
 ## Sample Site
 
-**Aether Launch** is a one-page satellite launch company site (`index.html`). Nginx serves it on container port 80, published as host port **8080**.
-
-The Flask app under `application/` is leftover from the previous track. This module uses the files inside each `new-style/` topic folder.
+**Aether Launch** is a one-page satellite launch company site (`index.html`). Nginx serves it on container port 80, published as host port **8080**. Each topic folder in `new-style/` has its own copy.
 
 ## Additional Resources
 
@@ -68,10 +66,6 @@ The Flask app under `application/` is leftover from the previous track. This mod
 - [Docker Documentation](https://docs.docker.com/)
 - [Dockerfile Reference](https://docs.docker.com/engine/reference/builder/)
 - [Amazon ECR User Guide](https://docs.aws.amazon.com/ecr/)
-
-### Quick References
-- [QUICK_REFERENCE.md](./reference/QUICK_REFERENCE.md) - Common Docker commands
-- [TROUBLESHOOTING.md](./reference/TROUBLESHOOTING.md) - Common issues and solutions
 
 ### Instructor Helper
 - [new-style/helpers/run-ecr-lab.sh](new-style/helpers/run-ecr-lab.sh) - Serves the HTML, bakes the image, curls **Aether Launch**, pushes to ECR, then pulls and runs again
@@ -93,10 +87,9 @@ The Flask app under `application/` is leftover from the previous track. This mod
 
 ## Getting Help
 
-1. Check [TROUBLESHOOTING.md](./reference/TROUBLESHOOTING.md)
-2. Review [QUICK_REFERENCE.md](./reference/QUICK_REFERENCE.md)
-3. Examine logs: `docker logs aether-web`
-4. Consult instructor or peers
+1. Open the topic `guide.md` in `new-style/`
+2. Examine logs: `docker logs aether-web`
+3. Consult instructor or peers
 
 ```bash
 docker <command> --help

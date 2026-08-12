@@ -1,0 +1,222 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: orbital-site
+  labels:
+    app: orbital-relay
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Orbital Relay | Ground Control</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
+    <style>
+      :root {
+        --ink: #eaf4f4;
+        --muted: #93a9ac;
+        --bg: #050b0d;
+        --panel: rgba(14, 27, 30, 0.72);
+        --line: rgba(110, 231, 214, 0.18);
+        --accent: #4be3c9;
+        --accent-2: #ff9f5a;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: 'JetBrains Mono', monospace;
+        color: var(--ink);
+        background: var(--bg);
+        min-height: 100vh;
+      }
+      h1, h2, h3, .brand { font-family: 'Space Grotesk', sans-serif; }
+      .bg-fixed {
+        position: fixed;
+        inset: 0;
+        z-index: -2;
+        background: linear-gradient(180deg, rgba(5,11,13,0.55) 0%, rgba(5,11,13,0.88) 55%, #050b0d 100%),
+          url('https://images.unsplash.com/photo-1451187863213-d1bcbaae3fa3?auto=format&fit=crop&w=1600&q=70') center/cover no-repeat;
+      }
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 32px;
+        background: rgba(5, 11, 13, 0.6);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--line);
+      }
+      .brand { font-size: 1.15rem; font-weight: 700; letter-spacing: 0.04em; }
+      .brand span { color: var(--accent); }
+      nav a {
+        color: var(--muted);
+        text-decoration: none;
+        margin-left: 26px;
+        font-size: 0.82rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+      nav a:hover { color: var(--accent); }
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.72rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--accent);
+        border: 1px solid var(--line);
+        padding: 5px 12px;
+        border-radius: 999px;
+      }
+      .status-pill::before {
+        content: '';
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--accent);
+        box-shadow: 0 0 8px var(--accent);
+      }
+      .hero {
+        padding: 90px 32px 60px;
+        max-width: 900px;
+      }
+      .eyebrow {
+        color: var(--accent-2);
+        font-size: 0.78rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        margin-bottom: 14px;
+      }
+      .hero h1 {
+        font-size: clamp(2.1rem, 5vw, 3.4rem);
+        line-height: 1.1;
+        margin: 0 0 18px;
+      }
+      .hero p {
+        color: var(--muted);
+        font-size: 1.02rem;
+        line-height: 1.6;
+        max-width: 640px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 18px;
+        padding: 0 32px 60px;
+      }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 22px;
+      }
+      .card .num {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.9rem;
+        font-weight: 700;
+        color: var(--accent);
+      }
+      .card .label {
+        color: var(--muted);
+        font-size: 0.78rem;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        margin-top: 6px;
+      }
+      .feed {
+        margin: 0 32px 70px;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 22px 26px;
+      }
+      .feed h2 {
+        margin: 0 0 14px;
+        font-size: 1rem;
+        color: var(--accent);
+        letter-spacing: 0.04em;
+      }
+      .feed .line {
+        font-size: 0.85rem;
+        color: var(--muted);
+        padding: 5px 0;
+        border-bottom: 1px dashed rgba(147, 169, 172, 0.15);
+      }
+      .feed .line .tag {
+        color: var(--accent-2);
+        margin-right: 10px;
+      }
+      footer {
+        padding: 26px 32px 40px;
+        color: var(--muted);
+        font-size: 0.75rem;
+        border-top: 1px solid var(--line);
+      }
+      @media (max-width: 720px) {
+        nav { display: none; }
+      }
+    </style>
+    </head>
+    <body data-lab="ncc-orbital-relay" data-version="v1">
+    <div class="bg-fixed"></div>
+    <header>
+      <div class="brand">ORBITAL <span>RELAY</span></div>
+      <nav>
+        <a href="#network">Network</a>
+        <a href="#missions">Missions</a>
+        <a href="#telemetry">Telemetry</a>
+      </nav>
+      <div class="status-pill">Ground link v1</div>
+    </header>
+
+    <section class="hero">
+      <div class="eyebrow">Ground control &middot; small-sat era</div>
+      <h1>Ground control for the small-sat era.</h1>
+      <p>
+        Orbital Relay runs the ground stations that keep low-earth-orbit
+        missions in contact. This page is the workload every Kubernetes topic
+        in this module deploys, scales, updates, and inspects.
+      </p>
+    </section>
+
+    <section class="grid" id="network">
+      <div class="card">
+        <div class="num">14</div>
+        <div class="label">Ground stations online</div>
+      </div>
+      <div class="card">
+        <div class="num">37</div>
+        <div class="label">Satellites tracked</div>
+      </div>
+      <div class="card">
+        <div class="num">99.95%</div>
+        <div class="label">Telemetry uptime</div>
+      </div>
+      <div class="card">
+        <div class="num">04:12</div>
+        <div class="label">Next pass window</div>
+      </div>
+    </section>
+
+    <section class="feed" id="telemetry">
+      <h2>Control feed</h2>
+      <div class="line"><span class="tag">UPLINK</span>Station Svalbard-2 acquired signal, elevation 41&deg;</div>
+      <div class="line"><span class="tag">DEPLOY</span>Relay pod scheduled to node pool orbital-a</div>
+      <div class="line"><span class="tag">STATUS</span>All stations reporting nominal</div>
+      <div class="line"><span class="tag">DOWNLINK</span>Telemetry batch 2281 received, 4.2 MB</div>
+    </section>
+
+    <footer id="missions">
+      Orbital Relay &middot; fictional ground-station dashboard for the
+      NCC Kubernetes lab &middot; background photo via Unsplash
+    </footer>
+    </body>
+    </html>

@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: station-config
+  labels:
+    app: orbital-relay
+data:
+  STATION_NAME: "Svalbard-2"
+  STATION_REGION: "Arctic Circle"

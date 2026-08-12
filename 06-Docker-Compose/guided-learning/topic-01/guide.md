@@ -15,9 +15,11 @@ docker compose config
 ## Guided Steps
 1. Confirm Compose is installed.
 2. Open the app folder used by this module.
-3. Validate the Compose file.
-4. Explain why a single file is easier than long `docker run` commands.
-5. Identify the three services defined for this module.
+3. Validate the Compose file (`docker-compose.yaml`).
+4. Explain why a single file is easier than two long `docker run` commands
+   (one for a Flask app, one for a MySQL database, wired together by
+   hand).
+5. Identify the two services defined for this module: `web` and `db`.
 
 ## Checkpoint
-What does Compose simplify when an app needs multiple containers?
+What does Compose simplify when an app needs a database alongside it?

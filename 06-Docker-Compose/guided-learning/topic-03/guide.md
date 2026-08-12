@@ -13,9 +13,9 @@ docker compose config
 
 ## Guided Steps
 1. Render the full Compose config.
-2. Confirm environment values are present from `.env.example`.
-3. Confirm health checks appear for `web` and `redis`.
-4. Confirm named volumes are defined.
+2. Confirm environment values are present for `web` from `.env.example`.
+3. Confirm health checks appear for both `web` and `db`.
+4. Confirm the `db_data` named volume is defined.
 5. Explain why config validation should happen before startup.
 
 ## Checkpoint

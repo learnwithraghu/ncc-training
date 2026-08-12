@@ -3,7 +3,8 @@
 **Time:** 20 minutes
 
 ## Goal
-Use environment variables to configure services without changing source code.
+Use environment variables to configure the app without changing source
+code.
 
 ## Commands to Use
 ```bash
@@ -16,11 +17,19 @@ docker compose down
 ```
 
 ## Guided Steps
-1. Open `.env.example` and review key values.
-2. Start the stack using env values from the file.
-3. Verify the API response includes expected environment fields.
-4. Change one value, restart, and verify the change.
-5. Explain why env files help reusable deployments.
+1. Open `.env.example` and review the `web`-facing values (`ENVIRONMENT`,
+   `APP_VERSION`, `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`,
+   `DB_NAME`).
+2. Start the stack using values from the file.
+3. Verify `GET /` includes `environment` and `app_version` from the file.
+4. Change `APP_VERSION` to something else, `docker compose up -d`
+   again (no rebuild needed, only the container restarts), and confirm
+   `GET /` reflects the new value.
+5. Explain why env-based configuration helps reusable deployments -
+   and, from Topic 2, why changing `DB_PASSWORD` here alone would *not*
+   be enough to actually change the database's password.
 
 ## Checkpoint
-Why is env-based configuration better than hardcoding values in code?
+Why is env-based configuration better than hardcoding values in code, and
+why did we ask you to change `APP_VERSION` instead of a `DB_*` value in
+this exercise?

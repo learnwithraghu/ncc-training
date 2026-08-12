@@ -25,7 +25,7 @@ This module uses one self-contained lesson per topic.
 - Topic 05 - Health Checks and Dependencies
 - Topic 06 - Environment and Env Files
 - Topic 07 - Volumes and Persistent Data
-- Topic 08 - Queue Workflow with Worker
+- Topic 08 - Database Workflow with MySQL
 - Topic 09 - Logs, Exec, and Troubleshooting
 - Topic 10 - Service Scaling Patterns
 - Topic 11 - Rebuild and Rollout Workflow

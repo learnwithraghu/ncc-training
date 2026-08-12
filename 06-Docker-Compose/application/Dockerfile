@@ -6,18 +6,18 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY app.py worker.py ./
+COPY app.py ./
 
 ENV PYTHONUNBUFFERED=1 \
     ENVIRONMENT=training \
     APP_VERSION=1.0 \
-    REDIS_HOST=redis \
-    REDIS_PORT=6379 \
-    QUEUE_NAME=events \
-    DATA_DIR=/app/data
+    DB_HOST=db \
+    DB_PORT=3306 \
+    DB_USER=appuser \
+    DB_PASSWORD=apppassword \
+    DB_NAME=appdb
 
 RUN useradd --create-home --shell /usr/sbin/nologin appuser \
-    && mkdir -p /app/data \
     && chown -R appuser:appuser /app
 
 USER appuser

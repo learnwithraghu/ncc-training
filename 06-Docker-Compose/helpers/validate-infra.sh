@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
-set -euo pipefail
+# Intentionally no `set -e`: every check below is meant to record a
+# PASS/WARN/FAIL and keep going so the summary at the end reflects the
+# whole stack, not just the first failure.
+set -uo pipefail
 
 readonly SCRIPT_NAME="NCC Docker Compose Training - Infrastructure Validator"
 readonly SEP="============================================================"
@@ -9,7 +12,7 @@ readonly SANDBOX="/tmp/ncc-compose-validation-$$"
 readonly PROJECT_NAME="ncc-compose-val-$$"
 
 export COMPOSE_PROJECT_NAME="${PROJECT_NAME}"
-export COMPOSE_FILE="${APP_DIR}/docker-compose.yml"
+export COMPOSE_FILE="${APP_DIR}/docker-compose.yaml"
 
 PASS=0
 WARN=0
@@ -25,7 +28,7 @@ cleanup() {
     if [ -f "${COMPOSE_FILE}" ]; then
         docker compose -p "${PROJECT_NAME}" down --volumes --remove-orphans &>/dev/null || true
     fi
-    docker rmi -f "${PROJECT_NAME}-web" "${PROJECT_NAME}-worker" &>/dev/null || true
+    docker rmi -f "${PROJECT_NAME}-web" &>/dev/null || true
     rm -rf "${SANDBOX}"
 }
 trap cleanup EXIT
@@ -143,20 +146,19 @@ curl_expect() {
 }
 
 wait_for_health() {
-    local timeout="${1:-60}"
-    echo "  (waiting up to ${timeout}s for all services to be healthy...)"
-    local i web_id redis_id worker_state web_health redis_health
+    local timeout="${1:-90}"
+    echo "  (waiting up to ${timeout}s for web+db to be healthy...)"
+    local i web_id db_id web_health db_health
     for i in $(seq 1 "$timeout"); do
         web_id=$(docker compose ps -q web 2>/dev/null || true)
-        redis_id=$(docker compose ps -q redis 2>/dev/null || true)
+        db_id=$(docker compose ps -q db 2>/dev/null || true)
 
-        if [ -n "$web_id" ] && [ -n "$redis_id" ]; then
+        if [ -n "$web_id" ] && [ -n "$db_id" ]; then
             web_health=$(docker inspect --format='{{.State.Health.Status}}' "$web_id" 2>/dev/null || echo 'unknown')
-            redis_health=$(docker inspect --format='{{.State.Health.Status}}' "$redis_id" 2>/dev/null || echo 'unknown')
-            worker_state=$(docker inspect --format='{{.State.Status}}' "$(docker compose ps -q worker 2>/dev/null || true)" 2>/dev/null || echo 'unknown')
+            db_health=$(docker inspect --format='{{.State.Health.Status}}' "$db_id" 2>/dev/null || echo 'unknown')
 
-            if [ "$web_health" = "healthy" ] && [ "$redis_health" = "healthy" ] && [ "$worker_state" = "running" ]; then
-                echo -e "  ${GREEN}[PASS]${NC} health web+redis healthy, worker running"
+            if [ "$web_health" = "healthy" ] && [ "$db_health" = "healthy" ]; then
+                echo -e "  ${GREEN}[PASS]${NC} health web+db healthy"
                 PASS=$((PASS + 1))
                 return 0
             fi
@@ -164,9 +166,8 @@ wait_for_health() {
         sleep 1
     done
     echo -e "  ${RED}[FAIL]${NC} health services did not become healthy within ${timeout}s"
-    echo "    web health    : ${web_health:-unknown}"
-    echo "    redis health  : ${redis_health:-unknown}"
-    echo "    worker state  : ${worker_state:-unknown}"
+    echo "    web health : ${web_health:-unknown}"
+    echo "    db health  : ${db_health:-unknown}"
     FAIL=$((FAIL + 1))
     docker compose ps 2>/dev/null || true
     return 1
@@ -197,22 +198,20 @@ else
     echo -e "  ${RED}[FAIL]${NC} tool docker compose plugin not found"
     FAIL=$((FAIL + 1))
 fi
-
-docker_ok "docker compose ps works" \
-    "docker compose ps 2>&1 | grep -q . && echo ok" "tool"
 echo ""
 
-# ── 3. Optional curl ──────────────────────────────────────────────────
+# ── 3. Optional tools ──────────────────────────────────────────────────
 
 echo -e "${CYAN}[ 3] Optional Tools (Topic 01)${NC}"
 warn_cmd "curl" "api"
+warn_cmd "mysql" "db"
 echo ""
 
 # ── 4. Project files ──────────────────────────────────────────────────
 
 echo -e "${CYAN}[ 4] Project Files (Topic 02)${NC}"
 
-for file in Dockerfile docker-compose.yml .env.example .dockerignore app.py worker.py requirements.txt; do
+for file in Dockerfile docker-compose.yaml .env.example .dockerignore app.py requirements.txt init.sql; do
     if [ -f "${APP_DIR}/${file}" ]; then
         echo -e "  ${GREEN}[PASS]${NC} files ${file} exists"
         PASS=$((PASS + 1))
@@ -223,7 +222,7 @@ for file in Dockerfile docker-compose.yml .env.example .dockerignore app.py work
 done
 
 if [ -f "${APP_DIR}/.env.example" ]; then
-    for key in ENVIRONMENT APP_VERSION REDIS_HOST REDIS_PORT QUEUE_NAME DATA_DIR; do
+    for key in ENVIRONMENT APP_VERSION DB_HOST DB_PORT DB_USER DB_PASSWORD DB_NAME; do
         if grep -qE "^${key}=" "${APP_DIR}/.env.example"; then
             echo -e "  ${GREEN}[PASS]${NC} envfile ${key} defined in .env.example"
             PASS=$((PASS + 1))
@@ -237,18 +236,27 @@ echo ""
 
 # ── 5. Port availability ──────────────────────────────────────────────
 
-echo -e "${CYAN}[ 5] Port 5000 Available (Topic 04)${NC}"
+echo -e "${CYAN}[ 5] Ports 5000 and 3306 Available (Topic 04)${NC}"
 
-if command -v ss &>/dev/null && ss -tln 2>/dev/null | grep -q ':5000'; then
-    echo -e "  ${RED}[FAIL]${NC} port port 5000 is already in use"
-    FAIL=$((FAIL + 1))
-elif command -v netstat &>/dev/null && netstat -tln 2>/dev/null | grep -q ':5000'; then
-    echo -e "  ${RED}[FAIL]${NC} port port 5000 is already in use"
-    FAIL=$((FAIL + 1))
-else
-    echo -e "  ${GREEN}[PASS]${NC} port port 5000 is free"
-    PASS=$((PASS + 1))
-fi
+port_free() {
+    local port="$1"
+    if command -v ss &>/dev/null && ss -tln 2>/dev/null | grep -q ":${port}"; then
+        return 1
+    elif command -v netstat &>/dev/null && netstat -tln 2>/dev/null | grep -q ":${port}"; then
+        return 1
+    fi
+    return 0
+}
+
+for port in 5000 3306; do
+    if port_free "$port"; then
+        echo -e "  ${GREEN}[PASS]${NC} port port ${port} is free"
+        PASS=$((PASS + 1))
+    else
+        echo -e "  ${RED}[FAIL]${NC} port port ${port} is already in use"
+        FAIL=$((FAIL + 1))
+    fi
+done
 echo ""
 
 # ── 6. Compose config validation ──────────────────────────────────────
@@ -261,8 +269,8 @@ compose_ok "docker compose config renders" \
 compose_expect "docker compose config shows services" \
     "docker compose config 2>&1 | grep -q '^services:' && echo ok" "ok" "config"
 
-compose_expect "docker compose config lists web, worker, redis" \
-    "docker compose config 2>&1 | grep -qE 'web:|worker:|redis:' && echo ok" "ok" "config"
+compose_expect "docker compose config lists web and db" \
+    "docker compose config 2>&1 | grep -qE 'web:|db:' && echo ok" "ok" "config"
 
 compose_expect "docker compose config lists named volumes" \
     "docker compose config 2>&1 | grep -q '^volumes:' && echo ok" "ok" "config"
@@ -278,30 +286,30 @@ compose_ok "docker compose up -d --build succeeds" \
     "timeout 240 docker compose up -d --build 2>&1 && echo ok" "up"
 
 compose_expect "docker compose ps shows running services" \
-    "docker compose ps --format '{{.Service}}' | sort -u | grep -cE '^(web|worker|redis)$' | grep -q '3' && echo ok" "ok" "ps"
+    "docker compose ps --format '{{.Service}}' | sort -u | grep -cE '^(web|db)$' | grep -q '2' && echo ok" "ok" "ps"
 
-wait_for_health 60
+wait_for_health 90
 echo ""
 
 # ── 8. Health checks and dependencies ─────────────────────────────────
 
 echo -e "${CYAN}[ 8] Health Checks and Dependencies (Topic 05)${NC}"
 
-compose_expect "redis service healthcheck defined" \
-    "docker compose config 2>&1 | awk '/^  redis:/{p=1} p{print} /^  [a-z]+:/{if(p && \$0 !~ /^  redis:/){exit}}' | grep -q 'healthcheck' && echo ok" "ok" "health"
+compose_expect "db service healthcheck defined" \
+    "docker compose config 2>&1 | awk '/^  db:/{p=1} p{print} /^  [a-z]+:/{if(p && \$0 !~ /^  db:/){exit}}' | grep -q 'healthcheck' && echo ok" "ok" "health"
 
 compose_expect "web service healthcheck defined" \
     "docker compose config 2>&1 | awk '/^  web:/{p=1} p{print} /^  [a-z]+:/{if(p && \$0 !~ /^  web:/){exit}}' | grep -q 'healthcheck' && echo ok" "ok" "health"
 
-compose_expect "web depends_on redis with condition" \
+compose_expect "web depends_on db with condition" \
     "docker compose config 2>&1 | grep -A8 'depends_on' | grep -q 'condition' && echo ok" "ok" "depends"
 
 docker_expect "web container reports healthy" \
     "docker inspect --format='{{.State.Health.Status}}' \"$(docker compose ps -q web)\" 2>&1" \
     "healthy" "health"
 
-docker_expect "redis container reports healthy" \
-    "docker inspect --format='{{.State.Health.Status}}' \"$(docker compose ps -q redis)\" 2>&1" \
+docker_expect "db container reports healthy" \
+    "docker inspect --format='{{.State.Health.Status}}' \"$(docker compose ps -q db)\" 2>&1" \
     "healthy" "health"
 echo ""
 
@@ -326,13 +334,12 @@ echo ""
 echo -e "${CYAN}[10] Volumes and Persistent Data (Topic 07)${NC}"
 
 if command -v curl &>/dev/null; then
-    curl -fsS -X POST http://localhost:5000/events \
+    curl -fsS -X POST http://localhost:5000/items \
         -H 'Content-Type: application/json' \
-        -d '{"title":"volume-check"}' >/dev/null 2>&1 || true
-    sleep 3
+        -d '{"name":"volume-check"}' >/dev/null 2>&1 || true
 
-    curl_expect "POST /events and GET /processed shows persisted data" \
-        "http://localhost:5000/processed" "volume-check" "volume"
+    curl_expect "POST /items and GET /items shows the new row" \
+        "http://localhost:5000/items" "volume-check" "volume"
 
     docker compose down &>/dev/null || true
     sleep 2
@@ -340,38 +347,40 @@ if command -v curl &>/dev/null; then
     compose_ok "docker compose up -d after down" \
         "docker compose up -d 2>&1 && echo ok" "volume"
 
-    wait_for_health 60
+    wait_for_health 90
 
-    curl_expect "processed data survives compose down + up" \
-        "http://localhost:5000/processed" "volume-check" "volume"
+    curl_expect "row survives compose down + up" \
+        "http://localhost:5000/items" "volume-check" "volume"
 else
     echo -e "  ${YELLOW}[WARN]${NC} volume curl not found — skipping persistence tests"
     WARN=$((WARN + 2))
 fi
 echo ""
 
-# ── 11. Queue workflow with worker ────────────────────────────────────
+# ── 11. Database workflow with MySQL ──────────────────────────────────
 
-echo -e "${CYAN}[11] Queue Workflow with Worker (Topic 08)${NC}"
+echo -e "${CYAN}[11] Database Workflow with MySQL (Topic 08)${NC}"
 
 if command -v curl &>/dev/null; then
-    curl -fsS -X POST http://localhost:5000/events \
+    curl -fsS -X POST http://localhost:5000/items \
         -H 'Content-Type: application/json' \
-        -d '{"title":"event-1"}' >/dev/null 2>&1 || true
-    curl -fsS -X POST http://localhost:5000/events \
+        -d '{"name":"event-1"}' >/dev/null 2>&1 || true
+    curl -fsS -X POST http://localhost:5000/items \
         -H 'Content-Type: application/json' \
-        -d '{"title":"event-2"}' >/dev/null 2>&1 || true
+        -d '{"name":"event-2"}' >/dev/null 2>&1 || true
 
-    sleep 3
+    curl_expect "GET /items shows event-1" \
+        "http://localhost:5000/items" "event-1" "db"
 
-    curl_expect "GET /processed shows queued events were processed" \
-        "http://localhost:5000/processed" "event-1" "queue"
+    curl_expect "GET /items shows event-2" \
+        "http://localhost:5000/items" "event-2" "db"
 
-    curl_expect "GET /processed shows second queued event" \
-        "http://localhost:5000/processed" "event-2" "queue"
+    compose_expect "docker compose exec db mysql (appuser) sees event-1 directly" \
+        "docker compose exec -T db mysql -u appuser -papppassword appdb -e 'SELECT name FROM items;' 2>&1" \
+        "event-1" "db"
 else
-    echo -e "  ${YELLOW}[WARN]${NC} queue curl not found — skipping queue tests"
-    WARN=$((WARN + 2))
+    echo -e "  ${YELLOW}[WARN]${NC} db curl not found — skipping database workflow tests"
+    WARN=$((WARN + 3))
 fi
 echo ""
 
@@ -379,7 +388,6 @@ echo ""
 
 echo -e "${CYAN}[12] Logs, Exec, and Troubleshooting (Topic 09)${NC}"
 
-# Generate fresh log lines before reading logs so the check is deterministic.
 if command -v curl &>/dev/null; then
     curl -fsS http://localhost:5000/health >/dev/null 2>&1 || true
     sleep 1
@@ -388,34 +396,41 @@ fi
 compose_ok "docker compose logs web returns output" \
     "docker compose logs --tail 5 web 2>&1 | grep -q . && echo ok" "logs"
 
-compose_ok "docker compose logs worker returns output" \
-    "docker compose logs --tail 5 worker 2>&1 | grep -q . && echo ok" "logs"
+compose_ok "docker compose logs db returns output" \
+    "docker compose logs --tail 5 db 2>&1 | grep -q . && echo ok" "logs"
 
-compose_ok "docker compose logs redis returns output" \
-    "docker compose logs --tail 5 redis 2>&1 | grep -q . && echo ok" "logs"
+compose_expect "docker compose exec web shows DB_ env vars" \
+    "docker compose exec -T web sh -c 'env | grep DB_' 2>&1" \
+    "DB_HOST" "exec"
 
-compose_expect "docker compose exec web lists /app/data" \
-    "docker compose exec web sh -c 'ls /app/data' 2>&1 | grep -q .  && echo ok" "ok" "exec"
-
-compose_expect "docker compose exec web reads processed.log" \
-    "docker compose exec web sh -c 'cat /app/data/processed.log' 2>&1 | grep -q 'event-1' && echo ok" "ok" "exec"
+compose_expect "docker compose exec db mysql (root) lists appdb" \
+    "docker compose exec -T db mysql -u root -prootpassword -e 'SHOW DATABASES;' 2>&1" \
+    "appdb" "exec"
 echo ""
 
 # ── 13. Service scaling patterns ──────────────────────────────────────
 
 echo -e "${CYAN}[13] Service Scaling Patterns (Topic 10)${NC}"
 
-compose_ok "docker compose up -d --scale worker=3" \
-    "docker compose up -d --scale worker=3 2>&1 && echo ok" "scale"
+echo "  (scaling web=3 is expected to fail - fixed host port 5000 can only bind once)"
+if docker compose up -d --scale web=3 &>/dev/null; then
+    RUNNING_WEB=$(docker compose ps --format '{{.Service}}' 2>/dev/null | grep -c '^web$' || true)
+    if [ "$RUNNING_WEB" -le 1 ]; then
+        echo -e "  ${GREEN}[PASS]${NC} scale --scale web=3 did not actually run 3 web containers (fixed port 5000 blocks it)"
+        PASS=$((PASS + 1))
+    else
+        echo -e "  ${RED}[FAIL]${NC} scale expected at most 1 web container with a fixed host port, found ${RUNNING_WEB}"
+        FAIL=$((FAIL + 1))
+    fi
+else
+    echo -e "  ${GREEN}[PASS]${NC} scale --scale web=3 correctly failed (port 5000 already allocated)"
+    PASS=$((PASS + 1))
+fi
 
-sleep 3
+compose_ok "scale back to web=1" \
+    "docker compose up -d --scale web=1 2>&1 && echo ok" "scale"
 
-compose_expect "three worker containers are running" \
-    "docker compose ps --format '{{.Service}}' | grep -c '^worker$'" \
-    "3" "scale"
-
-compose_ok "scale back to single worker" \
-    "docker compose up -d --scale worker=1 2>&1 && echo ok" "scale"
+wait_for_health 90
 echo ""
 
 # ── 14. Rebuild and rollout workflow ──────────────────────────────────
@@ -428,7 +443,7 @@ compose_ok "docker compose build --no-cache succeeds" \
 compose_ok "docker compose up -d after rebuild" \
     "docker compose up -d 2>&1 && echo ok" "rebuild"
 
-wait_for_health 60
+wait_for_health 90
 
 if command -v curl &>/dev/null; then
     curl_expect "GET /health responds after rebuild" \
@@ -446,16 +461,19 @@ echo -e "${CYAN}[15] Compose Mini Workflow (Topic 12)${NC}"
 compose_ok "docker compose up -d --build (mini workflow)" \
     "timeout 240 docker compose up -d --build 2>&1 && echo ok" "mini"
 
-wait_for_health 60
+wait_for_health 90
 
 if command -v curl &>/dev/null; then
-    curl -fsS -X POST http://localhost:5000/events \
+    curl -fsS -X POST http://localhost:5000/items \
         -H 'Content-Type: application/json' \
-        -d '{"title":"final-workflow"}' >/dev/null 2>&1 || true
-    sleep 3
+        -d '{"name":"final-workflow"}' >/dev/null 2>&1 || true
 
-    curl_expect "GET /processed shows final-workflow event" \
-        "http://localhost:5000/processed" "final-workflow" "mini"
+    curl_expect "GET /items shows final-workflow row" \
+        "http://localhost:5000/items" "final-workflow" "mini"
+
+    compose_expect "mysql -e SELECT confirms final-workflow row directly" \
+        "docker compose exec -T db mysql -u appuser -papppassword appdb -e 'SELECT name FROM items;' 2>&1" \
+        "final-workflow" "mini"
 
     compose_ok "docker compose logs --tail 20 returns output" \
         "docker compose logs --tail 20 2>&1 | grep -q .  && echo ok" "mini"

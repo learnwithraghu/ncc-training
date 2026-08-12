@@ -1,49 +1,46 @@
-# Docker New Style — EC2 Build to ECR
+# Docker New Style — Aether Launch on EC2 to ECR
 
-Work through these topics in order on an Amazon Linux 2 EC2 instance. Each topic teaches a few commands, then gives you a task to try on your own.
+Work through these topics in order on an Amazon Linux 2 EC2 instance. Each topic folder is independent: it has its own `index.html`, `Dockerfile`, and `guide.md`. You do not need files from a previous folder.
 
-This track stops after you push an image to Amazon ECR. Compose, volumes, and ECS deploy are later modules.
+The site is a single-page company page for **Aether Launch**, a satellite launch company.
 
 ## Recommended Flow
 
-1. Open the topic guide.
+1. Open the topic folder.
 2. Walk through the commands on EC2.
-3. Complete the **Task** without looking at the guided steps.
+3. Complete the **Task**.
 4. Answer the checkpoint before moving on.
-5. Finish each topic in about 20 minutes.
 
 ## Topic List
 
 | Folder | Focus |
 |--------|-------|
-| [01-setup-docker-on-ec2/](01-setup-docker-on-ec2/) | SSH to Amazon Linux 2, install Docker, run `hello-world` |
-| [02-docker-build/](02-docker-build/) | Read the Dockerfile and master `docker build` |
-| [03-docker-run-and-ports/](03-docker-run-and-ports/) | Run the image and publish ports |
-| [04-docker-logs-and-exec/](04-docker-logs-and-exec/) | Read logs and exec into a container |
-| [05-docker-tag-and-images/](05-docker-tag-and-images/) | Tag images and inspect what you built |
-| [06-push-to-ecr/](06-push-to-ecr/) | Login, tag, and push from EC2 to ECR |
+| [01-setup-docker-on-ec2/](01-setup-docker-on-ec2/) | Install Docker on Amazon Linux 2 |
+| [02-serve-on-ec2/](02-serve-on-ec2/) | Serve the HTML from EC2 and publish port 8080 |
+| [03-bake-image/](03-bake-image/) | Dockerfile, package install, `COPY`, `docker build` |
+| [04-docker-logs-and-exec/](04-docker-logs-and-exec/) | Logs and exec on the baked image |
+| [05-docker-tag-and-images/](05-docker-tag-and-images/) | Naming and tagging convention |
+| [06-push-to-ecr/](06-push-to-ecr/) | Push `aether-launch:1.0` from EC2 to ECR |
+| [07-pull-and-run/](07-pull-and-run/) | Pull from ECR and run to validate |
 
-## Lab Setup on EC2
+## How each folder is laid out
 
-Clone this repository on the instance, then work from the sample app:
-
-```bash
-cd ~/ncc-training/05-Docker/application
+```text
+index.html      Aether Launch company page
+Dockerfile      nginx + apk add curl + COPY index.html
+.dockerignore   keeps guide.md out of the build
+guide.md        commands, steps, task, checkpoint
 ```
 
-Adjust the path if you cloned the repo somewhere else.
-
 ## Instructor Helper
-
-Before teaching, run the full lab on a fresh Amazon Linux 2 EC2 instance:
 
 ```bash
 cd ~/ncc-training/05-Docker/new-style/helpers
 bash run-ecr-lab.sh
 ```
 
-The script asks only for the ECR image URI. Region is us-east-1. It uses the EC2 IAM role already attached to the instance (not access keys), installs Docker, builds the sample app, smoke-tests `/health`, and pushes to ECR.
+The script asks only for the ECR image URI. It uses the EC2 IAM role, serves the HTML from disk, bakes the image, curls **Aether Launch**, pushes, then pulls and runs again.
 
 ## Scope Boundary
 
-We stop after ECR push. Do not continue into ECS, Compose, or Kubernetes in this module.
+We stop after pull-and-run validation. Do not continue into ECS, Compose, or Kubernetes in this module.

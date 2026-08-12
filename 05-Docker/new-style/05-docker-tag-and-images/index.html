@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Aether Launch — Satellite Launch Company</title>
+  <style>
+    :root {
+      --ink: #e8f1ff;
+      --muted: #9bb0d0;
+      --accent: #6ee7ff;
+      --flame: #ff7a3d;
+      --deep: #050816;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Segoe UI", Helvetica, Arial, sans-serif;
+      color: var(--ink);
+      background: radial-gradient(1200px 600px at 20% -10%, #1b2a6b 0%, transparent 55%),
+                  radial-gradient(900px 500px at 110% 10%, #3b1d6e 0%, transparent 50%),
+                  var(--deep);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    .stars {
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(1px 1px at 12% 18%, #fff 50%, transparent 51%),
+        radial-gradient(1px 1px at 28% 72%, #fff 50%, transparent 51%),
+        radial-gradient(1.5px 1.5px at 44% 22%, #cde 50%, transparent 51%),
+        radial-gradient(1px 1px at 63% 41%, #fff 50%, transparent 51%),
+        radial-gradient(1px 1px at 81% 14%, #fff 50%, transparent 51%),
+        radial-gradient(1.5px 1.5px at 91% 68%, #fff 50%, transparent 51%),
+        radial-gradient(1px 1px at 8% 88%, #fff 50%, transparent 51%),
+        radial-gradient(1px 1px at 52% 91%, #fff 50%, transparent 51%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    header, main, footer { position: relative; z-index: 1; }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.4rem 7vw;
+    }
+    .logo {
+      letter-spacing: 0.28em;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      margin-left: 1.4rem;
+      font-size: 0.92rem;
+    }
+    .hero {
+      padding: 6vh 7vw 8vh;
+      max-width: 920px;
+    }
+    .eyebrow {
+      color: var(--accent);
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    h1 {
+      font-size: clamp(2.4rem, 6vw, 5.2rem);
+      line-height: 0.95;
+      font-weight: 700;
+      margin-bottom: 1.2rem;
+    }
+    h1 span { color: var(--flame); }
+    .lede {
+      max-width: 38rem;
+      color: var(--muted);
+      font-size: 1.15rem;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+    .cta {
+      display: inline-block;
+      background: linear-gradient(90deg, var(--flame), #ffb347);
+      color: #1a0b04;
+      font-weight: 700;
+      text-decoration: none;
+      padding: 0.9rem 1.4rem;
+      border-radius: 999px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.2rem;
+      padding: 0 7vw 8vh;
+    }
+    article {
+      border: 1px solid rgba(110, 231, 255, 0.18);
+      background: rgba(8, 14, 36, 0.72);
+      border-radius: 18px;
+      padding: 1.4rem;
+      backdrop-filter: blur(8px);
+    }
+    article h2 {
+      font-size: 1.05rem;
+      margin-bottom: 0.55rem;
+    }
+    article p { color: var(--muted); line-height: 1.5; font-size: 0.95rem; }
+    .orbit {
+      position: absolute;
+      right: 6vw;
+      top: 18vh;
+      width: min(280px, 32vw);
+      opacity: 0.9;
+    }
+    footer {
+      padding: 1.5rem 7vw 2.5rem;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    @media (max-width: 800px) {
+      .orbit { display: none; }
+      nav { display: none; }
+    }
+  </style>
+</head>
+<body data-lab="ncc-aether">
+  <div class="stars"></div>
+  <header>
+    <div class="logo">Aether Launch</div>
+    <nav>
+      <a href="#missions">Missions</a>
+      <a href="#vehicles">Vehicles</a>
+      <a href="#contact">Manifest</a>
+    </nav>
+  </header>
+  <svg class="orbit" viewBox="0 0 200 200" aria-hidden="true">
+    <circle cx="100" cy="100" r="72" fill="none" stroke="#6ee7ff" stroke-opacity="0.25"/>
+    <circle cx="100" cy="100" r="48" fill="none" stroke="#ff7a3d" stroke-opacity="0.35"/>
+    <circle cx="100" cy="28" r="7" fill="#6ee7ff"/>
+    <rect x="88" y="90" width="24" height="14" rx="3" fill="#d9e7ff"/>
+    <rect x="94" y="84" width="12" height="8" rx="2" fill="#6ee7ff"/>
+    <polygon points="88,104 80,118 92,110" fill="#9bb0d0"/>
+    <polygon points="112,104 120,118 108,110" fill="#9bb0d0"/>
+  </svg>
+  <main>
+    <section class="hero">
+      <p class="eyebrow">Low Earth orbit · Dedicated rides</p>
+      <h1>We put satellites <span>in orbit.</span></h1>
+      <p class="lede">Aether Launch flies smallsats to precise orbits. One page. One vehicle family. One promise: your payload reaches space on schedule.</p>
+      <a class="cta" href="#contact">Book a launch window</a>
+    </section>
+    <section class="grid" id="missions">
+      <article>
+        <h2>Rideshare</h2>
+        <p>Shared fairings for CubeSats and ESPA-class payloads. Monthly cadence to 500–600 km SSO.</p>
+      </article>
+      <article>
+        <h2>Dedicated</h2>
+        <p>Your inclination, your epoch. We hold the pad until your spacecraft is ready.</p>
+      </article>
+      <article id="vehicles">
+        <h2>Aether-1</h2>
+        <p>Two-stage kerosene launcher. 1,200 kg to LEO. Designed to be read, built, and shipped as a single HTML page in this lab.</p>
+      </article>
+      <article id="contact">
+        <h2>Next window</h2>
+        <p>Manifest opens at T-90 days. This site is the Aether Launch company page used in the NCC Docker lab.</p>
+      </article>
+    </section>
+  </main>
+  <footer>Aether Launch · NCC Docker lab · served from EC2, then baked into an image.</footer>
+</body>
+</html>

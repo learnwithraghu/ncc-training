@@ -3,70 +3,62 @@
 **Time:** ~20 minutes
 
 ## Goal
-From the same EC2 instance, authenticate to Amazon ECR using the **instance IAM role**, tag your built image with the repository URI, and push it. This is the last topic in the module.
+Build the Aether Launch image in this folder, tag it with the ECR URI, and push from this EC2 instance using the instance IAM role.
 
-Do not create access keys. Do not use `~/.aws/credentials`. The EC2 role is how this lab talks to AWS.
+Work only in this folder. It has its own `index.html` and `Dockerfile`.
+
+Do not create access keys. Do not use `~/.aws/credentials`.
 
 ## Commands to Teach
 
 ```bash
 aws sts get-caller-identity
 aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com
-docker tag ncc-training-app:1.0 <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/<repo>:1.0
+docker tag aether-launch:1.0 <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/<repo>:1.0
 docker push <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/<repo>:1.0
 ```
 
-- `aws sts get-caller-identity` must show an `assumed-role` ARN from the EC2 instance profile.
-- `get-login-password | docker login` gives Docker a short-lived ECR token from that role. You do not paste AWS keys into Docker.
-- `docker tag` rewrites the local name to the ECR URI. ECR will not accept `ncc-training-app:1.0` until it is tagged this way.
-- `docker push` uploads layers from this EC2 host to ECR. The image is not pushed from your laptop.
+- `aws sts get-caller-identity` must show an `assumed-role` ARN.
+- `docker login` uses a short-lived ECR token from that role.
+- `docker tag` applies the ECR naming convention from topic 05.
+- `docker push` uploads layers from this EC2 host.
 
 ## Guided Steps
 
-1. Build the image on EC2 if it is not already present:
+1. Build from this folder:
 
 ```bash
-cd ~/ncc-training/05-Docker/application
-docker build -t ncc-training-app:1.0 .
+cd ~/ncc-training/05-Docker/new-style/06-push-to-ecr
+docker build -t aether-launch:1.0 .
 ```
 
-2. Confirm the instance role can call AWS. Region for this lab is `us-east-1`:
+2. Confirm the instance role:
 
 ```bash
 aws sts get-caller-identity
 ```
 
-If this fails, or the ARN is not `assumed-role`, stop and tell the instructor. The EC2 instance must already have an IAM role that can push to ECR.
+If the ARN is not `assumed-role`, stop and tell the instructor.
 
-3. Copy the image URI from AWS Console (**ECR → Repositories → your repo**) and set it as a variable. Include the tag:
+3. Set the ECR URI your instructor gives you (include the tag):
 
 ```bash
 ECR_IMAGE_URI="<ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/<repo>:1.0"
 ECR_REGISTRY=$(echo "$ECR_IMAGE_URI" | cut -d/ -f1)
-ECR_REPOSITORY_NAME=$(echo "$ECR_IMAGE_URI" | cut -d/ -f2 | cut -d: -f1)
+ECR_REPOSITORY_NAME=$(echo "$ECR_IMAGE_URI" | cut -d/ -f2- | cut -d: -f1)
 ```
 
-Confirm the repository exists:
-
-```bash
-aws ecr describe-repositories \
-  --repository-names "$ECR_REPOSITORY_NAME" \
-  --region us-east-1
-```
-
-The instructor creates the ECR repository in the Console before class. You do not create it in this topic.
-
-4. Login, tag, and push from EC2:
+4. Login, tag, and push:
 
 ```bash
 aws ecr get-login-password --region us-east-1 | \
   docker login --username AWS --password-stdin "$ECR_REGISTRY"
 
-docker tag ncc-training-app:1.0 "$ECR_IMAGE_URI"
+docker tag aether-launch:1.0 "$ECR_IMAGE_URI"
 docker push "$ECR_IMAGE_URI"
 ```
 
-5. Verify the image landed in ECR:
+5. Confirm ECR has the image:
 
 ```bash
 aws ecr describe-images \
@@ -74,11 +66,11 @@ aws ecr describe-images \
   --region us-east-1
 ```
 
-Save the image URI. This module ends here.
+Save the URI for [07-pull-and-run](../07-pull-and-run/guide.md).
 
 ## Task
 
-Build `ncc-training-app:1.0` on EC2. Use the ECR repository URI your instructor gives you. Login, tag the local image with that URI, push it, and confirm the image appears in `aws ecr describe-images`. If login or push fails, confirm `aws sts get-caller-identity` shows `assumed-role` and tell the instructor.
+From this folder, build `aether-launch:1.0`, tag it with the instructor ECR URI, push it, and confirm it with `aws ecr describe-images`.
 
 ## Checkpoint
-Why does this lab use the EC2 instance IAM role instead of access keys, and what does `docker tag` change before `docker push`?
+Why must the local name `aether-launch:1.0` be tagged with the ECR URI before `docker push`?

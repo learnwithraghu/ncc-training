@@ -5,6 +5,8 @@
 ## Goal
 SSH into an Amazon Linux 2 EC2 instance, install Docker, and prove the daemon can run a container.
 
+This folder is self-contained. It already has the Aether Launch `index.html` and `Dockerfile`. You do not need them until the next topic.
+
 ## Commands to Teach
 
 ```bash
@@ -33,8 +35,6 @@ ssh -i your-key.pem ec2-user@<EC2_PUBLIC_IP>
 cat /etc/os-release
 ```
 
-You should see `Amazon Linux 2` in `PRETTY_NAME`.
-
 3. Install Docker, start the daemon, and add `ec2-user` to the docker group:
 
 ```bash
@@ -45,7 +45,7 @@ sudo systemctl enable docker
 sudo usermod -a -G docker ec2-user
 ```
 
-4. Apply the docker group in this shell, then confirm the install:
+4. Apply the docker group, then confirm the install:
 
 ```bash
 newgrp docker
@@ -61,19 +61,20 @@ If `docker info` still asks for sudo, log out of SSH and log back in.
 docker run hello-world
 ```
 
-You should see a message that the Docker client contacted the daemon, pulled the image, and ran a container.
-
-6. Clone the training repo if it is not already on the instance (install git first if needed):
+6. Clone the training repo if it is not already on the instance:
 
 ```bash
 sudo yum install -y git
 git clone <REPO_URL> ~/ncc-training
-cd ~/ncc-training
+cd ~/ncc-training/05-Docker/new-style/01-setup-docker-on-ec2
+ls
 ```
+
+You should see `guide.md`, `index.html`, and `Dockerfile` in this folder.
 
 ## Task
 
-SSH to your Amazon Linux 2 EC2 instance, install Docker with `amazon-linux-extras`, add `ec2-user` to the `docker` group, and run `docker run hello-world` without sudo. Do not move on until that command succeeds.
+SSH to your Amazon Linux 2 EC2 instance, install Docker with `amazon-linux-extras`, add `ec2-user` to the `docker` group, and run `docker run hello-world` without sudo.
 
 ## Checkpoint
-Why do we install and run Docker on EC2 Amazon Linux 2 instead of building images only on a laptop?
+Why do we install Docker on the EC2 instance instead of only on a laptop?

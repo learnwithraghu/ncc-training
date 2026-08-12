@@ -1,15 +1,16 @@
 #!/usr/bin/env bash
-# Instructor helper: install Docker on Amazon Linux 2 EC2, build the sample app,
-# smoke-test /health, and push the image to a supplied ECR URI.
+# Instructor helper: install Docker on Amazon Linux 2, serve the Aether Launch
+# page, bake it into an image, push to ECR, pull, and run again.
 set -uo pipefail
 
-readonly SCRIPT_NAME="NCC Docker Training - ECR Lab Runner"
+readonly SCRIPT_NAME="NCC Docker Training - Aether Launch Lab Runner"
 readonly SEP="============================================================"
 readonly SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-readonly APP_DIR=$(cd "${SCRIPT_DIR}/../../application" && pwd)
+readonly APP_DIR="$SCRIPT_DIR"
 readonly REGION="us-east-1"
-readonly CONTAINER_NAME="ncc-ecr-lab-app"
-readonly LOCAL_TAG="ncc-training-app:lab"
+readonly CONTAINER_NAME="aether-web"
+readonly LOCAL_TAG="aether-launch:1.0"
+readonly PAGE_MARK="Aether Launch"
 
 ECR_IMAGE_URI=""
 
@@ -29,14 +30,15 @@ Usage: $0
        $0 --ecr-image-uri <uri>
 
 Validates the new-style Docker lab on Amazon Linux 2 EC2:
-install Docker, build the sample app, curl /health, push to ECR.
+install Docker, serve the Aether Launch HTML from disk, bake it into
+an image, curl the page, push to ECR, then pull and run it again.
 
-Region is us-east-1 (N. Virginia). The app path is 05-Docker/application.
+Region is us-east-1 (N. Virginia). Site files live next to this script.
 
 If you do not pass --ecr-image-uri, the script asks for it.
 
 Example URI:
-  123456789012.dkr.ecr.us-east-1.amazonaws.com/ncc-training-app:lab
+  123456789012.dkr.ecr.us-east-1.amazonaws.com/aether-launch:1.0
 EOF
 }
 
@@ -61,7 +63,7 @@ done
 
 if [[ -z "$ECR_IMAGE_URI" ]]; then
     echo "ECR image URI (us-east-1), for example:"
-    echo "  123456789012.dkr.ecr.us-east-1.amazonaws.com/ncc-training-app:lab"
+    echo "  123456789012.dkr.ecr.us-east-1.amazonaws.com/aether-launch:1.0"
     printf "ECR image URI: "
     read -r ECR_IMAGE_URI
 fi
@@ -72,7 +74,7 @@ if [[ -z "$ECR_IMAGE_URI" ]]; then
 fi
 
 if [[ "$ECR_IMAGE_URI" != *:* ]]; then
-    ECR_IMAGE_URI="${ECR_IMAGE_URI}:lab"
+    ECR_IMAGE_URI="${ECR_IMAGE_URI}:1.0"
 fi
 
 ECR_REGISTRY=$(echo "$ECR_IMAGE_URI" | cut -d/ -f1)
@@ -99,6 +101,22 @@ docker_bin() {
     else
         sudo docker "$@"
     fi
+}
+
+page_ok() {
+    local url="$1"
+    curl -fsS "$url" 2>/dev/null | grep -q "$PAGE_MARK"
+}
+
+find_http_port() {
+    local port
+    for port in 8080 8081 8082 8090 80; do
+        if ! (echo >/dev/tcp/127.0.0.1/"$port") 2>/dev/null; then
+            echo "$port"
+            return 0
+        fi
+    done
+    echo "8080"
 }
 
 cleanup() {
@@ -137,8 +155,6 @@ if [[ -f /etc/os-release ]]; then
         warn "Amazon Linux detected (${PRETTY_NAME:-unknown}); expected Amazon Linux 2"
     else
         fail "Expected Amazon Linux 2 (found ${PRETTY_NAME:-unknown})"
-        echo ""
-        echo "Aborting: this lab installs Docker with amazon-linux-extras on Amazon Linux 2."
         exit 1
     fi
 else
@@ -166,8 +182,6 @@ else
         pass "Docker installed via yum"
     else
         fail "Docker install failed"
-        echo ""
-        echo "Aborting: could not install Docker on Amazon Linux 2."
         exit 1
     fi
 fi
@@ -176,25 +190,20 @@ if docker_bin info &>/dev/null; then
     pass "docker info succeeds"
 else
     fail "docker info failed after install"
-    echo ""
-    echo "Aborting: Docker daemon is not usable."
     exit 1
 fi
 echo ""
 
-# ── 3. AWS CLI (Amazon Linux 2 usually has it) ────────────────────
+# ── 3. AWS CLI ────────────────────────────────────────────────────
 
 echo -e "${CYAN}[ 3] AWS CLI${NC}"
 if command -v aws &>/dev/null; then
     pass "aws CLI present ($(aws --version 2>&1 | head -n1))"
 else
-    echo "  Installing awscli..."
     if sudo yum install -y awscli; then
         pass "awscli installed"
     else
         fail "awscli install failed"
-        echo ""
-        echo "Aborting: AWS CLI is required to login and push to ECR."
         exit 1
     fi
 fi
@@ -221,20 +230,15 @@ if [[ -n "$INSTANCE_PROFILE" ]]; then
     pass "Instance profile present: ${INSTANCE_PROFILE}"
 else
     fail "No IAM instance profile on this EC2 instance"
-    echo ""
-    echo "Aborting: attach an IAM role to this instance that can push to ECR."
     exit 1
 fi
 
 IDENTITY_JSON=$(aws sts get-caller-identity --region "$REGION" 2>&1) || IDENTITY_JSON=""
 if echo "$IDENTITY_JSON" | grep -q '"Account"'; then
-    ACCOUNT=$(echo "$IDENTITY_JSON" | grep -o '"Account": "[^"]*"' | cut -d'"' -f4)
     ARN=$(echo "$IDENTITY_JSON" | grep -o '"Arn": "[^"]*"' | cut -d'"' -f4)
     echo "  Arn       : ${ARN}"
 else
     fail "aws sts get-caller-identity failed: ${IDENTITY_JSON}"
-    echo ""
-    echo "Aborting: the instance role cannot call STS. Confirm the EC2 IAM role is attached."
     exit 1
 fi
 
@@ -242,8 +246,6 @@ if echo "$ARN" | grep -q ':assumed-role/'; then
     pass "Credentials come from the EC2 instance role"
 else
     fail "Credentials are not from an EC2 instance role (${ARN})"
-    echo ""
-    echo "Aborting: remove ~/.aws/credentials if present. This lab uses the instance IAM role only."
     exit 1
 fi
 echo ""
@@ -257,91 +259,121 @@ if aws ecr describe-repositories \
     pass "ECR repository exists: ${ECR_REPOSITORY_NAME}"
 else
     fail "ECR repository not found: ${ECR_REPOSITORY_NAME} in ${REGION}"
-    echo ""
-    echo "Aborting: create the repository in AWS Console, then rerun with the URI."
     exit 1
 fi
 echo ""
 
-# ── 6. docker build ───────────────────────────────────────────────
+# ── 6. Site files ─────────────────────────────────────────────────
 
-echo -e "${CYAN}[ 6] docker build${NC}"
-if [[ ! -f "${APP_DIR}/Dockerfile" ]]; then
-    fail "Dockerfile not found in ${APP_DIR}"
-    echo ""
-    echo "Aborting: clone ncc-training on this EC2 instance first."
-    exit 1
-fi
-pass "Dockerfile found"
-
-if (cd "$APP_DIR" && docker_bin build -t "$LOCAL_TAG" .); then
-    pass "docker build -t ${LOCAL_TAG} ."
+echo -e "${CYAN}[ 6] Aether Launch site files${NC}"
+if [[ -f "${APP_DIR}/index.html" && -f "${APP_DIR}/Dockerfile" ]]; then
+    pass "index.html and Dockerfile found in helpers/"
 else
-    fail "docker build failed"
-    echo ""
-    echo "Aborting: fix the build before teaching."
+    fail "index.html or Dockerfile missing in ${APP_DIR}"
+    exit 1
+fi
+if grep -q "$PAGE_MARK" "${APP_DIR}/index.html"; then
+    pass "index.html contains ${PAGE_MARK}"
+else
+    fail "index.html does not contain ${PAGE_MARK}"
+    exit 1
+fi
+if grep -q "apk add" "${APP_DIR}/Dockerfile"; then
+    pass "Dockerfile installs a package with apk add"
+else
+    fail "Dockerfile is missing package installation (apk add)"
     exit 1
 fi
 echo ""
 
-# ── 7. Run and /health ────────────────────────────────────────────
+HTTP_PORT=$(find_http_port)
 
-echo -e "${CYAN}[ 7] Run container and curl /health${NC}"
+# ── 7. Serve from EC2 disk (not baked yet) ────────────────────────
+
+echo -e "${CYAN}[ 7] Serve HTML from EC2 with a bind mount${NC}"
 docker_bin rm -f "$CONTAINER_NAME" &>/dev/null || true
-
-HTTP_PORT=5000
-for port in 5000 5001 5002 8080 8081; do
-    if ! (echo >/dev/tcp/127.0.0.1/"$port") 2>/dev/null; then
-        HTTP_PORT=$port
-        break
-    fi
-done
-
-if docker_bin run -d --name "$CONTAINER_NAME" -p "${HTTP_PORT}:5000" "$LOCAL_TAG" >/dev/null; then
-    pass "docker run -d -p ${HTTP_PORT}:5000"
+if docker_bin run -d --name "$CONTAINER_NAME" -p "${HTTP_PORT}:80" \
+    -v "${APP_DIR}:/usr/share/nginx/html:ro" \
+    nginx:1.27-alpine >/dev/null; then
+    pass "docker run nginx with bind mount on ${HTTP_PORT}:80"
 else
-    fail "docker run failed"
-    echo ""
-    echo "Aborting: could not start the sample app container."
+    fail "bind-mount docker run failed"
     exit 1
 fi
 
-HEALTH_OK=0
+MOUNT_OK=0
 for _ in $(seq 1 20); do
-    if curl -fsS "http://127.0.0.1:${HTTP_PORT}/health" >/dev/null 2>&1; then
-        HEALTH_OK=1
+    if page_ok "http://127.0.0.1:${HTTP_PORT}/"; then
+        MOUNT_OK=1
         break
     fi
     sleep 1
 done
-
-if [[ "$HEALTH_OK" -eq 1 ]]; then
-    pass "curl http://127.0.0.1:${HTTP_PORT}/health"
+if [[ "$MOUNT_OK" -eq 1 ]]; then
+    pass "curl company page from bind-mounted files"
 else
-    fail "curl /health did not succeed within 20s"
+    fail "bind-mounted page did not return ${PAGE_MARK}"
     docker_bin logs --tail 20 "$CONTAINER_NAME" 2>&1 | sed 's/^/         /' || true
-    echo ""
-    echo "Aborting: the built image did not become healthy."
+    exit 1
+fi
+docker_bin rm -f "$CONTAINER_NAME" &>/dev/null || true
+echo ""
+
+# ── 8. Bake image, tag convention, run ────────────────────────────
+
+echo -e "${CYAN}[ 8] Bake image, tag, and run${NC}"
+if (cd "$APP_DIR" && docker_bin build -t "$LOCAL_TAG" .); then
+    pass "docker build -t ${LOCAL_TAG} ."
+else
+    fail "docker build failed"
+    exit 1
+fi
+
+if docker_bin tag "$LOCAL_TAG" "aether-launch:latest"; then
+    pass "docker tag ${LOCAL_TAG} aether-launch:latest"
+else
+    fail "docker tag latest failed"
+    exit 1
+fi
+
+if docker_bin run -d --name "$CONTAINER_NAME" -p "${HTTP_PORT}:80" "$LOCAL_TAG" >/dev/null; then
+    pass "docker run baked image on ${HTTP_PORT}:80"
+else
+    fail "docker run of baked image failed"
+    exit 1
+fi
+
+BAKE_OK=0
+for _ in $(seq 1 20); do
+    if page_ok "http://127.0.0.1:${HTTP_PORT}/"; then
+        BAKE_OK=1
+        break
+    fi
+    sleep 1
+done
+if [[ "$BAKE_OK" -eq 1 ]]; then
+    pass "curl company page from baked image"
+else
+    fail "baked image did not return ${PAGE_MARK}"
+    docker_bin logs --tail 20 "$CONTAINER_NAME" 2>&1 | sed 's/^/         /' || true
     exit 1
 fi
 echo ""
 
-# ── 8. ECR login, tag, push ───────────────────────────────────────
+# ── 9. ECR login, tag, push ───────────────────────────────────────
 
-echo -e "${CYAN}[ 8] ECR login, tag, and push${NC}"
+echo -e "${CYAN}[ 9] ECR login, tag, and push${NC}"
 if aws ecr get-login-password --region "$REGION" | docker_bin login --username AWS --password-stdin "$ECR_REGISTRY" >/dev/null; then
     pass "docker login to ${ECR_REGISTRY}"
 else
     fail "ECR docker login failed"
-    echo ""
-    echo "Aborting: check ecr:GetAuthorizationToken on the EC2 instance role."
     exit 1
 fi
 
 if docker_bin tag "$LOCAL_TAG" "$ECR_IMAGE_URI"; then
     pass "docker tag ${LOCAL_TAG} ${ECR_IMAGE_URI}"
 else
-    fail "docker tag failed"
+    fail "docker tag for ECR failed"
     exit 1
 fi
 
@@ -349,15 +381,13 @@ if docker_bin push "$ECR_IMAGE_URI"; then
     pass "docker push ${ECR_IMAGE_URI}"
 else
     fail "docker push failed"
-    echo ""
-    echo "Aborting: check ECR push permissions on the EC2 instance role."
     exit 1
 fi
 echo ""
 
-# ── 9. Verify in ECR ──────────────────────────────────────────────
+# ── 10. Verify in ECR ─────────────────────────────────────────────
 
-echo -e "${CYAN}[ 9] Verify image in ECR${NC}"
+echo -e "${CYAN}[10] Verify image in ECR${NC}"
 IMAGE_TAG=$(echo "$ECR_IMAGE_URI" | awk -F: '{print $NF}')
 if aws ecr describe-images \
     --repository-name "$ECR_REPOSITORY_NAME" \
@@ -366,6 +396,44 @@ if aws ecr describe-images \
     pass "ECR contains tag ${IMAGE_TAG}"
 else
     fail "describe-images did not find tag ${IMAGE_TAG}"
+    exit 1
+fi
+echo ""
+
+# ── 11. Pull from ECR and run ─────────────────────────────────────
+
+echo -e "${CYAN}[11] Pull from ECR and run${NC}"
+docker_bin rm -f "$CONTAINER_NAME" &>/dev/null || true
+docker_bin rmi -f "$LOCAL_TAG" "aether-launch:latest" "$ECR_IMAGE_URI" &>/dev/null || true
+
+if docker_bin pull "$ECR_IMAGE_URI"; then
+    pass "docker pull ${ECR_IMAGE_URI}"
+else
+    fail "docker pull failed"
+    exit 1
+fi
+
+if docker_bin run -d --name "$CONTAINER_NAME" -p "${HTTP_PORT}:80" "$ECR_IMAGE_URI" >/dev/null; then
+    pass "docker run from pulled ECR image"
+else
+    fail "docker run of pulled image failed"
+    exit 1
+fi
+
+PULL_OK=0
+for _ in $(seq 1 20); do
+    if page_ok "http://127.0.0.1:${HTTP_PORT}/"; then
+        PULL_OK=1
+        break
+    fi
+    sleep 1
+done
+if [[ "$PULL_OK" -eq 1 ]]; then
+    pass "curl company page after pull from ECR"
+else
+    fail "pulled image did not return ${PAGE_MARK}"
+    docker_bin logs --tail 20 "$CONTAINER_NAME" 2>&1 | sed 's/^/         /' || true
+    exit 1
 fi
 echo ""
 
@@ -381,5 +449,5 @@ if [[ "$FAIL" -gt 0 ]]; then
     exit 1
 fi
 
-echo "Lab validation passed. You can teach the EC2 → docker build → ECR flow."
+echo "Lab validation passed. You can teach EC2 serve → bake → tag → ECR push → pull."
 exit 0

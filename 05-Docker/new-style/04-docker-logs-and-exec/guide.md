@@ -3,75 +3,74 @@
 **Time:** ~20 minutes
 
 ## Goal
-Read container logs and open a shell inside the running container so you can debug what you built.
+Read nginx logs and open a shell inside the running Aether Launch container.
+
+Work only in this folder. It has its own `index.html` and `Dockerfile`.
 
 ## Commands to Teach
 
 ```bash
-docker logs appdemo
-docker logs -f appdemo
-docker exec -it appdemo sh
-docker rm -f appdemo
+docker logs aether-web
+docker logs -f aether-web
+docker exec -it aether-web sh
+docker rm -f aether-web
 ```
 
-- `docker logs` prints stdout and stderr from the container process.
-- `docker logs -f` follows new log lines the same way `tail -f` follows a file.
-- `docker exec -it … sh` opens an interactive shell in the already-running container.
-- `docker rm -f` force-removes a container in one step (stop + delete).
+- `docker logs` prints nginx access and error output.
+- `docker logs -f` follows new requests.
+- `docker exec -it … sh` opens a shell in the already-running container.
+- `docker rm -f` force-removes the container.
 
 ## Guided Steps
 
-1. Build and start the sample app if it is not already running:
+1. Build and run from this folder:
 
 ```bash
-cd ~/ncc-training/05-Docker/application
-docker build -t ncc-training-app:1.0 .
-docker rm -f appdemo 2>/dev/null || true
-docker run -d --name appdemo -p 5000:5000 ncc-training-app:1.0
+cd ~/ncc-training/05-Docker/new-style/04-docker-logs-and-exec
+docker build -t aether-launch:1.0 .
+docker rm -f aether-web 2>/dev/null || true
+docker run -d --name aether-web -p 8080:80 aether-launch:1.0
 ```
 
-2. Generate some log lines, then read them:
+2. Generate a request, then read logs:
 
 ```bash
-curl http://127.0.0.1:5000/
-curl http://127.0.0.1:5000/health
-docker logs appdemo
+curl -sS -o /dev/null -w "%{http_code}\n" http://127.0.0.1:8080
+docker logs aether-web
 ```
 
-3. Follow logs live. In one terminal run:
+3. Follow logs live (`Ctrl+C` to stop). In a second SSH session, curl again:
 
 ```bash
-docker logs -f appdemo
+docker logs -f aether-web
 ```
 
-In a second SSH session, curl the app again and watch the new lines appear. Stop following with `Ctrl+C`.
-
-4. Open a shell inside the container:
+4. Exec into the container and find the baked page:
 
 ```bash
-docker exec -it appdemo sh
+docker exec -it aether-web sh
 ```
 
-Inside the container, try:
+Inside:
 
 ```bash
-id
-printenv
-ps
+ls /usr/share/nginx/html
+grep -o "Aether Launch" /usr/share/nginx/html/index.html
+which curl
 exit
 ```
 
-You should see the non-root `appuser` from the Dockerfile.
+`curl` is there because the Dockerfile ran `apk add --no-cache curl`.
 
 5. Clean up:
 
 ```bash
-docker rm -f appdemo
+docker rm -f aether-web
 ```
 
 ## Task
 
-Build and run `ncc-training-app:1.0` as `appdemo`. Curl `/` and `/health`, read the logs, exec into the container, and find the value of `ENVIRONMENT`. Then remove the container with `docker rm -f`.
+Build and run `aether-launch:1.0` from this folder. Curl the page, read logs, exec in, and confirm `index.html` contains **Aether Launch**. Then `docker rm -f aether-web`.
 
 ## Checkpoint
-When a container is running but the HTTP response looks wrong, why do you usually start with `docker logs` before `docker exec`?
+When the page looks wrong in the browser, why do you usually start with `docker logs` before `docker exec`?

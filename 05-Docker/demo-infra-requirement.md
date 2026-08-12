@@ -4,11 +4,11 @@
 
 - Amazon Linux 2 EC2 instance with SSH access (port 22)
 - SSH as `ec2-user`
-- Security group allowing SSH; port 5000 is optional (students curl `/health` from the instance itself)
+- Security group allowing SSH; port **8080** if students open the Aether Launch page in a browser
 - Internet access on the instance to pull base images and talk to ECR
 - ECR repository already created in `us-east-1`
-- Training repo cloned on the instance (`git clone` or instructor-provided copy)
-- An IAM instance profile attached to the EC2 instance that can already push to ECR (no `~/.aws/credentials`, no extra policy upload)
+- Training repo cloned on the instance
+- An IAM instance profile attached to the EC2 instance that can already push to and pull from ECR (no `~/.aws/credentials`)
 
 ## Quick Validation
 
@@ -21,7 +21,7 @@ aws sts get-caller-identity
 aws ecr describe-repositories --region us-east-1
 ```
 
-After Docker is installed (topic 01 or the instructor helper):
+After Docker is installed:
 
 ```bash
 docker --version
@@ -31,11 +31,9 @@ docker run --rm hello-world
 
 ## Instructor Lab Runner
 
-Prove the full student path before class. The script asks only for the ECR image URI (region is us-east-1):
-
 ```bash
 cd ~/ncc-training/05-Docker/new-style/helpers
 bash run-ecr-lab.sh
 ```
 
-The script installs Docker on Amazon Linux 2, uses the EC2 IAM role to reach ECR, builds `application/`, curls `/health`, and pushes. Exit code 0 means the lab is ready to teach.
+The script asks only for the ECR image URI (region is us-east-1). It uses the EC2 IAM role, serves the Aether Launch HTML from disk, bakes `aether-launch:1.0`, curls the company page, pushes, then pulls and runs again. Exit code 0 means the lab is ready to teach.

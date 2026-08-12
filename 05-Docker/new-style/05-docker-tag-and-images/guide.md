@@ -1,67 +1,74 @@
-# 05: Docker Tag and Images
+# 05: Image Names and Tagging Convention
 
 **Time:** ~20 minutes
 
 ## Goal
-List images, create extra tags for the same build, inspect image metadata, and understand what `docker rmi` actually removes.
+Name images the way registries expect: `name:version`, extra tags like `:latest`, and the ECR URI shape you will push next.
+
+Work only in this folder. It has its own `index.html` and `Dockerfile`.
 
 ## Commands to Teach
 
 ```bash
-docker images
-docker tag ncc-training-app:1.0 ncc-training-app:latest
-docker inspect ncc-training-app:1.0
-docker rmi ncc-training-app:latest
+docker build -t aether-launch:1.0 .
+docker tag aether-launch:1.0 aether-launch:latest
+docker tag aether-launch:1.0 aether-launch:1.0.0
+docker images | grep aether-launch
 ```
 
-- `docker images` lists local images and their tags.
-- `docker tag` adds another name to the same image ID. It does not rebuild.
-- `docker inspect` shows the JSON metadata Docker stored for that image.
-- `docker rmi` removes a tag. The image layers stay until no tag points at them.
+- Image name: lowercase, hyphenated, no spaces — `aether-launch`.
+- Version tag: `1.0` or `1.0.0`. Prefer a version over using only `latest`.
+- `docker tag` adds another name to the same IMAGE ID. It does not rebuild.
+- ECR will look like `<account>.dkr.ecr.us-east-1.amazonaws.com/aether-launch:1.0`.
 
 ## Guided Steps
 
-1. Make sure the image exists. Build it if `docker images` does not show it:
+1. Build from this folder with the version tag:
 
 ```bash
-cd ~/ncc-training/05-Docker/application
-docker build -t ncc-training-app:1.0 .
-docker images
+cd ~/ncc-training/05-Docker/new-style/05-docker-tag-and-images
+docker build -t aether-launch:1.0 .
 ```
 
-Note the IMAGE ID for `ncc-training-app:1.0`.
-
-2. Add a second tag that points at the same image:
+2. Add convention tags. Same image, three names:
 
 ```bash
-docker tag ncc-training-app:1.0 ncc-training-app:latest
-docker images | grep ncc-training-app
+docker tag aether-launch:1.0 aether-launch:latest
+docker tag aether-launch:1.0 aether-launch:1.0.0
+docker images | grep aether-launch
 ```
 
-`:1.0` and `:latest` should share the same IMAGE ID. That is one image with two names.
+All three rows should share one IMAGE ID.
 
-3. Inspect the image and find the exposed port and environment variables:
+3. Inspect what you built:
 
 ```bash
-docker inspect ncc-training-app:1.0
-docker inspect ncc-training-app:1.0 --format '{{.Config.ExposedPorts}}'
-docker inspect ncc-training-app:1.0 --format '{{.Config.Env}}'
+docker inspect aether-launch:1.0 --format '{{.RepoTags}}'
+docker inspect aether-launch:1.0 --format '{{.Config.ExposedPorts}}'
 ```
 
-4. Remove only the `latest` tag and list images again:
+Port `80/tcp` should be listed.
+
+4. Practice the ECR naming shape (do not push yet):
 
 ```bash
-docker rmi ncc-training-app:latest
-docker images | grep ncc-training-app
+docker tag aether-launch:1.0 \
+  123456789012.dkr.ecr.us-east-1.amazonaws.com/aether-launch:1.0
 ```
 
-`ncc-training-app:1.0` should still be there. You deleted a name, not the build.
+Replace `123456789012` with a fake or real account id. This is only a local name until `docker push`.
 
-5. Keep `ncc-training-app:1.0` for the ECR topic. Do not delete the last tag yet.
+5. Remove the practice registry tag and `latest`. Keep `:1.0`:
+
+```bash
+docker rmi 123456789012.dkr.ecr.us-east-1.amazonaws.com/aether-launch:1.0 2>/dev/null || true
+docker rmi aether-launch:latest
+docker images | grep aether-launch
+```
 
 ## Task
 
-Build `ncc-training-app:1.0`, tag the same image as both `:1.0` and `:latest`, and confirm they share one IMAGE ID. Inspect the image and write down the exposed port. Remove `:latest` only, then prove `:1.0` is still on the instance.
+Build `aether-launch:1.0` from this folder. Tag it as `:1.0`, `:1.0.0`, and `:latest`. Prove they share one IMAGE ID. Remove `:latest` only and keep `:1.0`.
 
 ## Checkpoint
-Why is tagging with a version such as `:1.0` safer than relying only on `:latest` when you later push to ECR?
+Why is `aether-launch:1.0` a better production name than `aether-launch:latest`?

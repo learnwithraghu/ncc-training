@@ -14,7 +14,7 @@ Use the provided lab hosts:
 
 ## Structure
 
-- `topic-01/` through `topic-16/` hold the learning topics
+- `topic-01/` through `topic-17/` hold the learning topics
 - `challenge-01/` through `challenge-05/` are inserted between topics as practice stops
 - each topic and challenge has a `guide.md` file and a starter `.yml` playbook, except Topic 01 (builds the inventory) and Topic 03 (ad-hoc `ansible -m command` only, no playbook)
 - each stop is designed to take about 20 minutes
@@ -52,3 +52,4 @@ Each topic tells a small story:
 - Topic 14 - Prove External Reachability from Every Web Host
 - Topic 15 - Audit Server Health and Create Locked Users
 - Topic 16 - Stand Up a Jenkins Master/Slave Pair
+- Topic 17 - Install and Start Docker on web1 and web2

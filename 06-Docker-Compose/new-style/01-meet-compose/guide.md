@@ -59,7 +59,8 @@ You should see:
 02-write-the-stack
 03-start-the-stack
 04-login-and-save
-05-inspect-mysql
+05-login-to-container
+06-inspect-mysql
 ```
 
 3. Read the demo story out loud:
@@ -67,7 +68,8 @@ You should see:
 - Stage 02 writes a Python login UI + MySQL + Compose file
 - Stage 03 starts both services
 - Stage 04 logs in and saves a row
-- Stage 05 enters the MySQL container and `SELECT`s the table
+- Stage 05 opens a shell inside the containers (`exec`)
+- Stage 06 enters MySQL and `SELECT`s the table
 
 ## Task
 

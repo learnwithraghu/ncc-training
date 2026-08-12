@@ -58,7 +58,7 @@ Day 5: Kubernetes + Helm + Capstone
 | Module | Guides | What You Build |
 |--------|--------|----------------|
 | [05-Docker](05-Docker/README.md) | 5+ guides | Docker image for a Python Flask app |
-| [06-Docker-Compose](06-Docker-Compose/README.md) | 5 stages | Login UI + MySQL with `docker-compose.yaml` |
+| [06-Docker-Compose](06-Docker-Compose/README.md) | 6 stages | Login UI + MySQL with `docker-compose.yaml` |
 
 **Artifact:** Docker image and Compose file for a Python web app.
 

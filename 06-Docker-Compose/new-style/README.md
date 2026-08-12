@@ -2,7 +2,7 @@
 
 Work through these stages in order. Each practical stage folder is independent: it has its own `app.py`, `Dockerfile`, `docker-compose.yaml`, and `guide.md`.
 
-The demo clubs a **Python login page** and **MySQL** in one Compose file. Login saves a row. You then `exec` into MySQL and `SELECT` the table.
+The demo clubs a **Python login page** and **MySQL** in one Compose file. Login saves a row. You log into containers with `exec`, then open MySQL and `SELECT` the table.
 
 ## Recommended Flow
 
@@ -19,7 +19,8 @@ The demo clubs a **Python login page** and **MySQL** in one Compose file. Login 
 | [02-write-the-stack/](02-write-the-stack/) | Read `docker-compose.yaml`, Flask login, `init.sql` |
 | [03-start-the-stack/](03-start-the-stack/) | `docker compose up -d --build` and open port 5000 |
 | [04-login-and-save/](04-login-and-save/) | Submit login; row is stored in MySQL |
-| [05-inspect-mysql/](05-inspect-mysql/) | `docker compose exec` into MySQL and `SELECT` |
+| [05-login-to-container/](05-login-to-container/) | `docker compose exec` — open a shell in `web` and `db` |
+| [06-inspect-mysql/](06-inspect-mysql/) | MySQL client inside `db` and `SELECT` from `logins` |
 
 ## How each practical folder is laid out
 
@@ -37,9 +38,11 @@ guide.md             commands, steps, task, checkpoint
 
 ```text
 Browser / curl  -->  web (Python)  -->  db (MySQL logins table)
-                                            ^
-                         docker compose exec db mysql ...
-                         SELECT * FROM logins;
+                         ^                  ^
+              compose exec web sh    compose exec db bash
+                                            |
+                                   compose exec db mysql ...
+                                   SELECT * FROM logins;
 ```
 
 ## Scope Boundary

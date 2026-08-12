@@ -1,16 +1,16 @@
-# 05: Inspect MySQL
+# 06: Inspect MySQL
 
 **Time:** ~15 minutes
 
 ## Goal
-Enter the MySQL container, open a MySQL terminal, select the database, and see the `logins` table rows you saved from the login page.
+After you can log into a container (stage 05), open a MySQL terminal inside `db`, select the database, and see the `logins` table rows from the login page.
 
-Work in this folder. Start its stack (or keep using stage 04's stack if it is still up — pick one).
+Work in this folder. Start its stack (or keep using stage 05's stack if it is still up — pick one).
 
 ## Commands to Teach
 
 ```bash
-cd ~/ncc-training/06-Docker-Compose/new-style/05-inspect-mysql
+cd ~/ncc-training/06-Docker-Compose/new-style/06-inspect-mysql
 docker compose up -d --build
 docker compose exec db mysql -u appuser -papppassword appdb
 ```
@@ -25,15 +25,15 @@ EXIT;
 
 ## Guided Steps
 
-1. If stage 04 is still running and you already saved logins there, stay in that folder and skip to step 3.
+1. If stage 05 is still running and you already practiced `exec` there, stay in that folder, submit a login if needed, and skip to step 3.
 
 Otherwise start this folder's stack and submit one login first:
 
 ```bash
-cd ~/ncc-training/06-Docker-Compose/new-style/04-login-and-save
+cd ~/ncc-training/06-Docker-Compose/new-style/05-login-to-container
 docker compose down
 
-cd ~/ncc-training/06-Docker-Compose/new-style/05-inspect-mysql
+cd ~/ncc-training/06-Docker-Compose/new-style/06-inspect-mysql
 docker compose up -d --build
 ```
 
@@ -59,7 +59,7 @@ docker compose exec db mysql -u appuser -papppassword appdb
 
 Notes:
 
-- `docker compose exec db` runs a command inside the `db` service container
+- `docker compose exec db` runs a command inside the `db` service container (same idea as stage 05's shell login)
 - `mysql -u appuser -papppassword appdb` opens MySQL as `appuser` on database `appdb`
 - There is no space between `-p` and the password
 

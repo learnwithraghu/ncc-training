@@ -2,7 +2,7 @@
 
 This module is a short demo: club a **Python login UI** and a **MySQL database** in one `docker-compose.yaml`.
 
-You start both services with Compose, submit a login, then enter the MySQL container and `SELECT` the saved rows.
+You start both services with Compose, submit a login, log into the containers with `exec`, then open MySQL and `SELECT` the saved rows.
 
 ## What You Will Learn
 
@@ -12,11 +12,12 @@ By the end of this module, you will be able to:
 - Read a simple `docker-compose.yaml` with `web` + `db`
 - Start the stack with `docker compose up -d --build`
 - Use a login page that stores data in MySQL
-- `exec` into the MySQL container and query the table
+- Log into a running container with `docker compose exec`
+- Open MySQL inside `db` and query the `logins` table
 
 ## Time Estimate
 
-Approximately **1 hour** total, split into 5 named stages.
+Approximately **1 hour** total, split into 6 named stages.
 
 ## Prerequisites
 
@@ -36,7 +37,8 @@ Each practical stage folder in `new-style/` is independent. It includes the app 
 | 02 Write the Stack | [new-style/02-write-the-stack/](new-style/02-write-the-stack/) | Compose file, Flask login, `init.sql` |
 | 03 Start the Stack | [new-style/03-start-the-stack/](new-style/03-start-the-stack/) | `compose up` and open the login page |
 | 04 Login and Save | [new-style/04-login-and-save/](new-style/04-login-and-save/) | Submit login; save to MySQL |
-| 05 Inspect MySQL | [new-style/05-inspect-mysql/](new-style/05-inspect-mysql/) | `exec` into MySQL and `SELECT` |
+| 05 Login to a Container | [new-style/05-login-to-container/](new-style/05-login-to-container/) | `compose exec` shell into `web` and `db` |
+| 06 Inspect MySQL | [new-style/06-inspect-mysql/](new-style/06-inspect-mysql/) | MySQL client and `SELECT` |
 
 ## Getting Started
 

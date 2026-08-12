@@ -40,7 +40,8 @@ for playbook in \
   guided-learning/topic-12/multi-play.yml \
   guided-learning/topic-13/node-check.yml \
   guided-learning/topic-14/google-check.yml \
-  guided-learning/topic-16/jenkins-master-slave.yml
+  guided-learning/topic-16/jenkins-master-slave.yml \
+  guided-learning/topic-17/docker-install.yml
   do
     echo "--> $playbook"
     ansible-playbook -i "$INVENTORY" "$playbook"

@@ -10,7 +10,7 @@ This module introduces Ansible through hands-on automation on `web1` and `web2`.
 
 ## Guided Learning
 
-See [guided-learning/README.md](./guided-learning/README.md) for the 15-topic path.
+See [guided-learning/README.md](./guided-learning/README.md) for the guided topic path.
 
 ## Lab Check
 

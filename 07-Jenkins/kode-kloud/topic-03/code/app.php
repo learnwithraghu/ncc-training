@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+use PHPUnit\Framework\TestCase;
 
 class Calculator
 {
@@ -21,18 +21,18 @@ class Calculator
         }
         return true;
     }
+}
 
-    public function fizzbuzz($n)
+class CalculatorTest extends TestCase
+{
+    public function testAdd()
     {
-        if ($n % 15 === 0) {
-            return 'FizzBuzz';
-        }
-        if ($n % 3 === 0) {
-            return 'Fizz';
-        }
-        if ($n % 5 === 0) {
-            return 'Buzz';
-        }
-        return (string) $n;
+        $this->assertSame(5, (new Calculator())->add(2, 3));
+    }
+
+    public function testIsPrime()
+    {
+        $this->assertTrue((new Calculator())->isPrime(17));
+        $this->assertFalse((new Calculator())->isPrime(9));
     }
 }

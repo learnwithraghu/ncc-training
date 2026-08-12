@@ -3,51 +3,49 @@
 **Time:** 20 minutes
 
 ## Goal
-Add a stage that looks past syntax and style into code *quality* -
-unused variables, deeply nested conditionals, unused parameters - none
-of which `php -l`, PHPUnit, or `phpcs` have any reason to flag.
+Add a stage that looks past syntax, tests, and style into code *quality*
+- an unused parameter and an unused local variable, neither of which
+`php -l`, PHPUnit, or `phpcs` have any reason to flag.
 
-## Files Provided
-`code/composer.json` (adds `phpmd/phpmd`), `code/src/Risky.php` (valid,
-PSR-12-clean, but deliberately messy logic), plus the now-fixed
-`code/src/Messy.php` from Topic 4, `code/src/Calculator.php`,
-`code/tests/CalculatorTest.php`, `code/index.php`, `code/phpunit.xml`,
-`code/phpcs.xml.dist`.
+## File Provided
+`code/app.php` - PSR-12-clean again (Topic 4's fix carried forward), but
+`isPrime` now takes an extra `$unused` parameter and declares an unused
+`$wasted` variable it never reads. The tests were updated to still call
+`isPrime` correctly with the new (unused) second argument.
 
 ## Execute Shell Command
 Add this as a **new** step, after "Code Style Check (PSR-12)":
 
 ```bash
 echo "== Stage: Mess Detection (PHPMD) =="
-vendor/bin/phpmd src/,index.php text cleancode,codesize,controversial,design,naming,unusedcode
+vendor/bin/phpmd app.php text cleancode,codesize,controversial,design,naming,unusedcode
 ```
 
 ## Guided Steps
-1. Copy this topic's `code/*` into `simple-project`. Commit and push -
-   `phpmd/phpmd` installs via the existing "Composer Install" step.
+1. Copy this topic's `code/app.php` over your existing one. Commit and
+   push.
 2. Add the **Mess Detection (PHPMD)** step to the job, after "Code Style
    Check," and save.
-3. Trigger a build. The first three stages pass - `Risky.php` compiles,
-   has no tests to fail, and is formatted correctly. "Mess Detection"
-   fails - read the report: `UnusedFormalParameter` on `$unusedParam`,
-   `UnusedLocalVariable` on `$unusedLocal`, and a complexity warning on
-   `classify()` for its nested `if`/`elseif` chain.
-4. Fix `Risky.php`: remove the unused parameter and variable, and
-   flatten the nested conditionals (a `match` expression or an early-
-   return chain both work). Push, rebuild, confirm the stage goes green.
+3. Trigger a build. The first three stages pass - the file compiles, has
+   correctly formatted code, and its tests pass. "Mess Detection" fails -
+   read the report: `UnusedFormalParameter` on `$unused`,
+   `UnusedLocalVariable` on `$wasted`.
+4. Fix `app.php`: remove the `$unused` parameter from `isPrime` (and the
+   extra argument from both places it's called in `CalculatorTest`), and
+   remove the `$wasted` line. Push, rebuild, confirm the stage goes
+   green.
 5. Read the six ruleset names in the command - `phpmd` ships several
-   rulesets, and you chose to run all six at once. Try running with just
-   `unusedcode` to see a much shorter, more focused report - useful when
-   you're introducing this stage to a team for the first time and don't
-   want to overwhelm them on day one.
+   rulesets at once here. Try running with just `unusedcode` to see a
+   much shorter, more focused report - useful when introducing this
+   stage to a team for the first time.
 
 ## Guided Explanation
-PHPMD is inherently more opinionated than `phpcs` - "this function is too
-complex" is a judgment call, not an objective parse rule. Many real teams
-run this stage without letting it fail the build (append `|| true` to the
-command, or route its output to a Jenkins warnings plugin as "unstable"
-rather than "failed"). This lesson leaves it blocking, on purpose, so you
-feel the difference before deciding which policy fits your own team.
+PHPMD is inherently more opinionated than `phpcs` - "this parameter is
+unused" is close to objective, but other PHPMD rules (like flagging
+"too many lines in a method") are judgment calls. Many real teams don't
+let this stage fail the build (append `|| true`, or route its output to
+a "warnings" plugin instead). This lesson leaves it blocking, on purpose,
+so you feel the difference before deciding which policy fits your team.
 
 ## Checkpoint
 If you appended `|| true` to the `vendor/bin/phpmd` command, the Execute

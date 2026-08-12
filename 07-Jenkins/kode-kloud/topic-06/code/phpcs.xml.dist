@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<ruleset name="simple-project">
-    <description>Coding standard for simple-project.</description>
-    <rule ref="PSR12"/>
-    <file>src</file>
-    <file>index.php</file>
-    <arg name="colors"/>
-</ruleset>

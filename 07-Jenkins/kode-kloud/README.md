@@ -14,34 +14,34 @@ infrastructure already exists:
   Jenkins agent/master itself, since this track uses **Execute Shell**
   build steps only - no Docker, no Pipeline/Jenkinsfile).
 
-None of that infrastructure is created by this folder - only the PHP code
-and the shell commands you paste into **Execute Shell** build steps are.
+None of that infrastructure is created by this folder.
 
 ## How This Track Works
 
-Unlike `guided-learning/` (Docker-based, one throwaway job per topic),
-this track builds **one job, incrementally**, across all six topics:
+The whole app is **one file**, `app.php`, that grows a little at each
+topic - it never exceeds ~45 lines. That's the only thing you copy and
+push at every topic. Everything else (`composer.json`, `phpunit.xml`,
+`.gitignore`) is set up **once**, in `setup/`, before Topic 1, and never
+touched again.
 
-1. Open a topic's `guide.md`.
-2. Copy that topic's `code/` files into your local `simple-project`
-   folder (files accumulate - each topic ships the **full** set of files
-   needed up to that point, so copying always leaves you in a consistent
-   state).
-3. Commit and push to `master` on Gitea.
-4. Jenkins triggers automatically. Watch the build.
-5. In the Jenkins job configuration, **add a new Execute Shell build
-   step** with that topic's command (previous steps stay in place - you
-   are growing one pipeline of shell steps, stage by stage, not
-   replacing it).
-6. Save the job, and either push a trivial change or click **Build Now**
-   to see the new stage run.
+1. **Do this once, before Topic 1:** copy `setup/composer.json`,
+   `setup/phpunit.xml`, and `setup/.gitignore` into your local
+   `simple-project` folder. Commit and push.
+2. For each topic: open its `guide.md`, copy that topic's single
+   `code/app.php` over your existing one, commit, push.
+3. Jenkins triggers automatically. Watch the build.
+4. In the Jenkins job configuration, **add a new Execute Shell build
+   step** with that topic's command (previous steps stay in place - one
+   growing job, not a new one each time).
+5. Save, and either push a trivial change or click **Build Now** to see
+   the new stage run.
 
 ## Topic List
 
 | Topic | Folder | Stage | Tool |
 |-------|--------|-------|------|
 | Topic 01 | [topic-01/](topic-01/) | Syntax check | `php -l` |
-| Topic 02 | [topic-02/](topic-02/) | Dependencies & autoloading | Composer |
+| Topic 02 | [topic-02/](topic-02/) | Dependencies (Composer install) | Composer |
 | Topic 03 | [topic-03/](topic-03/) | Unit tests | PHPUnit |
 | Topic 04 | [topic-04/](topic-04/) | Code style | PHP_CodeSniffer (PSR-12) |
 | Topic 05 | [topic-05/](topic-05/) | Mess detection | PHPMD |
@@ -49,16 +49,14 @@ this track builds **one job, incrementally**, across all six topics:
 
 ## The Sample App
 
-A tiny PHP `Calculator` class (`add`, `isPrime`, `fizzbuzz` - the same
-three operations used in the Python app back in `guided-learning/`, on
-purpose, so the CI *concepts* transfer even though the *tools* are
-completely different per language). Each topic adds exactly one more file
-or one more problem for that topic's tool to catch, on top of what came
-before.
+One `Calculator` class (`add`, `isPrime`) plus its own `CalculatorTest`
+class, both living in `app.php`. Each topic changes that single file just
+enough for that stage's tool to have something new to say about it - a
+bad format, an unused parameter, a copy-pasted method - and the guide
+walks you through fixing it before moving on.
 
 ## Guided Learning Focus
 
-Each topic's `code/` folder is a complete, drop-in snapshot of
-`simple-project` at that stage - not a diff. If you fall behind or want
-to jump straight to Topic 5, copy `topic-05/code/` in and you're caught
-up.
+Because everything lives in one file, there's nothing to "fall behind
+on." If you want to jump straight to Topic 5, copy `topic-05/code/app.php`
+in (assuming `setup/` was already done once) and you're caught up.

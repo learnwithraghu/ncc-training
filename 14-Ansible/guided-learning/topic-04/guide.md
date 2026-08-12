@@ -25,19 +25,19 @@ Before deploying anything else, you want to know how much CPU and disk space eac
 
 ## The Playbook
 
-`facts.yml` turns on `gather_facts: true`, then reads two facts Ansible
-already collected instead of running any shell command:
+`capacity.yml` does two things:
 
-- `ansible_processor_vcpus` - how many vCPUs the host has.
-- `ansible_mounts` - a list of every mounted filesystem, each with
-  `mount`, `size_total`, and `size_available` (in bytes). The playbook
-  loops over it and formats the sizes with the `filesizeformat` filter so
-  the output reads in GB instead of raw bytes.
+- Turns on `gather_facts: true` and prints `ansible_processor_vcpus` -
+  a fact Ansible already collected, no command needed.
+- Runs `df -h /` with the `command` module, `register`s the output, then
+  prints it with `debug`. Same idea as the ad-hoc commands from earlier
+  topics, just written down as a playbook so it runs the same way every
+  time.
 
 ## Practice
 
 ```bash
-ansible-playbook facts.yml -i inventory.ini
+ansible-playbook capacity.yml -i inventory.ini
 ```
 
 ## Validate
@@ -47,11 +47,11 @@ ansible web1 -i inventory.ini -m setup -a 'filter=ansible_processor_vcpus'
 ansible web2 -i inventory.ini -m command -a 'df -h /'
 ```
 
-Compare the `df -h /` numbers against what the playbook printed for the
-`/` mount - they should match.
+Compare the `df -h /` numbers against what the playbook printed - they
+should match.
 
 ## Checkpoint
 
-The playbook never ran `nproc` or `df` itself. Where did
-`ansible_processor_vcpus` and `ansible_mounts` actually come from, and
-what would you lose if you set `gather_facts: false` instead?
+The playbook never ran `nproc`. Where did `ansible_processor_vcpus`
+actually come from, and what would you lose if you set
+`gather_facts: false` instead?

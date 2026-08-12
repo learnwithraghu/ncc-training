@@ -1,0 +1,17 @@
+---
+- name: Report CPU and disk space on lab hosts
+  hosts: web
+  gather_facts: true
+  tasks:
+    - name: Show CPU count
+      ansible.builtin.debug:
+        msg: "{{ inventory_hostname }} has {{ ansible_processor_vcpus }} vCPUs"
+
+    - name: Check disk space
+      ansible.builtin.command: df -h /
+      register: disk_space
+      changed_when: false
+
+    - name: Show disk space
+      ansible.builtin.debug:
+        var: disk_space.stdout_lines

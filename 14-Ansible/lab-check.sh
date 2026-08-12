@@ -29,7 +29,7 @@ ansible all -i "$INVENTORY" -m command -a 'uname -a'
 echo "==> Running topic playbooks"
 for playbook in \
   guided-learning/topic-02/ping.yml \
-  guided-learning/topic-04/facts.yml \
+  guided-learning/topic-04/capacity.yml \
   guided-learning/topic-05/site.yml \
   guided-learning/topic-06/vars.yml \
   guided-learning/topic-07/web.yml \

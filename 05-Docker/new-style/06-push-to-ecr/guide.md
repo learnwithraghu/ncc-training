@@ -3,7 +3,9 @@
 **Time:** ~20 minutes
 
 ## Goal
-From the same EC2 instance, authenticate to Amazon ECR, tag your built image with the repository URI, and push it. This is the last topic in the module.
+From the same EC2 instance, authenticate to Amazon ECR using the **instance IAM role**, tag your built image with the repository URI, and push it. This is the last topic in the module.
+
+Do not create access keys. Do not use `~/.aws/credentials`. The EC2 role is how this lab talks to AWS.
 
 ## Commands to Teach
 
@@ -14,10 +16,56 @@ docker tag ncc-training-app:1.0 <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/<re
 docker push <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/<repo>:1.0
 ```
 
-- `aws sts get-caller-identity` proves the EC2 instance can call AWS (instance role or `~/.aws/credentials`).
-- `get-login-password | docker login` gives Docker a short-lived ECR token. You do not paste long-lived AWS keys into Docker.
+- `aws sts get-caller-identity` must show an `assumed-role` ARN from the EC2 instance profile.
+- `get-login-password | docker login` gives Docker a short-lived ECR token from that role. You do not paste AWS keys into Docker.
 - `docker tag` rewrites the local name to the ECR URI. ECR will not accept `ncc-training-app:1.0` until it is tagged this way.
 - `docker push` uploads layers from this EC2 host to ECR. The image is not pushed from your laptop.
+
+## Attach the EC2 IAM policy
+
+The instance role needs permission to log in to ECR and push layers. If `aws sts get-caller-identity` fails, or login/push returns `AccessDenied`, attach this policy to the role on your EC2 instance.
+
+1. In AWS Console, open **EC2 → Instances** and select your instance.
+2. Open the **Security** tab and click the **IAM role** name.
+3. Choose **Add permissions → Create inline policy**.
+4. Open the **JSON** tab and paste this policy (also in `../helpers/ecr-push-policy.json`):
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "ECRLogin",
+      "Effect": "Allow",
+      "Action": "ecr:GetAuthorizationToken",
+      "Resource": "*"
+    },
+    {
+      "Sid": "ECRPush",
+      "Effect": "Allow",
+      "Action": [
+        "ecr:BatchCheckLayerAvailability",
+        "ecr:CompleteLayerUpload",
+        "ecr:DescribeImages",
+        "ecr:DescribeRepositories",
+        "ecr:InitiateLayerUpload",
+        "ecr:PutImage",
+        "ecr:UploadLayerPart"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+```
+
+5. Name the policy `ncc-ecr-push` and choose **Create policy**.
+6. Back on the EC2 instance, confirm the role is in use:
+
+```bash
+aws sts get-caller-identity
+```
+
+The `Arn` should contain `assumed-role` and your role name. If you previously ran `aws configure`, remove `~/.aws/credentials` so the CLI uses the instance role.
 
 ## Guided Steps
 
@@ -28,14 +76,13 @@ cd ~/ncc-training/05-Docker/application
 docker build -t ncc-training-app:1.0 .
 ```
 
-2. Confirm AWS identity. Region for this lab is `us-east-1`:
+2. Confirm the instance role can call AWS. Region for this lab is `us-east-1`:
 
 ```bash
 aws sts get-caller-identity
-aws configure list
 ```
 
-If this fails, stop and ask the instructor. You cannot push without credentials.
+If this fails, or the ARN is an IAM user instead of `assumed-role`, stop and attach the policy in **Attach the EC2 IAM policy** above. You cannot push without the instance role.
 
 3. Copy the image URI from AWS Console (**ECR → Repositories → your repo**) and set it as a variable. Include the tag:
 
@@ -77,7 +124,7 @@ Save the image URI. This module ends here.
 
 ## Task
 
-Build `ncc-training-app:1.0` on EC2. Use the ECR repository URI your instructor gives you. Login, tag the local image with that URI, push it, and confirm the image appears in `aws ecr describe-images`. If login or push fails, check identity and repository name before retrying.
+Build `ncc-training-app:1.0` on EC2. Use the ECR repository URI your instructor gives you. Login, tag the local image with that URI, push it, and confirm the image appears in `aws ecr describe-images`. If login or push fails, attach the EC2 IAM policy and confirm `aws sts get-caller-identity` shows `assumed-role`.
 
 ## Checkpoint
-Why do we push from EC2 to ECR instead of building on a laptop, and what does `docker tag` change before `docker push`?
+Why does this lab use the EC2 instance IAM role instead of access keys, and what does `docker tag` change before `docker push`?

@@ -23,7 +23,7 @@ Approximately **2 hours** total, split into 6 topics at about 20 minutes each.
 
 - Completion of [Day 2](../00-course-roadmap.md#day-2-git-and-github-basics)
 - An Amazon Linux 2 EC2 instance you can SSH into as `ec2-user`
-- AWS credentials on that instance (instance IAM role or `~/.aws/credentials`) with permission to push to ECR
+- An IAM instance profile on that EC2 instance with permission to push to ECR (no access keys)
 - An ECR repository already created in `us-east-1` (instructor creates this in the AWS Console)
 
 See [demo-infra-requirement.md](demo-infra-requirement.md) for the full checklist.

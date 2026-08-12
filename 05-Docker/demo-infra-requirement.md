@@ -8,18 +8,8 @@
 - Internet access on the instance to pull base images and talk to ECR
 - ECR repository already created in `us-east-1`
 - Training repo cloned on the instance (`git clone` or instructor-provided copy)
-- IAM permissions on the instance role or `~/.aws/credentials` to push images:
-
-```text
-ecr:GetAuthorizationToken
-ecr:BatchCheckLayerAvailability
-ecr:PutImage
-ecr:InitiateLayerUpload
-ecr:UploadLayerPart
-ecr:CompleteLayerUpload
-ecr:DescribeRepositories
-ecr:DescribeImages
-```
+- An IAM instance profile attached to the EC2 instance (no `~/.aws/credentials`)
+- The ECR push policy on that role. Students attach it in [new-style/06-push-to-ecr/guide.md](new-style/06-push-to-ecr/guide.md). JSON copy: [new-style/helpers/ecr-push-policy.json](new-style/helpers/ecr-push-policy.json)
 
 ## Quick Validation
 
@@ -49,4 +39,4 @@ cd ~/ncc-training/05-Docker/new-style/helpers
 bash run-ecr-lab.sh
 ```
 
-The script installs Docker on Amazon Linux 2, builds `application/`, curls `/health`, and pushes to ECR. Exit code 0 means the lab is ready to teach.
+The script installs Docker on Amazon Linux 2, uses the EC2 IAM role to reach ECR, builds `application/`, curls `/health`, and pushes. Exit code 0 means the lab is ready to teach.

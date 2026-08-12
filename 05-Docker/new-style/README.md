@@ -42,7 +42,9 @@ cd ~/ncc-training/05-Docker/new-style/helpers
 bash run-ecr-lab.sh
 ```
 
-The script asks only for the ECR image URI. Region is us-east-1. It installs Docker, builds the sample app, smoke-tests `/health`, and pushes to ECR.
+The script asks only for the ECR image URI. Region is us-east-1. It uses the EC2 IAM role (not access keys), installs Docker, builds the sample app, smoke-tests `/health`, and pushes to ECR.
+
+If push is denied, attach the policy in [06-push-to-ecr/guide.md](06-push-to-ecr/guide.md).
 
 ## Scope Boundary
 

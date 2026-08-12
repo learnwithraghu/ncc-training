@@ -182,9 +182,9 @@ else
 fi
 echo ""
 
-# ── 3. Install AWS CLI ────────────────────────────────────────────
+# ── 3. AWS CLI (Amazon Linux 2 usually has it) ────────────────────
 
-echo -e "${CYAN}[ 3] Install AWS CLI${NC}"
+echo -e "${CYAN}[ 3] AWS CLI${NC}"
 if command -v aws &>/dev/null; then
     pass "aws CLI present ($(aws --version 2>&1 | head -n1))"
 else
@@ -200,19 +200,53 @@ else
 fi
 echo ""
 
-# ── 4. AWS identity ───────────────────────────────────────────────
+# ── 4. EC2 IAM role ───────────────────────────────────────────────
 
-echo -e "${CYAN}[ 4] AWS identity${NC}"
+echo -e "${CYAN}[ 4] EC2 IAM role${NC}"
+echo "  This lab uses the instance IAM role only. Do not use ~/.aws/credentials."
+
+IMDS_TOKEN=$(curl -sS -X PUT "http://169.254.169.254/latest/api/token" \
+    -H "X-aws-ec2-metadata-token-ttl-seconds: 60" \
+    --connect-timeout 2 2>/dev/null || true)
+if [[ -n "$IMDS_TOKEN" ]]; then
+    INSTANCE_PROFILE=$(curl -sS -H "X-aws-ec2-metadata-token: ${IMDS_TOKEN}" \
+        --connect-timeout 2 \
+        "http://169.254.169.254/latest/meta-data/iam/security-credentials/" 2>/dev/null || true)
+else
+    INSTANCE_PROFILE=$(curl -sS --connect-timeout 2 \
+        "http://169.254.169.254/latest/meta-data/iam/security-credentials/" 2>/dev/null || true)
+fi
+
+if [[ -n "$INSTANCE_PROFILE" ]]; then
+    pass "Instance profile present: ${INSTANCE_PROFILE}"
+else
+    fail "No IAM instance profile on this EC2 instance"
+    echo ""
+    echo "Aborting: attach an IAM role to this instance, then add the ECR push policy."
+    echo "See 05-Docker/new-style/06-push-to-ecr/guide.md (Attach the EC2 IAM policy)."
+    exit 1
+fi
+
 IDENTITY_JSON=$(aws sts get-caller-identity --region "$REGION" 2>&1) || IDENTITY_JSON=""
 if echo "$IDENTITY_JSON" | grep -q '"Account"'; then
     ACCOUNT=$(echo "$IDENTITY_JSON" | grep -o '"Account": "[^"]*"' | cut -d'"' -f4)
     ARN=$(echo "$IDENTITY_JSON" | grep -o '"Arn": "[^"]*"' | cut -d'"' -f4)
-    pass "sts get-caller-identity (account ${ACCOUNT})"
     echo "  Arn       : ${ARN}"
 else
     fail "aws sts get-caller-identity failed: ${IDENTITY_JSON}"
     echo ""
-    echo "Aborting: attach an instance role or configure ~/.aws/credentials."
+    echo "Aborting: the instance role cannot call STS. Attach the role and policy, then retry."
+    echo "See 05-Docker/new-style/06-push-to-ecr/guide.md (Attach the EC2 IAM policy)."
+    exit 1
+fi
+
+if echo "$ARN" | grep -q ':assumed-role/'; then
+    pass "Credentials come from the EC2 instance role"
+else
+    fail "Credentials are not from an EC2 instance role (${ARN})"
+    echo ""
+    echo "Aborting: remove ~/.aws/credentials if present. This lab uses the instance IAM role only."
+    echo "See 05-Docker/new-style/06-push-to-ecr/guide.md (Attach the EC2 IAM policy)."
     exit 1
 fi
 echo ""
@@ -303,7 +337,8 @@ if aws ecr get-login-password --region "$REGION" | docker_bin login --username A
 else
     fail "ECR docker login failed"
     echo ""
-    echo "Aborting: check ecr:GetAuthorizationToken on the instance role."
+    echo "Aborting: check ecr:GetAuthorizationToken on the EC2 instance role."
+    echo "See 05-Docker/new-style/06-push-to-ecr/guide.md (Attach the EC2 IAM policy)."
     exit 1
 fi
 
@@ -319,7 +354,8 @@ if docker_bin push "$ECR_IMAGE_URI"; then
 else
     fail "docker push failed"
     echo ""
-    echo "Aborting: check ECR push permissions (PutImage, UploadLayerPart, CompleteLayerUpload)."
+    echo "Aborting: check ECR push permissions on the EC2 instance role."
+    echo "See 05-Docker/new-style/06-push-to-ecr/guide.md (Attach the EC2 IAM policy)."
     exit 1
 fi
 echo ""

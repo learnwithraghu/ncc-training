@@ -8,8 +8,7 @@
 - Internet access on the instance to pull base images and talk to ECR
 - ECR repository already created in `us-east-1`
 - Training repo cloned on the instance (`git clone` or instructor-provided copy)
-- An IAM instance profile attached to the EC2 instance (no `~/.aws/credentials`)
-- The ECR push policy on that role. Students attach it in [new-style/06-push-to-ecr/guide.md](new-style/06-push-to-ecr/guide.md). JSON copy: [new-style/helpers/ecr-push-policy.json](new-style/helpers/ecr-push-policy.json)
+- An IAM instance profile attached to the EC2 instance that can already push to ECR (no `~/.aws/credentials`, no extra policy upload)
 
 ## Quick Validation
 

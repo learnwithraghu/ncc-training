@@ -222,8 +222,7 @@ if [[ -n "$INSTANCE_PROFILE" ]]; then
 else
     fail "No IAM instance profile on this EC2 instance"
     echo ""
-    echo "Aborting: attach an IAM role to this instance, then add the ECR push policy."
-    echo "See 05-Docker/new-style/06-push-to-ecr/guide.md (Attach the EC2 IAM policy)."
+    echo "Aborting: attach an IAM role to this instance that can push to ECR."
     exit 1
 fi
 
@@ -235,8 +234,7 @@ if echo "$IDENTITY_JSON" | grep -q '"Account"'; then
 else
     fail "aws sts get-caller-identity failed: ${IDENTITY_JSON}"
     echo ""
-    echo "Aborting: the instance role cannot call STS. Attach the role and policy, then retry."
-    echo "See 05-Docker/new-style/06-push-to-ecr/guide.md (Attach the EC2 IAM policy)."
+    echo "Aborting: the instance role cannot call STS. Confirm the EC2 IAM role is attached."
     exit 1
 fi
 
@@ -246,7 +244,6 @@ else
     fail "Credentials are not from an EC2 instance role (${ARN})"
     echo ""
     echo "Aborting: remove ~/.aws/credentials if present. This lab uses the instance IAM role only."
-    echo "See 05-Docker/new-style/06-push-to-ecr/guide.md (Attach the EC2 IAM policy)."
     exit 1
 fi
 echo ""
@@ -338,7 +335,6 @@ else
     fail "ECR docker login failed"
     echo ""
     echo "Aborting: check ecr:GetAuthorizationToken on the EC2 instance role."
-    echo "See 05-Docker/new-style/06-push-to-ecr/guide.md (Attach the EC2 IAM policy)."
     exit 1
 fi
 
@@ -355,7 +351,6 @@ else
     fail "docker push failed"
     echo ""
     echo "Aborting: check ECR push permissions on the EC2 instance role."
-    echo "See 05-Docker/new-style/06-push-to-ecr/guide.md (Attach the EC2 IAM policy)."
     exit 1
 fi
 echo ""

@@ -1,6 +1,17 @@
 # Topic 13 - Install, Run, and Verify a Package in One Playbook
 
-Your team doesn't want to hear "it should be installed" - they want proof the package actually works, so you write one playbook that installs it, runs it, and checks the result.
+> **NCC-113: Prove Node.js actually works after install, not just that it's present**
+>
+> **Type:** Task · **Priority:** High · **Reporter:** Platform Team
+>
+> **Description**
+> QA keeps bouncing our installs back with "the package is there, but did anyone confirm it runs?" We need a playbook that doesn't stop at `state: present`.
+>
+> **Acceptance Criteria**
+> - Node.js is installed on `web1` and `web2`.
+> - The playbook actually executes a piece of JavaScript, not just `node --version`.
+> - The playbook **fails** the run (not a warning, not a log line) if the script's output is wrong.
+> - Install, run, and verify all happen in a single playbook run.
 
 ## Learn
 

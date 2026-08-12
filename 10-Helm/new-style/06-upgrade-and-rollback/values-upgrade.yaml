@@ -1,0 +1,18 @@
+# Upgrade values for Signal Forge — visibly different from values-lab.yaml
+
+controller:
+  admin:
+    username: admin
+    password: "Passw0rd"
+  serviceType: NodePort
+  nodePort: 32081
+  resources:
+    requests:
+      cpu: 300m
+      memory: 768Mi
+    limits:
+      cpu: "1"
+      memory: 1536Mi
+
+persistence:
+  enabled: false

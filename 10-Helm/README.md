@@ -1,63 +1,63 @@
 # Day 5, Part 2: Helm
 
-This module teaches Helm through a guided-learning path from chart basics to a capstone-style workflow.
+This module teaches Helm the same way Kubernetes is taught: a linear
+**new-style** story. You install **Signal Forge** — Jenkins CI from the
+official open-source chart (`jenkins/jenkins` on
+[charts.jenkins.io](https://charts.jenkins.io/)) — then practice Helm
+features on that release.
 
 ## What You Will Learn
 
 By the end of this module, you will be able to:
 
-- Explain Helm chart, release, and values concepts
-- Search and inspect chart repositories
-- Create, lint, template, and package Helm charts
-- Install, upgrade, rollback, and uninstall releases safely
-- Build a practical chart workflow for the document-search app shape
+- Explain chart vs release and why Helm sits on top of kubectl
+- Add a chart repository, search, and inspect chart values
+- Install Jenkins with a small lab values file
+- Inspect a release (`list`, `status`, `get`)
+- Override values, upgrade, roll back, template, dry-run, and uninstall
 
 ## Time Estimate
 
-Approximately **3 to 3.5 hours** total, split into 10 guided topics at about 20 minutes each.
+Approximately **2.5 hours** total, split into 8 topics at about 15–25 minutes each.
 
 ## Prerequisites
 
 - Completion of [09-Kubernetes](../09-Kubernetes/README.md)
 - Helm installed (`helm version`)
-- Kubernetes cluster access
+- Kubernetes cluster access (`kubectl`)
 
 ## Verify Your Environment
 
-Before starting the topics, run the infrastructure validator to confirm Helm, kubectl, and the cluster can execute every command used across the 10 guided topics:
-
 ```bash
-/workspaces/ncc-training/10-Helm/helpers/validate-infra.sh
+bash 10-Helm/new-style/helpers/run-helm-lab.sh
 ```
 
-The validator checks Helm environment, repository discovery, release install/uninstall, chart creation, templating, linting, dry-run, upgrades, rollbacks, packaging, and the capstone workflow. Fix any failures before teaching or running the module.
+The helper installs Signal Forge with lab values, waits for Jenkins, exercises
+upgrade/rollback and template/dry-run, then uninstalls. Fix any failures before
+teaching.
+
+See [demo-infra-requirement.md](demo-infra-requirement.md) for the checklist.
 
 ## Guided Learning Topics
 
-Work through topics in [guided-learning/](guided-learning/) in order:
+Work through topics in [new-style/](new-style/) in order — see
+[new-style/README.md](new-style/README.md) for folder layout and scope.
 
 | Topic | Folder | Focus |
 |-------|--------|-------|
-| Topic 1 | [guided-learning/topic-01/](guided-learning/topic-01/) | Helm mindset and environment checks |
-| Topic 2 | [guided-learning/topic-02/](guided-learning/topic-02/) | Chart and repository discovery |
-| Topic 3 | [guided-learning/topic-03/](guided-learning/topic-03/) | Release lifecycle basics |
-| Topic 4 | [guided-learning/topic-04/](guided-learning/topic-04/) | Create your first chart |
-| Topic 5 | [guided-learning/topic-05/](guided-learning/topic-05/) | Values and template fundamentals |
-| Topic 6 | [guided-learning/topic-06/](guided-learning/topic-06/) | Service and deployment templating |
-| Topic 7 | [guided-learning/topic-07/](guided-learning/topic-07/) | Lint, template, and dry-run validation |
-| Topic 8 | [guided-learning/topic-08/](guided-learning/topic-08/) | Upgrade, rollback, and value overrides |
-| Topic 9 | [guided-learning/topic-09/](guided-learning/topic-09/) | Package and reuse a chart |
-| Topic 10 | [guided-learning/topic-10/](guided-learning/topic-10/) | Capstone Helm mini workflow |
+| 01 Meet Helm | [new-style/01-meet-helm/](new-style/01-meet-helm/) | Helm mindset, `signal-forge` namespace |
+| 02 Add Repo and Search | [new-style/02-add-repo-and-search/](new-style/02-add-repo-and-search/) | Jenkins chart repo, search, show |
+| 03 Install Jenkins | [new-style/03-install-jenkins/](new-style/03-install-jenkins/) | `helm install` with lab values |
+| 04 Inspect the Release | [new-style/04-inspect-the-release/](new-style/04-inspect-the-release/) | list / status / get / UI login |
+| 05 Override Values | [new-style/05-override-values/](new-style/05-override-values/) | `-f` and `--set` |
+| 06 Upgrade and Rollback | [new-style/06-upgrade-and-rollback/](new-style/06-upgrade-and-rollback/) | upgrade, history, rollback |
+| 07 Template and Dry-Run | [new-style/07-template-and-dry-run/](new-style/07-template-and-dry-run/) | template, dry-run, lint |
+| 08 Uninstall and Cleanup | [new-style/08-uninstall-and-cleanup/](new-style/08-uninstall-and-cleanup/) | uninstall and tidy the cluster |
 
-## Topic Assets
+## Lab Defaults
 
-Topics that need helper files include local `assets/` folders, so each lesson can run independently from its own topic directory.
-
-## Legacy References
-
-Legacy narrative guides remain as reference material:
-
-- [guide_01_helm_basics.md](guide_01_helm_basics.md)
-- [guide_02_chart_for_capstone.md](guide_02_chart_for_capstone.md)
-
-Primary learner flow is now the guided-learning topic sequence.
+- Namespace / release: `signal-forge`
+- Chart: `jenkins/jenkins`
+- Admin: `admin` / `Passw0rd`
+- Service: NodePort **32080** (upgrade demo uses **32081**)
+- Persistence: disabled for easy teardown

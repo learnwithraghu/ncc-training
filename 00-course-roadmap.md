@@ -83,8 +83,8 @@ Day 5: Kubernetes + Helm + Capstone
 
 | Module | Guides | What You Build |
 |--------|--------|----------------|
-| [09-Kubernetes](09-Kubernetes/README.md) | 5 levels | Kubernetes manifests and cluster operations |
-| [10-Helm](10-Helm/README.md) | 2 guides | Helm chart for the capstone app |
+| [09-Kubernetes](09-Kubernetes/README.md) | 8 topics | Orbital Relay on a cluster |
+| [10-Helm](10-Helm/README.md) | 8 topics | Signal Forge — Jenkins via official Helm chart |
 | [11-Capstone-Document-Search](11-Capstone-Document-Search/README.md) | 7 guides | End-to-end deployment of the document-search app |
 
 **Artifact:** Helm chart deploying the document-search app to Kubernetes.

@@ -1,0 +1,45 @@
+---
+- name: Audit host health and create locked maintenance users
+  hosts: web
+  become: true
+  gather_facts: false
+  tasks:
+    - name: Collect CPU and filesystem facts
+      ansible.builtin.setup:
+        gather_subset:
+          - hardware
+          - network
+          - virtual
+          - '!all'
+
+    - name: Show CPU model and root filesystem usage
+      ansible.builtin.debug:
+        msg:
+          - "CPU model: {{ ansible_facts.processor[2] | default(ansible_facts.processor | first | default('unknown')) }}"
+          - "Root filesystem: {{ ansible_facts.mounts | selectattr('mount', 'equalto', '/') | map(attribute='size_total') | first | default('unknown') }} bytes total"
+
+    - name: Check root disk usage
+      ansible.builtin.command: df -h /
+      register: disk_check
+      changed_when: false
+
+    - name: Warn if root disk is getting full
+      ansible.builtin.debug:
+        msg: "Root disk usage on {{ inventory_hostname }} looks high; review {{ disk_check.stdout_lines[1] | default('df output') }}"
+      when: disk_check.stdout is search('9[0-9]%|100%')
+
+    - name: Create the first locked user
+      ansible.builtin.user:
+        name: opsone
+        state: present
+        create_home: true
+        shell: /bin/bash
+        password_lock: true
+
+    - name: Create the second locked user
+      ansible.builtin.user:
+        name: opstwo
+        state: present
+        create_home: true
+        shell: /bin/bash
+        password_lock: true

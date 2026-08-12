@@ -1,0 +1,37 @@
+pipeline {
+    agent any
+
+    parameters {
+        choice(name: 'COMMAND', choices: ['add', 'is_prime'], description: 'Which app.py command to run')
+    }
+
+    environment {
+        // Groovy interpolates params.COMMAND here too, but that only ever
+        // sets an environment variable's *value* - it doesn't hand Groovy's
+        // output straight to a shell as script text, which is what made
+        // Topic 6's "Run" stage dangerous.
+        COMMAND = "${params.COMMAND}"
+    }
+
+    stages {
+        stage('Syntax Check') {
+            steps {
+                sh 'python3 -m py_compile app.py'
+            }
+        }
+        stage('Lint') {
+            steps {
+                sh 'flake8 app.py'
+            }
+        }
+        stage('Run') {
+            steps {
+                // Single-quoted Groovy string: Groovy does NOT interpolate
+                // this. The shell sees a literal $COMMAND and substitutes
+                // it itself, so the "$COMMAND" quoting rule from Topic 2
+                // applies again and actually protects you here.
+                sh 'python3 app.py "$COMMAND" 2 3'
+            }
+        }
+    }
+}

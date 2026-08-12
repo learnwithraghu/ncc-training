@@ -3,15 +3,15 @@
 **Time:** 20 minutes
 
 ## Goal
-Get the very first CI stage working against your own lab: commit Python
-code into the local git repo at `/root/sample-config`, point a Jenkins
-**Freestyle** job at it, and have a single **Execute Shell** build step
-fail the build the moment `app.py` doesn't parse.
+Get the very first CI stage working against your own lab: commit a tiny
+Python file into the local git repo at `/root/sample-config`, point a
+Jenkins **Freestyle** job at it, and have a single **Execute Shell** build
+step fail the build the moment `app.py` doesn't parse.
 
-## Files Provided
-- `code/app.py` - valid, stdlib-only, `add` and `is_prime`.
-- `code/broken.py` - a real syntax error (missing colon), used to prove
-  the stage actually fails builds.
+## File Provided
+`code/app.py` - 10 lines, one `add` function plus a `sys.argv` CLI. This
+is the whole app for this track - it grows a little at each topic, the
+same file the whole way through, never swapped out for a different one.
 
 ## Execute Shell Command
 Add this as the job's first **Execute Shell** build step:
@@ -44,20 +44,23 @@ python3 -m py_compile app.py
 5. Under **Build Steps**, **Add build step** → **Execute Shell**, and
    paste the command above. Save.
 6. Click **Build Now**. It should be **green** - `app.py` compiles fine.
-7. Now break it on purpose:
+7. Now break it on purpose, directly in the repo:
    ```bash
-   cp code/broken.py /root/sample-config/app.py
-   cd /root/sample-config && git add app.py && git commit -m "break app.py"
+   cd /root/sample-config
+   ```
+   Open `app.py` and delete the colon at the end of `def add(a, b):`, so
+   the line reads `def add(a, b)`. Commit:
+   ```bash
+   git commit -am "break app.py on purpose"
    ```
 8. Click **Build Now** again. Watch the build go **red**. Open the
    console output and find the exact line `py_compile` reports the
    `SyntaxError` on.
-9. Restore the good copy and confirm green again:
+9. Put the colon back, commit again, and confirm the build is green:
    ```bash
-   cp code/app.py /root/sample-config/app.py
-   cd /root/sample-config && git add app.py && git commit -m "fix app.py"
+   git commit -am "fix app.py"
    ```
-   Click **Build Now**, confirm the build is green.
+   Click **Build Now** to confirm.
 
 ## Guided Explanation
 `python3 -m py_compile` only parses the file - it does not run it or
@@ -69,8 +72,7 @@ git URL, every build is really re-reading whatever you last committed at
 and build.
 
 ## Checkpoint
-The Execute Shell step ran `python3 -m py_compile app.py` with a
-hard-coded filename. What happens to this build the day someone adds a
-second `.py` file to `/root/sample-config` that also has a syntax error -
-does this stage catch it? What would you change in the shell step so it
-checks every `.py` file in the repo, not just one hard-coded name?
+`app.py` is going to keep growing over the next few topics, all inside
+this same file and this same repo. Why does that matter more for a real
+project than it did for a one-off script - what goes wrong if every
+topic instead shipped an unrelated, disconnected example file?

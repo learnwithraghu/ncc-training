@@ -26,3 +26,7 @@
 
 - [SNS/README.md](./SNS/README.md)
 - [SNS/publish-message.sh](./SNS/publish-message.sh)
+
+## Module: Rekognition Image to Text
+
+- [rekognition-image-to-text-app/README.md](./rekognition-image-to-text-app/README.md)

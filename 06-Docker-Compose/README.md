@@ -1,61 +1,72 @@
 # Day 3, Part 2: Docker Compose
 
-This module teaches you how to define and operate a multi-service
-application with Docker Compose: a small Python (Flask) app connected to
-a MySQL database.
+This module is a short demo: club a **Python login UI** and a **MySQL database** in one `docker-compose.yaml`.
+
+You start both services with Compose, submit a login, then enter the MySQL container and `SELECT` the saved rows.
 
 ## What You Will Learn
 
 By the end of this module, you will be able to:
 
-- Explain why Compose is useful in local DevOps workflows
-- Read and edit a `docker-compose.yaml` file confidently
-- Build, run, and inspect a Python app and a MySQL service together
-- Use health checks, dependencies, volumes, and scaling
-- Log into the database container and run MySQL commands directly
-- Troubleshoot common Compose startup and runtime problems
+- Explain why Compose is useful for multi-service apps
+- Read a simple `docker-compose.yaml` with `web` + `db`
+- Start the stack with `docker compose up -d --build`
+- Use a login page that stores data in MySQL
+- `exec` into the MySQL container and query the table
 
 ## Time Estimate
 
-Approximately **4 hours** total, split into 12 guided topics at about 20 minutes each.
+Approximately **1 hour** total, split into 5 named stages.
 
 ## Prerequisites
 
 - Completion of [05-Docker](../05-Docker/README.md)
-- Docker Compose installed (`docker compose version`)
+- Docker Engine and Compose plugin (`docker compose version`)
+- Free host port **5000**
 
-## Verify Your Environment
+See [demo-infra-requirement.md](demo-infra-requirement.md) for the checklist.
 
-Before starting the topics, run the infrastructure validator to confirm this environment can build, run, and operate the full Compose stack:
+## Guided Stages
+
+Each practical stage folder in `new-style/` is independent. It includes the app files and a `guide.md`.
+
+| Stage | Folder | Focus |
+|-------|--------|-------|
+| 01 Meet Compose | [new-style/01-meet-compose/](new-style/01-meet-compose/) | Why Compose clubs UI + DB |
+| 02 Write the Stack | [new-style/02-write-the-stack/](new-style/02-write-the-stack/) | Compose file, Flask login, `init.sql` |
+| 03 Start the Stack | [new-style/03-start-the-stack/](new-style/03-start-the-stack/) | `compose up` and open the login page |
+| 04 Login and Save | [new-style/04-login-and-save/](new-style/04-login-and-save/) | Submit login; save to MySQL |
+| 05 Inspect MySQL | [new-style/05-inspect-mysql/](new-style/05-inspect-mysql/) | `exec` into MySQL and `SELECT` |
+
+## Getting Started
 
 ```bash
-/workspaces/ncc-training/06-Docker-Compose/helpers/validate-infra.sh
+cd ~/ncc-training/06-Docker-Compose/new-style/01-meet-compose
 ```
 
-The validator checks the Docker Compose plugin, the project files, the `docker-compose.yaml` config, service health, env-file values, volume persistence, the database workflow (including a direct `mysql` login), scaling, rebuilds, and final cleanup. Fix any failures before teaching or running the module.
+Follow [new-style/README.md](new-style/README.md) for the full stage order.
 
-## Guided Learning Topics
+## Sample App
 
-Work through the topics in [guided-learning/](guided-learning/) in order:
+- **web** — Flask login page on port **5000**
+- **db** — MySQL 8 with database `appdb` and table `logins`
 
-| Topic | Folder | Focus |
-|-------|--------|-------|
-| Topic 1 | [guided-learning/topic-01/](guided-learning/topic-01/) | Compose mindset and quick checks |
-| Topic 2 | [guided-learning/topic-02/](guided-learning/topic-02/) | Compose file structure walkthrough |
-| Topic 3 | [guided-learning/topic-03/](guided-learning/topic-03/) | Validate Compose config |
-| Topic 4 | [guided-learning/topic-04/](guided-learning/topic-04/) | Build and start services |
-| Topic 5 | [guided-learning/topic-05/](guided-learning/topic-05/) | Health checks and dependencies |
-| Topic 6 | [guided-learning/topic-06/](guided-learning/topic-06/) | Environment and env files |
-| Topic 7 | [guided-learning/topic-07/](guided-learning/topic-07/) | Volumes and persistent data |
-| Topic 8 | [guided-learning/topic-08/](guided-learning/topic-08/) | Database workflow with MySQL |
-| Topic 9 | [guided-learning/topic-09/](guided-learning/topic-09/) | Logs, exec, and troubleshooting |
-| Topic 10 | [guided-learning/topic-10/](guided-learning/topic-10/) | Service scaling patterns |
-| Topic 11 | [guided-learning/topic-11/](guided-learning/topic-11/) | Rebuild and rollout workflow |
-| Topic 12 | [guided-learning/topic-12/](guided-learning/topic-12/) | Compose mini workflow |
+Demo only: passwords are stored in plain text so you can see them with `SELECT`. Never do this in production.
 
-## Module App
+## Tips for Success
 
-Use the training app in [application/](application/) for all guided topics
-- a Flask API (`web`) reading and writing an `items` table in MySQL
-(`db`), started with `docker compose up -d --build` from
-`application/docker-compose.yaml`.
+- `cd` into the stage folder you are teaching before running Compose
+- Only one stack should use port 5000 at a time — `docker compose down` in the previous folder first
+- Give MySQL ~20 seconds on first start before logging in
+
+## Getting Help
+
+1. Open the stage `guide.md` in `new-style/`
+2. Check services: `docker compose ps`
+3. Check logs: `docker compose logs`
+
+```bash
+docker compose --help
+docker compose up --help
+docker compose exec --help
+```

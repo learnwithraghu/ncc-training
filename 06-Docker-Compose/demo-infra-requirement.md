@@ -1,22 +1,27 @@
 # Demo Infra Requirement
 
 ## Infra Needed
+
 - Docker Engine running
 - Docker Compose plugin (`docker compose`)
-- Free local ports for app services (module app uses port 5000 for the
-  API and port 3306 for MySQL)
-- `curl` available (used in guided topics; optional for the validator)
+- Free host port **5000** for the login UI
+- Browser or `curl` to submit a login
 
 ## Quick Validation
+
 ```bash
 docker --version
 docker compose version
 docker ps
 ```
 
-## Full Validation
-Run the module validator before teaching or running the guided topics. It exercises the entire Compose stack end-to-end - including a direct MySQL login - and cleans up after itself.
+## Smoke Test (optional)
+
+From any practical stage folder:
 
 ```bash
-/workspaces/ncc-training/06-Docker-Compose/helpers/validate-infra.sh
+cd ~/ncc-training/06-Docker-Compose/new-style/03-start-the-stack
+docker compose up -d --build
+curl http://127.0.0.1:5000
+docker compose down
 ```

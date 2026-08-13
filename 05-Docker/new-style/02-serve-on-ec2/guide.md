@@ -7,6 +7,8 @@ Build the Aether Launch image on this EC2 instance and serve the company page on
 
 Work only in this folder. It has its own `index.html` and `Dockerfile`.
 
+`COPY` puts `index.html` **inside the image**. It does not copy the file onto the EC2 disk, and it does not change nginx on the host.
+
 ## Commands to Teach
 
 ```bash
@@ -18,7 +20,8 @@ docker rm -f aether-web
 ```
 
 - `cd` into this topic folder so `docker build` uses this folder's `Dockerfile` and `index.html`.
-- `docker build -t aether-launch:1.0 .` reads the Dockerfile, copies the HTML into the image, and names the result `aether-launch:1.0`.
+- `docker build -t aether-launch:1.0 .` copies `index.html` into the image at `/usr/share/nginx/html/`.
+- Run the image you just built (`aether-launch:1.0`). Do not run `nginx:1.27-alpine` or you will get the default nginx page.
 - `docker run -p 8080:80` publishes host port 8080 to nginx port 80 inside the container.
 - `curl` proves the company page is reachable on this host.
 
@@ -28,28 +31,32 @@ docker rm -f aether-web
 
 ```bash
 cd ~/ncc-training/05-Docker/new-style/02-serve-on-ec2
+pwd
 ls
 head -n 5 index.html
 cat Dockerfile
 ```
 
-You should see a two-line Dockerfile: `FROM nginx:1.27-alpine` and `COPY index.html` into nginx's html folder. Next topic adds package install and a health check.
+You must be in `02-serve-on-ec2` so `index.html` is in the build context. The Dockerfile is two lines: `FROM nginx:1.27-alpine` and `COPY index.html` into nginx's html folder.
 
-2. Build the image from this folder:
+2. Build the image from this folder, then prove `COPY` landed in the image (not on the EC2 disk):
 
 ```bash
 docker build -t aether-launch:1.0 .
 docker images | grep aether-launch
+docker run --rm aether-launch:1.0 ls /usr/share/nginx/html
+docker run --rm aether-launch:1.0 grep -o "Aether Launch" /usr/share/nginx/html/index.html
 ```
 
-The trailing `.` is the build context: this directory. Docker uses the `Dockerfile` here and copies `index.html` into the image.
+You should see `index.html` listed and `Aether Launch` printed. `ls` on the EC2 host will not show a new file under `/usr/share/nginx`. That path exists only inside the container.
 
-3. Run the image and publish port 8080:
+3. Run **that** image and publish port 8080:
 
 ```bash
 docker rm -f aether-web 2>/dev/null || true
 docker run -d --name aether-web -p 8080:80 aether-launch:1.0
 docker ps
+docker exec aether-web ls /usr/share/nginx/html
 ```
 
 4. Hit the page from the same EC2 instance:
@@ -58,7 +65,7 @@ docker ps
 curl -sS http://127.0.0.1:8080 | head
 ```
 
-You should see `Aether Launch` in the HTML.
+You should see `Aether Launch` in the HTML. If you see `Welcome to nginx!`, you ran the stock `nginx` image instead of `aether-launch:1.0`. Remove the container and run the command in step 3 again.
 
 5. Optional: from your laptop browser, open `http://<EC2_PUBLIC_IP>:8080` if the security group allows port 8080.
 
@@ -72,7 +79,7 @@ The image `aether-launch:1.0` stays on the instance. Next topic walks the Docker
 
 ## Task
 
-From this folder, `docker build -t aether-launch:1.0 .`, run the image with `8080:80`, and curl the page until you see **Aether Launch**. Then remove the container.
+From this folder, `docker build -t aether-launch:1.0 .`, confirm `Aether Launch` is inside `/usr/share/nginx/html/index.html` in the image, run `aether-launch:1.0` with `8080:80`, and curl the page. Then remove the container.
 
 ## Checkpoint
-Why does `docker build` need the `.` at the end, and what files from this folder end up inside the image?
+Why does `COPY` in the Dockerfile not create a new `index.html` on the EC2 disk?

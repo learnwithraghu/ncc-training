@@ -38,8 +38,8 @@ docker rm -f <NAME>
 | [03-bake-image/](03-bake-image/) | Dockerfile, package install, `COPY`, `docker build` |
 | [04-docker-logs-and-exec/](04-docker-logs-and-exec/) | Logs and exec on the baked image |
 | [05-docker-tag-and-images/](05-docker-tag-and-images/) | Naming and tagging convention |
-| [06-push-to-ecr/](06-push-to-ecr/) | Push `aether-launch:1.0` from EC2 to ECR |
-| [07-pull-and-run/](07-pull-and-run/) | Pull from ECR and run to validate |
+| [06-push-to-ecr/](06-push-to-ecr/) | Push to ECR, delete the local image, pull, and run |
+| [07-pull-and-run/](07-pull-and-run/) | Optional extra: pull and run again from this folder |
 
 ## How each folder is laid out
 

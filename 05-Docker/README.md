@@ -43,8 +43,8 @@ Each topic folder in `new-style/` is independent. It includes `index.html`, `Doc
 | 03 Bake Image | [new-style/03-bake-image/](new-style/03-bake-image/) | Dockerfile, `apk add`, `COPY`, `docker build` |
 | 04 Logs and Exec | [new-style/04-docker-logs-and-exec/](new-style/04-docker-logs-and-exec/) | Logs and exec |
 | 05 Tag and Names | [new-style/05-docker-tag-and-images/](new-style/05-docker-tag-and-images/) | Naming and tagging convention |
-| 06 Push to ECR | [new-style/06-push-to-ecr/](new-style/06-push-to-ecr/) | Push `aether-launch:1.0` to ECR |
-| 07 Pull and Run | [new-style/07-pull-and-run/](new-style/07-pull-and-run/) | Pull from ECR and run to validate |
+| 06 Push to ECR | [new-style/06-push-to-ecr/](new-style/06-push-to-ecr/) | Push to ECR, delete the local image, pull, and run |
+| 07 Pull and Run | [new-style/07-pull-and-run/](new-style/07-pull-and-run/) | Optional extra: pull and run again from this folder |
 
 ## Getting Started
 
@@ -92,7 +92,7 @@ docker ps -a
 ```
 
 - That avoids **name already in use**, **port is already allocated**, and **image is being used by a container**
-- Images can stay (`docker images`). Only topic 07 asks you to `docker rmi` on purpose.
+- Images can stay (`docker images`). Topic 06 asks you to `docker rmi` on purpose so the pull is real.
 
 **Each folder stands alone:**
 - `cd` into the topic folder you are teaching

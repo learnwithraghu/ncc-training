@@ -1,88 +1,88 @@
-# 06: Push to ECR
+# 06: Push to ECR, Pull, and Run
 
 **Time:** ~20 minutes
 
 ## Goal
-Build the Aether Launch image in this folder, tag it with the ECR URI, and push from this EC2 instance using the instance IAM role.
+Build `aether-launch:1.0` in this folder, push it to ECR, delete the local image, then pull it back and run it.
+
+The IAM role is already attached to this EC2 instance.
+
+ECR image: `851725341232.dkr.ecr.us-east-1.amazonaws.com/raghu-ncc:1.0`
 
 Work only in this folder. It has its own `index.html` and `Dockerfile`.
-
-Do not create access keys. Do not use `~/.aws/credentials`.
 
 ## Commands to Teach
 
 ```bash
-aws sts get-caller-identity
-aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com
-docker tag aether-launch:1.0 <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/<repo>:1.0
-docker push <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/<repo>:1.0
+docker build -t aether-launch:1.0 .
+aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 851725341232.dkr.ecr.us-east-1.amazonaws.com
+docker tag aether-launch:1.0 851725341232.dkr.ecr.us-east-1.amazonaws.com/raghu-ncc:1.0
+docker push 851725341232.dkr.ecr.us-east-1.amazonaws.com/raghu-ncc:1.0
+docker rmi aether-launch:1.0
+docker rmi 851725341232.dkr.ecr.us-east-1.amazonaws.com/raghu-ncc:1.0
+docker pull 851725341232.dkr.ecr.us-east-1.amazonaws.com/raghu-ncc:1.0
+docker run -d --name aether-web -p 8080:80 851725341232.dkr.ecr.us-east-1.amazonaws.com/raghu-ncc:1.0
+curl http://127.0.0.1:8080
 ```
 
-- `aws sts get-caller-identity` must show an `assumed-role` ARN.
-- `docker login` uses a short-lived ECR token from that role.
-- `docker tag` applies the ECR naming convention from topic 05.
-- `docker push` uploads layers from this EC2 host.
+- The instance role is already attached, so `aws ecr get-login-password` works. You do not set up credentials.
+- `docker tag` gives the local image the ECR name. `docker push` uploads it.
+- `docker rmi` deletes the local copies so the next run cannot use the image you just built.
+- `docker pull` downloads from ECR. `docker run` proves that pulled image still serves **Aether Launch**.
 
 ## Guided Steps
 
-1. Start clean, then build from this folder:
+1. Build from this folder:
 
 ```bash
 cd ~/ncc-training/05-Docker/new-style/06-push-to-ecr
 docker rm -f aether-web 2>/dev/null || true
-docker container prune -f
 docker build -t aether-launch:1.0 .
 ```
 
-2. Confirm the instance role:
-
-```bash
-aws sts get-caller-identity
-```
-
-If the ARN is not `assumed-role`, stop and tell the instructor.
-
-3. Set the ECR URI your instructor gives you (include the tag):
-
-```bash
-ECR_IMAGE_URI="<ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/<repo>:1.0"
-ECR_REGISTRY=$(echo "$ECR_IMAGE_URI" | cut -d/ -f1)
-ECR_REPOSITORY_NAME=$(echo "$ECR_IMAGE_URI" | cut -d/ -f2- | cut -d: -f1)
-```
-
-4. Login, tag, and push:
+2. Login, tag, and push:
 
 ```bash
 aws ecr get-login-password --region us-east-1 | \
-  docker login --username AWS --password-stdin "$ECR_REGISTRY"
+  docker login --username AWS --password-stdin 851725341232.dkr.ecr.us-east-1.amazonaws.com
 
-docker tag aether-launch:1.0 "$ECR_IMAGE_URI"
-docker push "$ECR_IMAGE_URI"
+docker tag aether-launch:1.0 851725341232.dkr.ecr.us-east-1.amazonaws.com/raghu-ncc:1.0
+docker push 851725341232.dkr.ecr.us-east-1.amazonaws.com/raghu-ncc:1.0
 ```
 
-5. Confirm ECR has the image:
-
-```bash
-aws ecr describe-images \
-  --repository-name "$ECR_REPOSITORY_NAME" \
-  --region us-east-1
-```
-
-Save the URI for [07-pull-and-run](../07-pull-and-run/guide.md).
-
-## Cleanup
-
-Do not delete `aether-launch:1.0` yet. Topic 07 removes local images on purpose. Do remove any leftover container so topic 07 can `docker rmi` without **image is being used by a container**:
+3. Remove the local image so you cannot run the copy you just built:
 
 ```bash
 docker rm -f aether-web 2>/dev/null || true
-docker container prune -f
+docker rmi aether-launch:1.0
+docker rmi 851725341232.dkr.ecr.us-east-1.amazonaws.com/raghu-ncc:1.0
+docker images
+```
+
+The Aether Launch image should be gone locally.
+
+4. Pull from ECR and run:
+
+```bash
+docker pull 851725341232.dkr.ecr.us-east-1.amazonaws.com/raghu-ncc:1.0
+docker run -d --name aether-web -p 8080:80 851725341232.dkr.ecr.us-east-1.amazonaws.com/raghu-ncc:1.0
+curl -sS http://127.0.0.1:8080 | grep -o "Aether Launch" | head -n 1
+```
+
+Optional: open `http://<EC2_PUBLIC_IP>:8080` if port 8080 is open.
+
+## Cleanup
+
+```bash
+docker rm -f aether-web 2>/dev/null || true
 docker ps -a
 ```
 
+If `docker rmi` said **image is being used by a container**, remove the container first, then retry `docker rmi`.
+
 ## Task
 
-From this folder, build `aether-launch:1.0`, tag it with the instructor ECR URI, push it, and confirm it with `aws ecr describe-images`.
+From this folder, build `aether-launch:1.0`, push it to `851725341232.dkr.ecr.us-east-1.amazonaws.com/raghu-ncc:1.0`, delete the local image, pull it back, run it on `8080:80`, and curl until you see **Aether Launch**.
 
 ## Checkpoint
-Why must the local name `aether-launch:1.0` be tagged with the ECR URI before `docker push`?
+Why do we delete the local image before `docker pull`?

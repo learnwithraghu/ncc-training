@@ -19,16 +19,17 @@ docker rm -f aether-web
 - `docker logs` prints nginx access and error output.
 - `docker logs -f` follows new requests.
 - `docker exec -it … sh` opens a shell in the already-running container.
-- `docker rm -f` force-removes the container.
+- `docker rm -f` force-removes the container so the next topic can reuse the name `aether-web` and port 8080.
 
 ## Guided Steps
 
-1. Build and run from this folder:
+1. Start clean, then build and run from this folder:
 
 ```bash
 cd ~/ncc-training/05-Docker/new-style/04-docker-logs-and-exec
-docker build -t aether-launch:1.0 .
 docker rm -f aether-web 2>/dev/null || true
+docker container prune -f
+docker build -t aether-launch:1.0 .
 docker run -d --name aether-web -p 8080:80 aether-launch:1.0
 ```
 
@@ -62,10 +63,31 @@ exit
 
 `curl` is there because the Dockerfile ran `apk add --no-cache curl`.
 
-5. Clean up:
+5. Clean up so the next topic can reuse `aether-web` and port 8080:
 
 ```bash
 docker rm -f aether-web
+docker container prune -f
+docker ps -a
+```
+
+## Cleanup
+
+If `docker run` fails with **name already in use** or **port is already allocated**, or when you finish this topic:
+
+```bash
+docker rm -f aether-web 2>/dev/null || true
+docker container prune -f
+docker ps -a
+```
+
+If `docker exec` says the container is not running, start it again with the `docker run` in step 1.
+
+If port 8080 is still busy:
+
+```bash
+docker ps --format 'table {{.Names}}\t{{.Ports}}'
+docker rm -f <NAME>
 ```
 
 ## Task

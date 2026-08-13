@@ -7,9 +7,27 @@ The site is a single-page company page for **Aether Launch**, a satellite launch
 ## Recommended Flow
 
 1. Open the topic folder.
-2. Walk through the commands on EC2.
-3. Complete the **Task**.
-4. Answer the checkpoint before moving on.
+2. Start clean (`docker rm -f aether-web` if a previous topic left a container).
+3. Walk through the commands on EC2.
+4. Complete the **Task**.
+5. Run that topic's **Cleanup** before moving on.
+
+## Cleanup between topics
+
+Every topic that runs a container uses the name `aether-web` and host port **8080**. Leftovers cause **name already in use**, **port is already allocated**, or **image is being used by a container**.
+
+```bash
+docker rm -f aether-web 2>/dev/null || true
+docker container prune -f
+docker ps -a
+```
+
+If port 8080 is still busy:
+
+```bash
+docker ps --format 'table {{.Names}}\t{{.Ports}}'
+docker rm -f <NAME>
+```
 
 ## Topic List
 

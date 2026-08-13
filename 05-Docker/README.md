@@ -81,6 +81,19 @@ Follow [new-style/README.md](new-style/README.md) for the full topic order.
 - Serve, build, run, and push from the instance
 - If `docker` asks for sudo, log out of SSH and log back in after `usermod -a -G docker ec2-user`
 
+**Clean up between topics:**
+- Each run uses `--name aether-web` and port **8080**
+- Before you start a topic, and when you finish it:
+
+```bash
+docker rm -f aether-web 2>/dev/null || true
+docker container prune -f
+docker ps -a
+```
+
+- That avoids **name already in use**, **port is already allocated**, and **image is being used by a container**
+- Images can stay (`docker images`). Only topic 07 asks you to `docker rmi` on purpose.
+
 **Each folder stands alone:**
 - `cd` into the topic folder you are teaching
 - Use that folder's `index.html` and `Dockerfile`

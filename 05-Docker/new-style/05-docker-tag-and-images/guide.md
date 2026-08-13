@@ -23,10 +23,12 @@ docker images | grep aether-launch
 
 ## Guided Steps
 
-1. Build from this folder with the version tag:
+1. Start clean, then build from this folder with the version tag:
 
 ```bash
 cd ~/ncc-training/05-Docker/new-style/05-docker-tag-and-images
+docker rm -f aether-web 2>/dev/null || true
+docker container prune -f
 docker build -t aether-launch:1.0 .
 ```
 
@@ -65,6 +67,18 @@ docker rmi 123456789012.dkr.ecr.us-east-1.amazonaws.com/aether-launch:1.0 2>/dev
 docker rmi aether-launch:latest
 docker images | grep aether-launch
 ```
+
+## Cleanup
+
+This topic does not need a long-running container. Still remove `aether-web` if a previous topic left it running, or `docker rmi` can fail with **image is being used by a container**:
+
+```bash
+docker rm -f aether-web 2>/dev/null || true
+docker container prune -f
+docker ps -a
+```
+
+Keep `aether-launch:1.0`. You only removed extra tags (`:latest` and the practice ECR name).
 
 ## Task
 

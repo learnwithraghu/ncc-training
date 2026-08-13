@@ -24,6 +24,7 @@ docker rm -f aether-web
 - Run the image you just built (`aether-launch:1.0`). Do not run `nginx:1.27-alpine` or you will get the default nginx page.
 - `docker run -p 8080:80` publishes host port 8080 to nginx port 80 inside the container.
 - `curl` proves the company page is reachable on this host.
+- `docker rm -f aether-web` removes the container so a second `docker run --name aether-web` does not fail.
 
 ## Guided Steps
 
@@ -38,6 +39,14 @@ cat Dockerfile
 ```
 
 You must be in `02-serve-on-ec2` so `index.html` is in the build context. The Dockerfile is two lines: `FROM nginx:1.27-alpine` and `COPY index.html` into nginx's html folder.
+
+Start clean so a leftover container from a retry does not block port 8080:
+
+```bash
+docker rm -f aether-web 2>/dev/null || true
+docker container prune -f
+docker ps -a
+```
 
 2. Build the image from this folder, then prove `COPY` landed in the image (not on the EC2 disk):
 
@@ -69,17 +78,40 @@ You should see `Aether Launch` in the HTML. If you see `Welcome to nginx!`, you 
 
 5. Optional: from your laptop browser, open `http://<EC2_PUBLIC_IP>:8080` if the security group allows port 8080.
 
-6. Stop the container when you are done looking:
+6. Clean up when you are done:
 
 ```bash
 docker rm -f aether-web
+docker container prune -f
+docker ps -a
 ```
 
 The image `aether-launch:1.0` stays on the instance. Next topic walks the Dockerfile line by line.
 
+## Cleanup
+
+If `docker run` fails with **name already in use** or **port is already allocated**, or when you finish this topic:
+
+```bash
+docker rm -f aether-web 2>/dev/null || true
+docker container prune -f
+docker ps -a
+```
+
+- `docker rm -f aether-web` stops and deletes the lab container even if it is still running.
+- `docker container prune -f` deletes other **exited** containers.
+- Images stay (`docker images`). You do not need to delete `aether-launch:1.0`.
+
+If port 8080 is still busy:
+
+```bash
+docker ps --format 'table {{.Names}}\t{{.Ports}}'
+docker rm -f <NAME>
+```
+
 ## Task
 
-From this folder, `docker build -t aether-launch:1.0 .`, confirm `Aether Launch` is inside `/usr/share/nginx/html/index.html` in the image, run `aether-launch:1.0` with `8080:80`, and curl the page. Then remove the container.
+From this folder, `docker build -t aether-launch:1.0 .`, confirm `Aether Launch` is inside `/usr/share/nginx/html/index.html` in the image, run `aether-launch:1.0` with `8080:80`, and curl the page. Then `docker rm -f aether-web`.
 
 ## Checkpoint
 Why does `COPY` in the Dockerfile not create a new `index.html` on the EC2 disk?

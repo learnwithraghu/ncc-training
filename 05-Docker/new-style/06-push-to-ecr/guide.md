@@ -25,10 +25,12 @@ docker push <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/<repo>:1.0
 
 ## Guided Steps
 
-1. Build from this folder:
+1. Start clean, then build from this folder:
 
 ```bash
 cd ~/ncc-training/05-Docker/new-style/06-push-to-ecr
+docker rm -f aether-web 2>/dev/null || true
+docker container prune -f
 docker build -t aether-launch:1.0 .
 ```
 
@@ -67,6 +69,16 @@ aws ecr describe-images \
 ```
 
 Save the URI for [07-pull-and-run](../07-pull-and-run/guide.md).
+
+## Cleanup
+
+Do not delete `aether-launch:1.0` yet. Topic 07 removes local images on purpose. Do remove any leftover container so topic 07 can `docker rmi` without **image is being used by a container**:
+
+```bash
+docker rm -f aether-web 2>/dev/null || true
+docker container prune -f
+docker ps -a
+```
 
 ## Task
 

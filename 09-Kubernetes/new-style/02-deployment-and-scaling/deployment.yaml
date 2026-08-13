@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: web
-          image: <ECR_REGISTRY>/orbital-relay:1.0
+          image: learnwithraghu/ncc-workshop:1.0
           imagePullPolicy: Always
           ports:
             - containerPort: 80

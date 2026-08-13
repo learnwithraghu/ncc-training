@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Relay Night Board | 2.0</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet" />
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: 'IBM Plex Mono', monospace;
+    color: #1a1510;
+    background: #f3ead8 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24'%3E%3Cpath d='M0 24h24V0' fill='none' stroke='%23d9cbb0' stroke-width='1'/%3E%3C/svg%3E");
+  }
+  .wrap {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    min-height: 100vh;
+  }
+  aside {
+    background: #1a1510;
+    color: #f3ead8;
+    padding: 36px 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+  .ver {
+    font-family: 'Fraunces', serif;
+    font-size: 5.4rem;
+    line-height: 0.8;
+    color: #e4572e;
+    margin: 0;
+  }
+  .aside-label {
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    color: #cbbda3;
+  }
+  .stamp {
+    border: 2px dashed #e4572e;
+    color: #e4572e;
+    padding: 10px 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 0.78rem;
+    font-weight: 600;
+  }
+  main { padding: 48px 56px; }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-size: clamp(2.4rem, 5vw, 4.2rem);
+    margin: 0 0 12px;
+    letter-spacing: -0.03em;
+  }
+  .lede {
+    max-width: 38rem;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    margin-bottom: 36px;
+  }
+  .passes {
+    display: grid;
+    gap: 14px;
+    max-width: 640px;
+  }
+  .pass {
+    background: #fffaf1;
+    border: 2px solid #1a1510;
+    padding: 16px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 6px 6px 0 #1a1510;
+  }
+  .pass strong { font-family: 'Fraunces', serif; font-size: 1.2rem; }
+  .pass span { color: #e4572e; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; font-size: 0.75rem; }
+  @media (max-width: 800px) {
+    .wrap { grid-template-columns: 1fr; }
+    aside { flex-direction: row; align-items: center; }
+    .ver { font-size: 3rem; }
+  }
+</style>
+</head>
+<body data-lab="ncc-orbital-relay" data-version="v2">
+<div class="wrap">
+  <aside>
+    <p class="aside-label">Image tag</p>
+    <p class="ver">2.0</p>
+    <div class="stamp">Night Pass v2</div>
+    <p class="aside-label">If you see this board, the rolling update landed.</p>
+  </aside>
+  <main>
+    <p class="aside-label" style="color:#e4572e; margin:0 0 10px;">Relay Night Board</p>
+    <h1>The night shift took the console.</h1>
+    <p class="lede">
+      This is a different page on purpose. Version 1.0 was the dark
+      day-shift dashboard. Version 2.0 is the paper night board. A
+      Kubernetes rolling update swaps one image tag for the other
+      without taking the Service down.
+    </p>
+    <div class="passes">
+      <div class="pass"><strong>Svalbard-2</strong><span>Pass 02:18</span></div>
+      <div class="pass"><strong>Punta Arenas</strong><span>Pass 03:04</span></div>
+      <div class="pass"><strong>Inuvik</strong><span>Pass 03:41</span></div>
+    </div>
+  </main>
+</div>
+</body>
+</html>

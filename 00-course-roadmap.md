@@ -83,7 +83,7 @@ Day 5: Kubernetes + Helm + Capstone
 
 | Module | Guides | What You Build |
 |--------|--------|----------------|
-| [09-Kubernetes](09-Kubernetes/README.md) | 8 topics | Orbital Relay on a cluster |
+| [09-Kubernetes](09-Kubernetes/README.md) | 7 topics | Orbital Relay on a cluster (Docker Hub) |
 | [10-Helm](10-Helm/README.md) | 8 topics | Signal Forge — Jenkins via official Helm chart |
 | [11-Capstone-Document-Search](11-Capstone-Document-Search/README.md) | 7 guides | End-to-end deployment of the document-search app |
 

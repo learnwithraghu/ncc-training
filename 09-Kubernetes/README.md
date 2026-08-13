@@ -1,82 +1,59 @@
 # Day 5, Part 1: Kubernetes
 
-This module teaches Kubernetes fundamentals by building the **Orbital
-Relay** image, pushing it to ECR, then deploying, scaling, updating, and
-operating that workload end to end on a real cluster.
+This module teaches Kubernetes by deploying **Orbital Relay** from a
+shared Docker Hub image. You do not install AWS CLI, and you do not
+push images in class.
 
 ## What You Will Learn
 
-By the end of this module, you will be able to:
-
-- Install and configure the AWS CLI, and push a custom image to ECR
-- Install Docker on Ubuntu when it is missing and validate it
-- Verify cluster readiness and use kubectl confidently
 - Run a workload as a Pod, then as a Deployment, and scale it
-- Expose it with a Service and reach it without `port-forward`
-- Ship a zero-downtime image update and roll it back
-- Configure a workload with ConfigMaps and Secrets
-- Diagnose a broken Pod with `kubectl logs`/`exec`
-- Add liveness/readiness probes and resource requests/limits
+- Expose it with a Service
+- Roll `:1.0` to `:2.0` (two different UIs) and undo
+- Configure with ConfigMaps and Secrets
+- Diagnose with `kubectl logs` / `exec`
+- Add probes and resource limits
 
 ## Time Estimate
 
-Approximately **3 to 3.5 hours** total, split into 10 guided topics at
-about 20 minutes each.
+About **2.5 hours**, seven topics at ~20 minutes each.
 
 ## Prerequisites
 
-- Completion of [08-GitHub-Actions](../08-GitHub-Actions/README.md)
-- Ubuntu lab host (for AWS CLI / Docker topics)
-- Instructor-provided AWS access keys and an ECR repository named
-  `orbital-relay` in `us-east-1`
-- Kubernetes cluster access (provided by instructor)
-- Cluster nodes able to pull from that ECR repository
-- kubectl installed and configured
+- Kubernetes cluster access and `kubectl`
+- Instructor has already pushed the two public images (see below)
 
-## Verify Your Environment
+Students pull:
 
-Before starting the topics, run the instructor helper to confirm Docker,
-AWS CLI, ECR, and the cluster can execute every command used across all
-10 topics:
+- `learnwithraghu/ncc-workshop:1.0` — dark day-shift dashboard
+- `learnwithraghu/ncc-workshop:2.0` — paper night board
+
+### Instructor — before class
+
+Docker must be running. Log in to Docker Hub as `learnwithraghu`, then:
 
 ```bash
-bash 09-Kubernetes/new-style/helpers/run-k8s-lab.sh
+cd 09-Kubernetes/new-style/helpers
+docker login
+bash build-and-push-images.sh
 ```
 
-The script derives the ECR URI from `aws sts get-caller-identity` and
-the `orbital-relay` repository in `us-east-1`. Pass `--ecr-image-uri`
-only if you need a different registry or tag.
-
-It installs Docker/AWS CLI if missing, builds and pushes the Orbital Relay
-images, applies each Kubernetes topic's manifests into a scratch
-namespace, exercises the rollout/rollback and probe-failure scenarios,
-then cleans up. Fix any failures before teaching the module.
+The script builds both tags, curls them locally so the pages are
+different, then pushes to Docker Hub. Confirm Hub shows `:1.0` and
+`:2.0` before you teach.
 
 ## Guided Learning Topics
 
-Work through topics in [new-style/](new-style/) in order — see
-[new-style/README.md](new-style/README.md) for the full topic list, folder
-layout, and scope boundary.
+Work through [new-style/](new-style/) in order.
 
 | Topic | Folder | Focus |
 |-------|--------|-------|
-| Topic 1 | [new-style/01-install-aws-cli/](new-style/01-install-aws-cli/) | Install AWS CLI v2 |
-| Topic 2 | [new-style/02-configure-aws-cli/](new-style/02-configure-aws-cli/) | Configure credentials, confirm ECR |
-| Topic 3 | [new-style/03-build-docker-image/](new-style/03-build-docker-image/) | Install Docker if needed, build/push image |
-| Topic 4 | [new-style/04-run-a-pod/](new-style/04-run-a-pod/) | Namespace setup, first Pod from ECR |
-| Topic 5 | [new-style/05-deployment-and-scaling/](new-style/05-deployment-and-scaling/) | Deployment, ReplicaSets, scaling |
-| Topic 6 | [new-style/06-expose-with-service/](new-style/06-expose-with-service/) | Service (NodePort), endpoints |
-| Topic 7 | [new-style/07-rolling-update-and-rollback/](new-style/07-rolling-update-and-rollback/) | Image rollout `:1.0` → `:2.0`, rollback |
-| Topic 8 | [new-style/08-configmap-and-secret/](new-style/08-configmap-and-secret/) | ConfigMap and Secret injection |
-| Topic 9 | [new-style/09-logs-and-exec/](new-style/09-logs-and-exec/) | Logs, exec, break-and-diagnose |
-| Topic 10 | [new-style/10-health-checks-and-limits/](new-style/10-health-checks-and-limits/) | Probes, resource requests/limits |
+| 1 | [new-style/01-run-a-pod/](new-style/01-run-a-pod/) | Namespace + Pod |
+| 2 | [new-style/02-deployment-and-scaling/](new-style/02-deployment-and-scaling/) | Deployment, scale, self-heal |
+| 3 | [new-style/03-expose-with-service/](new-style/03-expose-with-service/) | Service + endpoints |
+| 4 | [new-style/04-rolling-update-and-rollback/](new-style/04-rolling-update-and-rollback/) | `:1.0` → `:2.0`, undo |
+| 5 | [new-style/05-configmap-and-secret/](new-style/05-configmap-and-secret/) | ConfigMap + Secret |
+| 6 | [new-style/06-logs-and-exec/](new-style/06-logs-and-exec/) | logs, exec, break-and-fix |
+| 7 | [new-style/07-health-checks-and-limits/](new-style/07-health-checks-and-limits/) | probes + requests/limits |
 
-## Topic Assets
-
-Each topic folder is self-contained: setup topics carry their install
-steps (and Topic 3 carries `Dockerfile` / `index.html`); Kubernetes topics
-carry their own manifests alongside `guide.md`, so you can teach any
-single topic without needing files or state from a previous one.
-
-Run commands from the topic folder so each lesson stays self-contained.
-Replace `<ECR_REGISTRY>` in every Pod/Deployment before you apply.
+Each folder is self-contained. Run commands from the topic folder.
+The image is already in the YAML — do not replace a registry placeholder.

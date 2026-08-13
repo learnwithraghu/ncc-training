@@ -39,9 +39,11 @@ kubectl apply -f deployment.yaml
 kubectl get deploy,pods -n daypack
 ```
 
-3. Wait until `READY` is `1/1` and `STATUS` is `Running`. If the image
-   pull fails, confirm Hub has `learnwithraghu/ai-k8-workshop:1.0`
-   (topic 04 / `build-and-push.sh`).
+3. Wait until `READY` is `1/1` and `STATUS` is `Running`. If the Pod
+   stays `Pending`, `kubectl describe pod -n daypack -l app=daypack`
+   — `Insufficient memory` means the node is full (this YAML requests
+   only 128Mi). If the image pull fails, confirm Hub has
+   `learnwithraghu/ai-k8-workshop:1.0`.
 
 4. Optional: `kubectl logs -n daypack -l app=daypack --tail=30`
 

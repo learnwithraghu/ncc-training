@@ -41,6 +41,31 @@ The script builds both tags, curls them locally so the pages are
 different, then pushes to Docker Hub. Confirm Hub shows `:1.0` and
 `:2.0` before you teach.
 
+### Teaching host — clone and prove every command
+
+On the machine that already has `kubectl` pointed at the class cluster
+(no Docker needed here):
+
+```bash
+git clone https://github.com/learnwithraghu/ncc-training.git
+cd ncc-training
+kubectl get nodes
+bash 09-Kubernetes/new-style/helpers/command-helper.sh
+```
+
+If the repo is already cloned:
+
+```bash
+cd ~/ncc-training
+git pull
+bash 09-Kubernetes/new-style/helpers/command-helper.sh
+```
+
+Exit code 0 means every topic command ran (Pod, Deployment, Service,
+rollout `:1.0`→`:2.0`→undo, ConfigMap/Secret, logs/exec, probes). The
+script uses scratch namespace `orbital-relay-lab` and deletes it when
+it finishes.
+
 ## Guided Learning Topics
 
 Work through [new-style/](new-style/) in order.

@@ -6,6 +6,11 @@ metadata:
     app: orbital-relay
 spec:
   replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 100%
+      maxSurge: 1
   selector:
     matchLabels:
       app: orbital-relay

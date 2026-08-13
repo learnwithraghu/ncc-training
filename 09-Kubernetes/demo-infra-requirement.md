@@ -17,6 +17,29 @@
 - Run `bash 09-Kubernetes/new-style/helpers/build-and-push-images.sh`
 - Confirm Hub has tags `1.0` and `2.0`
 
+## Teaching host — clone and validate every command
+
+No Docker on this machine. `kubectl` must already talk to the class
+cluster.
+
+```bash
+git clone https://github.com/learnwithraghu/ncc-training.git
+cd ncc-training
+kubectl get nodes
+bash 09-Kubernetes/new-style/helpers/command-helper.sh
+```
+
+Already cloned:
+
+```bash
+cd ~/ncc-training
+git pull
+bash 09-Kubernetes/new-style/helpers/command-helper.sh
+```
+
+Exit 0 means every topic command worked. Scratch namespace is
+`orbital-relay-lab` (deleted at the end).
+
 ## Quick Validation
 
 ```bash
@@ -25,11 +48,5 @@ kubectl cluster-info
 kubectl get nodes
 kubectl auth can-i create deployments
 kubectl auth can-i create secrets
-```
-
-After the instructor script has pushed:
-
-```bash
-docker pull learnwithraghu/ncc-workshop:1.0
-docker pull learnwithraghu/ncc-workshop:2.0
+bash 09-Kubernetes/new-style/helpers/command-helper.sh
 ```

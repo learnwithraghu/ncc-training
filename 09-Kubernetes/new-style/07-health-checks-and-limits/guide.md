@@ -38,7 +38,9 @@ kubectl apply -f deployment.yaml -f service.yaml
 2. `kubectl describe pod -l app=orbital-relay` — find Liveness, Readiness,
    Requests, and Limits.
 3. `kubectl get pods` — `1/1 READY` only after the readiness probe passes.
-4. Break readiness (port 81 is wrong; nginx listens on 80):
+4. Break readiness (port 81 is wrong; nginx listens on 80). This
+   folder's Deployment allows `maxUnavailable: 100%` so both replicas
+   can leave the Service:
 
 ```bash
 kubectl patch deployment orbital-relay --type=json \

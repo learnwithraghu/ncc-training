@@ -20,6 +20,17 @@ docker login
 bash build-and-push-images.sh
 ```
 
+On the teaching cluster host (kubectl only):
+
+```bash
+git clone https://github.com/learnwithraghu/ncc-training.git
+cd ncc-training
+bash 09-Kubernetes/new-style/helpers/command-helper.sh
+```
+
+That script runs every command from topics 01–07 in namespace
+`orbital-relay-lab`, then deletes the namespace.
+
 ## Recommended Flow
 
 1. Open the topic folder.

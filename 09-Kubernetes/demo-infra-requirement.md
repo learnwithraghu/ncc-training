@@ -33,9 +33,12 @@ kubectl auth can-i create secrets
 
 ```bash
 cd ~/ncc-training/09-Kubernetes/new-style/helpers
-bash run-k8s-lab.sh \
-  --ecr-image-uri <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/orbital-relay:1.0
+bash run-k8s-lab.sh
 ```
+
+`--ecr-image-uri` is optional. If omitted, the script uses the account
+from `aws sts get-caller-identity` and the `orbital-relay` repository in
+`us-east-1`.
 
 It installs Docker and AWS CLI v2 if missing, validates credentials and
 the ECR repository, builds and pushes `:1.0` and `:2.0`, then applies

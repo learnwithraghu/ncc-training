@@ -18,7 +18,7 @@ readonly TOPIC07="${NEW_STYLE_DIR}/07-rolling-update-and-rollback"
 
 ECR_IMAGE_URI=""
 ECR_REGISTRY=""
-ECR_REPOSITORY_NAME=""
+ECR_REPOSITORY_NAME="orbital-relay"
 ECR_IMAGE_URI_V2=""
 
 PASS=0
@@ -40,10 +40,11 @@ Validates the new-style Kubernetes lab on Amazon Linux 2023 EC2:
 install Docker and AWS CLI v2 if missing, build/push orbital-relay
 images to ECR, then apply topics 04-10 into a scratch namespace.
 
-Region is us-east-1 (N. Virginia).
+Region is us-east-1 (N. Virginia). Repository defaults to orbital-relay.
+--ecr-image-uri is optional; if omitted, the script uses the account from
+aws sts get-caller-identity:
 
-Example URI:
-  123456789012.dkr.ecr.us-east-1.amazonaws.com/orbital-relay:1.0
+  <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/orbital-relay:1.0
 EOF
 }
 
@@ -66,25 +67,20 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-if [[ -z "$ECR_IMAGE_URI" ]]; then
-    echo "ECR image URI (us-east-1), for example:"
-    echo "  123456789012.dkr.ecr.us-east-1.amazonaws.com/orbital-relay:1.0"
-    printf "ECR image URI: "
-    read -r ECR_IMAGE_URI
-fi
+apply_ecr_uri() {
+    local uri="$1"
+    if [[ "$uri" != *:* ]]; then
+        uri="${uri}:1.0"
+    fi
+    ECR_IMAGE_URI="$uri"
+    ECR_REGISTRY=$(echo "$ECR_IMAGE_URI" | cut -d/ -f1)
+    ECR_REPOSITORY_NAME=$(echo "$ECR_IMAGE_URI" | cut -d/ -f2- | cut -d: -f1)
+    ECR_IMAGE_URI_V2="${ECR_REGISTRY}/${ECR_REPOSITORY_NAME}:2.0"
+}
 
-if [[ -z "$ECR_IMAGE_URI" ]]; then
-    echo "ECR image URI is required." >&2
-    exit 2
+if [[ -n "$ECR_IMAGE_URI" ]]; then
+    apply_ecr_uri "$ECR_IMAGE_URI"
 fi
-
-if [[ "$ECR_IMAGE_URI" != *:* ]]; then
-    ECR_IMAGE_URI="${ECR_IMAGE_URI}:1.0"
-fi
-
-ECR_REGISTRY=$(echo "$ECR_IMAGE_URI" | cut -d/ -f1)
-ECR_REPOSITORY_NAME=$(echo "$ECR_IMAGE_URI" | cut -d/ -f2- | cut -d: -f1)
-ECR_IMAGE_URI_V2="${ECR_REGISTRY}/${ECR_REPOSITORY_NAME}:2.0"
 
 pass() { echo -e "  ${GREEN}[PASS]${NC} $1"; PASS=$((PASS + 1)); }
 warn() { echo -e "  ${YELLOW}[WARN]${NC} $1"; WARN=$((WARN + 1)); }
@@ -151,7 +147,11 @@ echo -e "${CYAN}${SEP}${NC}"
 echo "  Host      : $(hostname 2>/dev/null || echo unknown)"
 echo "  User      : $(whoami 2>/dev/null || echo unknown)"
 echo "  Region    : ${REGION}"
-echo "  ECR URI   : ${ECR_IMAGE_URI}"
+if [[ -n "$ECR_IMAGE_URI" ]]; then
+    echo "  ECR URI   : ${ECR_IMAGE_URI}"
+else
+    echo "  ECR URI   : auto (ACCOUNT.dkr.ecr.${REGION}.amazonaws.com/${ECR_REPOSITORY_NAME}:1.0)"
+fi
 echo "  Namespace : ${NS}"
 echo ""
 
@@ -253,6 +253,11 @@ else
     fail "aws sts get-caller-identity failed — run topic 02 aws configure first"
     echo "  Detail    : ${IDENTITY_JSON}"
     exit 1
+fi
+
+if [[ -z "$ECR_IMAGE_URI" ]]; then
+    apply_ecr_uri "${ACCOUNT}.dkr.ecr.${REGION}.amazonaws.com/${ECR_REPOSITORY_NAME}:1.0"
+    echo "  ECR URI   : ${ECR_IMAGE_URI}"
 fi
 echo ""
 

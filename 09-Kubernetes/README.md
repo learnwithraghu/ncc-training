@@ -40,9 +40,12 @@ AWS CLI, ECR, and the cluster can execute every command used across all
 10 topics:
 
 ```bash
-bash 09-Kubernetes/new-style/helpers/run-k8s-lab.sh \
-  --ecr-image-uri <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/orbital-relay:1.0
+bash 09-Kubernetes/new-style/helpers/run-k8s-lab.sh
 ```
+
+The script derives the ECR URI from `aws sts get-caller-identity` and
+the `orbital-relay` repository in `us-east-1`. Pass `--ecr-image-uri`
+only if you need a different registry or tag.
 
 It installs Docker/AWS CLI if missing, builds and pushes the Orbital Relay
 images, applies each Kubernetes topic's manifests into a scratch

@@ -64,10 +64,12 @@ Inside:
 
 ```bash
 hostname
-which mysql
+command -v mysql
 mysql --version
 exit
 ```
+
+Note: newer `mysql:8.0` images don't ship the `which` command, so use `command -v mysql` instead — it does the same job (prints the path to the `mysql` binary) and always works in `bash`.
 
 Next stage you will use this same idea to open the MySQL client and `SELECT` from `logins`.
 

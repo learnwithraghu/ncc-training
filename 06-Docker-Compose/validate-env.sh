@@ -175,7 +175,9 @@ for stage in "${STAGE_FOLDERS[@]}"; do
   fi
 
   # docker compose exec db bash / mysql client (stage 06's command)
-  if (cd "$dir" && docker compose exec -T db bash -c 'which mysql && mysql --version') >/dev/null 2>&1; then
+  # `command -v` is used instead of `which` because newer mysql:8.0 images
+  # don't ship the `which` binary, even though bash and mysql are both present.
+  if (cd "$dir" && docker compose exec -T db bash -c 'command -v mysql && mysql --version') >/dev/null 2>&1; then
     pass "$stage: docker compose exec db bash works"
   else
     fail "$stage: docker compose exec db bash failed"

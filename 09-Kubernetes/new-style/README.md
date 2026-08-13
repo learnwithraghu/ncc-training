@@ -31,6 +31,10 @@ bash 09-Kubernetes/new-style/helpers/command-helper.sh
 That script runs every command from topics 01–07 in namespace
 `orbital-relay-lab`, then deletes the namespace.
 
+Three teams that need to **push** their own images: see
+[dockerhub-teams.md](dockerhub-teams.md) (`ncc-team-1` / `ncc-team-2` /
+`ncc-team-3`).
+
 ## Recommended Flow
 
 1. Open the topic folder.

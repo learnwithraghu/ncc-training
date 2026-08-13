@@ -2,7 +2,7 @@
 
 ## Infra Needed
 
-- Amazon Linux 2023 EC2 lab host (for AWS CLI / Docker install and image build)
+- Ubuntu lab host (for AWS CLI / Docker install and image build)
 - Instructor-provided AWS access keys (this module uses `aws configure`)
 - ECR repository named `orbital-relay` in `us-east-1`
 - Kubernetes cluster access

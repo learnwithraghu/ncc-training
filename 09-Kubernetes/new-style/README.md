@@ -1,7 +1,7 @@
 # Kubernetes New Style — Orbital Relay on a Cluster
 
-Work through these topics in order on Amazon Linux 2023 EC2, then against
-a real Kubernetes cluster (`kubectl` configured and pointed at it). Each
+Work through these topics in order on Ubuntu, then against a real
+Kubernetes cluster (`kubectl` configured and pointed at it). Each
 topic folder is independent: it has its own manifests (or setup assets)
 and `guide.md`. You do not need files from a previous folder.
 
@@ -23,7 +23,7 @@ Deployment from Topic 4 onward.
 
 | Folder | Focus |
 |--------|-------|
-| [01-install-aws-cli/](01-install-aws-cli/) | Install AWS CLI v2 on Amazon Linux 2023 |
+| [01-install-aws-cli/](01-install-aws-cli/) | Install AWS CLI v2 on Ubuntu |
 | [02-configure-aws-cli/](02-configure-aws-cli/) | `aws configure`, identity check, confirm ECR repo |
 | [03-build-docker-image/](03-build-docker-image/) | Install Docker if needed, build/push `orbital-relay:1.0` to ECR |
 | [04-run-a-pod/](04-run-a-pod/) | Namespace setup, first Pod from ECR, `port-forward` |

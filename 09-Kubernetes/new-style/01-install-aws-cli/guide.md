@@ -4,18 +4,19 @@
 
 ## What You'll Learn (and Solve)
 
-1. Install AWS CLI v2 with the official Linux installer on Amazon Linux 2023.
+1. Install AWS CLI v2 with the official Linux installer on Ubuntu.
 2. Confirm the binary is on your `PATH` with `aws --version`.
 3. Skip the install cleanly when AWS CLI is already present.
-4. Avoid mixing in the old `awscli` v1 package from `dnf`.
+4. Avoid mixing in the old `awscli` v1 package from `apt`.
 5. Solve "I need `aws` before I can talk to ECR or describe my account."
 
 ## Goal
-Get a working AWS CLI v2 on the Amazon Linux 2023 EC2 instance where the
-rest of this Kubernetes module runs. This folder is self-contained — no
-manifests, just the install steps.
+Get a working AWS CLI v2 on the Ubuntu lab host where the rest of this
+Kubernetes module runs. This folder is self-contained — no manifests,
+just the install steps.
 
-Do not use Ubuntu, Debian, or Homebrew. This lab is Amazon Linux only.
+This lab is Ubuntu only (`NAME="Ubuntu"` in `/etc/os-release`). Do not use
+Amazon Linux `dnf` or Homebrew.
 
 ## Commands to Teach
 
@@ -35,8 +36,8 @@ sudo ./aws/install
 
 ## Guided Steps
 
-1. Confirm you are on Amazon Linux 2023 (`ID=amzn`). Stop if this is Ubuntu
-   or another distro:
+1. Confirm you are on Ubuntu (`ID=ubuntu`, `NAME="Ubuntu"`). Stop if this
+   is Amazon Linux or another distro:
 
 ```bash
 cat /etc/os-release
@@ -54,7 +55,8 @@ missing, continue.
 3. Install unzip if needed, then download and run the official installer:
 
 ```bash
-sudo dnf install -y unzip
+sudo apt-get update -y
+sudo apt-get install -y unzip
 cd /tmp
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 unzip -o awscliv2.zip
@@ -89,7 +91,7 @@ Install AWS CLI v2 (or confirm it is already present) and get
 
 ## Checkpoint
 
-Why do we prefer the official AWS CLI v2 installer over `sudo dnf install
+Why do we prefer the official AWS CLI v2 installer over `sudo apt install
 awscli` on this lab host?
 
 ## What's Next?

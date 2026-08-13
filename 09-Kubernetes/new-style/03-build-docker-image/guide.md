@@ -4,7 +4,7 @@
 
 ## What You'll Learn (and Solve)
 
-1. Install Docker on Amazon Linux 2023 when it is missing, then validate it.
+1. Install Docker on Ubuntu when it is missing, then validate it.
 2. Bake the Orbital Relay page into `orbital-relay:1.0` with a two-line Dockerfile.
 3. Run the image locally and prove the page with `curl`.
 4. Log in to ECR, tag, and push using the AWS CLI from Topics 1–2.
@@ -18,13 +18,13 @@ that image.
 This folder is self-contained: `index.html`, `Dockerfile`, and
 `.dockerignore` live here. You do not need files from a previous folder.
 
-Do not use Ubuntu, Debian, or Docker Inc's apt repository. This lab is
-Amazon Linux only.
+This lab is Ubuntu only (`NAME="Ubuntu"` in `/etc/os-release`). Install
+Docker with `apt` (`docker.io`). Do not use Amazon Linux `dnf`.
 
 ## Commands to Teach
 
 ```bash
-sudo dnf install -y docker
+sudo apt-get install -y docker.io
 docker build -t orbital-relay:1.0 .
 docker run -d --name orbital-web -p 8080:80 orbital-relay:1.0
 aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com
@@ -32,7 +32,7 @@ docker tag orbital-relay:1.0 <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/orbita
 docker push <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/orbital-relay:1.0
 ```
 
-- `dnf install docker` is the Amazon Linux 2023 way to install the engine
+- `apt-get install docker.io` is the Ubuntu way to install the engine
   when it is not already present.
 - `docker build -t orbital-relay:1.0 .` bakes `index.html` into nginx's
   html folder (see the two-line `Dockerfile`).
@@ -43,7 +43,7 @@ docker push <ACCOUNT_ID>.dkr.ecr.us-east-1.amazonaws.com/orbital-relay:1.0
 
 ## Guided Steps
 
-1. Confirm you are on Amazon Linux 2023:
+1. Confirm you are on Ubuntu (`ID=ubuntu`, `NAME="Ubuntu"`):
 
 ```bash
 cat /etc/os-release
@@ -58,11 +58,11 @@ docker info
 If that fails:
 
 ```bash
-sudo dnf update -y
-sudo dnf install -y docker
+sudo apt-get update -y
+sudo apt-get install -y docker.io
 sudo systemctl start docker
 sudo systemctl enable docker
-sudo usermod -aG docker ec2-user
+sudo usermod -aG docker ubuntu
 newgrp docker
 docker --version
 docker info
@@ -148,7 +148,7 @@ confirm it with `aws ecr describe-images`.
 ## Checkpoint
 
 Why do we push the image to ECR instead of only keeping
-`orbital-relay:1.0` on this EC2 instance?
+`orbital-relay:1.0` on this Ubuntu host?
 
 ## What's Next?
 

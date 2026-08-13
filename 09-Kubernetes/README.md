@@ -9,7 +9,7 @@ operating that workload end to end on a real cluster.
 By the end of this module, you will be able to:
 
 - Install and configure the AWS CLI, and push a custom image to ECR
-- Install Docker on Amazon Linux when it is missing and validate it
+- Install Docker on Ubuntu when it is missing and validate it
 - Verify cluster readiness and use kubectl confidently
 - Run a workload as a Pod, then as a Deployment, and scale it
 - Expose it with a Service and reach it without `port-forward`
@@ -26,7 +26,7 @@ about 20 minutes each.
 ## Prerequisites
 
 - Completion of [08-GitHub-Actions](../08-GitHub-Actions/README.md)
-- Amazon Linux 2023 EC2 lab host (for AWS CLI / Docker topics)
+- Ubuntu lab host (for AWS CLI / Docker topics)
 - Instructor-provided AWS access keys and an ECR repository named
   `orbital-relay` in `us-east-1`
 - Kubernetes cluster access (provided by instructor)

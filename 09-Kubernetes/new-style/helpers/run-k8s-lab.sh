@@ -36,7 +36,7 @@ usage() {
 Usage: $0
        $0 --ecr-image-uri <uri>
 
-Validates the new-style Kubernetes lab on Amazon Linux 2023 EC2:
+Validates the new-style Kubernetes lab on Ubuntu:
 install Docker and AWS CLI v2 if missing, build/push orbital-relay
 images to ECR, then apply topics 04-10 into a scratch namespace.
 
@@ -155,13 +155,13 @@ fi
 echo "  Namespace : ${NS}"
 echo ""
 
-# ── 1. Amazon Linux 2023 ──────────────────────────────────────────
+# ── 1. Ubuntu ─────────────────────────────────────────────────────
 
 echo -e "${CYAN}[ 1] Operating system${NC}"
 if [[ "$(uname -s)" != "Linux" ]]; then
-    fail "This lab runner is for Amazon Linux 2023 EC2 (found $(uname -s))"
+    fail "This lab runner is for Ubuntu (found $(uname -s))"
     echo ""
-    echo "Aborting: run this script on the Amazon Linux 2023 EC2 instance, not a laptop."
+    echo "Aborting: run this script on the Ubuntu lab host, not a laptop."
     exit 1
 fi
 pass "Linux host"
@@ -170,13 +170,10 @@ if [[ -f /etc/os-release ]]; then
     # shellcheck disable=SC1091
     . /etc/os-release
     echo "  Distro    : ${PRETTY_NAME:-unknown}"
-    if [[ "${ID:-}" == "amzn" && "${VERSION_ID:-}" == "2023" ]]; then
-        pass "Amazon Linux 2023 detected"
-    elif [[ "${ID:-}" == "amzn" ]]; then
-        fail "Expected Amazon Linux 2023 (found ${PRETTY_NAME:-unknown}). This lab is Amazon Linux only."
-        exit 1
+    if [[ "${ID:-}" == "ubuntu" ]]; then
+        pass "Ubuntu detected (${PRETTY_NAME:-unknown})"
     else
-        fail "Expected Amazon Linux 2023 (found ${PRETTY_NAME:-unknown}). Do not run this on Ubuntu or other distros."
+        fail "Expected Ubuntu (found ${PRETTY_NAME:-unknown}). This lab is Ubuntu only."
         exit 1
     fi
 else
@@ -191,12 +188,12 @@ echo -e "${CYAN}[ 2] Install Docker Engine${NC}"
 if docker_bin info &>/dev/null; then
     pass "Docker daemon already running ($(docker_bin --version 2>/dev/null | head -n1))"
 else
-    echo "  Installing Docker with dnf from Amazon Linux repos..."
-    if sudo dnf update -y && sudo dnf install -y docker; then
+    echo "  Installing Docker with apt (docker.io)..."
+    if sudo apt-get update -y && sudo apt-get install -y docker.io; then
         sudo systemctl start docker
         sudo systemctl enable docker || true
         sudo usermod -aG docker "$USER" || true
-        pass "Docker installed via dnf"
+        pass "Docker installed via apt (docker.io)"
     else
         fail "Docker install failed"
         exit 1
@@ -218,7 +215,7 @@ if command -v aws &>/dev/null; then
     pass "aws CLI present ($(aws --version 2>&1 | head -n1))"
 else
     echo "  Installing AWS CLI v2 with the official installer..."
-    if sudo dnf install -y unzip && \
+    if sudo apt-get update -y && sudo apt-get install -y unzip && \
         cd /tmp && \
         curl -fsS "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
         unzip -qo awscliv2.zip && \

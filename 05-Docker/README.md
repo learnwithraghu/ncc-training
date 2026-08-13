@@ -1,8 +1,8 @@
 # Day 3, Part 1: Docker
 
-This module covers containerization with Docker. You work entirely on an Amazon Linux 2 EC2 instance. The sample is a single-page site for **Aether Launch**, a satellite launch company.
+This module covers containerization with Docker. You work entirely on an Amazon Linux 2023 EC2 instance. The sample is a single-page site for **Aether Launch**, a satellite launch company.
 
-You serve that HTML from EC2, bake it into an image (with package installation in the Dockerfile), tag it with a naming convention, push to Amazon ECR, then pull and run it to validate.
+You build and serve that HTML from EC2, bake it into an image (with package installation in the Dockerfile), tag it with a naming convention, push to Amazon ECR, then pull and run it to validate.
 
 This module stops after pull-and-run validation.
 
@@ -10,8 +10,8 @@ This module stops after pull-and-run validation.
 
 By the end of this module, you will be able to:
 
-- Install Docker on Amazon Linux 2 EC2
-- Serve a static site from EC2 and publish a port
+- Install Docker on Amazon Linux 2023 EC2
+- Build a static site image on EC2 and publish a port
 - Write a Dockerfile that installs packages and copies HTML into an image
 - Run, log, and exec into a container
 - Name and tag images (`aether-launch:1.0`)
@@ -25,7 +25,7 @@ Approximately **2.5 hours** total, split into 7 topics at about 20 minutes each.
 ## Prerequisites
 
 - Completion of [Day 2](../00-course-roadmap.md#day-2-git-and-github-basics)
-- An Amazon Linux 2 EC2 instance you can SSH into as `ec2-user`
+- An Amazon Linux 2023 EC2 instance you can SSH into as `ec2-user`
 - An IAM instance profile on that EC2 instance that can push to and pull from ECR (no access keys)
 - An ECR repository already created in `us-east-1`
 - Security group: SSH (22). Port **8080** if you want to open the company page in a browser.
@@ -38,8 +38,8 @@ Each topic folder in `new-style/` is independent. It includes `index.html`, `Doc
 
 | Topic | Folder | Focus |
 |-------|--------|-------|
-| 01 Setup Docker on EC2 | [new-style/01-setup-docker-on-ec2/](new-style/01-setup-docker-on-ec2/) | Install Docker on Amazon Linux 2 |
-| 02 Serve on EC2 | [new-style/02-serve-on-ec2/](new-style/02-serve-on-ec2/) | Serve the HTML and publish port 8080 |
+| 01 Setup Docker on EC2 | [new-style/01-setup-docker-on-ec2/](new-style/01-setup-docker-on-ec2/) | Install Docker on Amazon Linux 2023 |
+| 02 Serve on EC2 | [new-style/02-serve-on-ec2/](new-style/02-serve-on-ec2/) | `docker build`, run, and serve the HTML on port 8080 |
 | 03 Bake Image | [new-style/03-bake-image/](new-style/03-bake-image/) | Dockerfile, `apk add`, `COPY`, `docker build` |
 | 04 Logs and Exec | [new-style/04-docker-logs-and-exec/](new-style/04-docker-logs-and-exec/) | Logs and exec |
 | 05 Tag and Names | [new-style/05-docker-tag-and-images/](new-style/05-docker-tag-and-images/) | Naming and tagging convention |
@@ -68,7 +68,7 @@ Follow [new-style/README.md](new-style/README.md) for the full topic order.
 - [Amazon ECR User Guide](https://docs.aws.amazon.com/ecr/)
 
 ### Instructor Helper
-- [new-style/helpers/run-ecr-lab.sh](new-style/helpers/run-ecr-lab.sh) - Serves the HTML, bakes the image, curls **Aether Launch**, pushes to ECR, then pulls and runs again
+- [new-style/helpers/run-ecr-lab.sh](new-style/helpers/run-ecr-lab.sh) - Builds and serves the HTML, bakes the image, curls **Aether Launch**, pushes to ECR, then pulls and runs again
 
 ### Next Steps After This Module
 - **Docker Compose**: [06-Docker-Compose](../06-Docker-Compose/README.md)

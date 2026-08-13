@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Instructor helper: install Docker on Amazon Linux 2, serve the Aether Launch
+# Instructor helper: install Docker on Amazon Linux 2023, serve the Aether Launch
 # page, bake it into an image, push to ECR, pull, and run again.
 set -uo pipefail
 
@@ -29,9 +29,9 @@ usage() {
 Usage: $0
        $0 --ecr-image-uri <uri>
 
-Validates the new-style Docker lab on Amazon Linux 2 EC2:
-install Docker, serve the Aether Launch HTML from disk, bake it into
-an image, curl the page, push to ECR, then pull and run it again.
+Validates the new-style Docker lab on Amazon Linux 2023 EC2:
+install Docker, docker build and serve the Aether Launch page, bake it
+into an image, curl the page, push to ECR, then pull and run it again.
 
 Region is us-east-1 (N. Virginia). Site files live next to this script.
 
@@ -134,13 +134,13 @@ echo "  Region    : ${REGION}"
 echo "  ECR URI   : ${ECR_IMAGE_URI}"
 echo ""
 
-# ── 1. Amazon Linux 2 ─────────────────────────────────────────────
+# ── 1. Amazon Linux ───────────────────────────────────────────────
 
 echo -e "${CYAN}[ 1] Operating system${NC}"
 if [[ "$(uname -s)" != "Linux" ]]; then
-    fail "This lab runner is for Amazon Linux 2 EC2 (found $(uname -s))"
+    fail "This lab runner is for Amazon Linux 2023 EC2 (found $(uname -s))"
     echo ""
-    echo "Aborting: run this script on the Amazon Linux 2 EC2 instance, not a laptop."
+    echo "Aborting: run this script on the Amazon Linux 2023 EC2 instance, not a laptop."
     exit 1
 fi
 pass "Linux host"
@@ -149,12 +149,13 @@ if [[ -f /etc/os-release ]]; then
     # shellcheck disable=SC1091
     . /etc/os-release
     echo "  Distro    : ${PRETTY_NAME:-unknown}"
-    if [[ "${ID:-}" == "amzn" && "${VERSION_ID:-}" == "2" ]]; then
-        pass "Amazon Linux 2 detected"
+    if [[ "${ID:-}" == "amzn" && "${VERSION_ID:-}" == "2023" ]]; then
+        pass "Amazon Linux 2023 detected"
     elif [[ "${ID:-}" == "amzn" ]]; then
-        warn "Amazon Linux detected (${PRETTY_NAME:-unknown}); expected Amazon Linux 2"
+        fail "Expected Amazon Linux 2023 (found ${PRETTY_NAME:-unknown}). This lab is Amazon Linux only."
+        exit 1
     else
-        fail "Expected Amazon Linux 2 (found ${PRETTY_NAME:-unknown})"
+        fail "Expected Amazon Linux 2023 (found ${PRETTY_NAME:-unknown}). Do not run this on Ubuntu or other distros."
         exit 1
     fi
 else
@@ -169,17 +170,12 @@ echo -e "${CYAN}[ 2] Install Docker Engine${NC}"
 if docker_bin info &>/dev/null; then
     pass "Docker daemon already running ($(docker_bin --version 2>/dev/null | head -n1))"
 else
-    echo "  Installing Docker with amazon-linux-extras..."
-    if sudo yum update -y && sudo amazon-linux-extras install docker -y; then
-        sudo service docker start
+    echo "  Installing Docker with dnf from Amazon Linux repos..."
+    if sudo dnf update -y && sudo dnf install -y docker; then
+        sudo systemctl start docker
         sudo systemctl enable docker || true
-        sudo usermod -a -G docker "$USER" || true
-        pass "Docker installed via amazon-linux-extras"
-    elif sudo yum install -y docker; then
-        sudo service docker start
-        sudo systemctl enable docker || true
-        sudo usermod -a -G docker "$USER" || true
-        pass "Docker installed via yum"
+        sudo usermod -aG docker "$USER" || true
+        pass "Docker installed via dnf"
     else
         fail "Docker install failed"
         exit 1
@@ -200,7 +196,7 @@ echo -e "${CYAN}[ 3] AWS CLI${NC}"
 if command -v aws &>/dev/null; then
     pass "aws CLI present ($(aws --version 2>&1 | head -n1))"
 else
-    if sudo yum install -y awscli; then
+    if sudo dnf install -y awscli; then
         pass "awscli installed"
     else
         fail "awscli install failed"
@@ -288,31 +284,35 @@ echo ""
 
 HTTP_PORT=$(find_http_port)
 
-# ── 7. Serve from EC2 disk (not baked yet) ────────────────────────
+# ── 7. Serve the company page (docker build and run) ──────────────
 
-echo -e "${CYAN}[ 7] Serve HTML from EC2 with a bind mount${NC}"
+echo -e "${CYAN}[ 7] Serve the company page with docker build${NC}"
 docker_bin rm -f "$CONTAINER_NAME" &>/dev/null || true
-if docker_bin run -d --name "$CONTAINER_NAME" -p "${HTTP_PORT}:80" \
-    -v "${APP_DIR}:/usr/share/nginx/html:ro" \
-    nginx:1.27-alpine >/dev/null; then
-    pass "docker run nginx with bind mount on ${HTTP_PORT}:80"
+if (cd "$APP_DIR" && docker_bin build -t "$LOCAL_TAG" .); then
+    pass "docker build -t ${LOCAL_TAG} ."
 else
-    fail "bind-mount docker run failed"
+    fail "docker build failed"
+    exit 1
+fi
+if docker_bin run -d --name "$CONTAINER_NAME" -p "${HTTP_PORT}:80" "$LOCAL_TAG" >/dev/null; then
+    pass "docker run ${LOCAL_TAG} on ${HTTP_PORT}:80"
+else
+    fail "docker run failed"
     exit 1
 fi
 
-MOUNT_OK=0
+SERVE_OK=0
 for _ in $(seq 1 20); do
     if page_ok "http://127.0.0.1:${HTTP_PORT}/"; then
-        MOUNT_OK=1
+        SERVE_OK=1
         break
     fi
     sleep 1
 done
-if [[ "$MOUNT_OK" -eq 1 ]]; then
-    pass "curl company page from bind-mounted files"
+if [[ "$SERVE_OK" -eq 1 ]]; then
+    pass "curl company page from built image"
 else
-    fail "bind-mounted page did not return ${PAGE_MARK}"
+    fail "built image did not return ${PAGE_MARK}"
     docker_bin logs --tail 20 "$CONTAINER_NAME" 2>&1 | sed 's/^/         /' || true
     exit 1
 fi

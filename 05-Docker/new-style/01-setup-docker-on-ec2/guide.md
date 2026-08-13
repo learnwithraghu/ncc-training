@@ -1,48 +1,52 @@
-# 01: Setup Docker on EC2 Amazon Linux 2
+# 01: Setup Docker on EC2 Amazon Linux
 
 **Time:** ~20 minutes
 
 ## Goal
-SSH into an Amazon Linux 2 EC2 instance, install Docker, and prove the daemon can run a container.
+SSH into an Amazon Linux 2023 EC2 instance, install Docker from the Amazon Linux repositories, and prove the daemon can run a container.
 
 This folder is self-contained. It already has the Aether Launch `index.html` and `Dockerfile`. You do not need them until the next topic.
+
+Do not use Ubuntu, Debian, or Docker's apt repository. This lab is Amazon Linux only.
 
 ## Commands to Teach
 
 ```bash
 ssh -i your-key.pem ec2-user@<EC2_PUBLIC_IP>
-sudo yum update -y
-sudo amazon-linux-extras install docker -y
+sudo dnf update -y
+sudo dnf install -y docker
 docker run hello-world
 ```
 
-- `ssh` as `ec2-user` gets you onto the Amazon Linux 2 instance where every later command runs.
-- `yum update` refreshes packages before you install Docker.
-- `amazon-linux-extras install docker` is the Amazon Linux 2 way to install the Docker engine.
+- `ssh` as `ec2-user` gets you onto the Amazon Linux instance where every later command runs.
+- `dnf update` refreshes packages before you install Docker.
+- `dnf install docker` is the Amazon Linux 2023 way to install the Docker engine. Docker is in the default Amazon Linux repos. You do not add Docker Inc's repository, and you do not use `amazon-linux-extras` (that is Amazon Linux 2 only).
 - `docker run hello-world` is the first proof that Docker works on this box.
 
 ## Guided Steps
 
-1. From your laptop, SSH into the Amazon Linux 2 EC2 instance your instructor provided:
+1. From your laptop, SSH into the Amazon Linux 2023 EC2 instance your instructor provided:
 
 ```bash
 ssh -i your-key.pem ec2-user@<EC2_PUBLIC_IP>
 ```
 
-2. Confirm you are on Amazon Linux 2:
+2. Confirm you are on Amazon Linux 2023 (`ID=amzn`). Stop if this is Ubuntu or another distro:
 
 ```bash
 cat /etc/os-release
 ```
 
-3. Install Docker, start the daemon, and add `ec2-user` to the docker group:
+You should see `Amazon Linux 2023` (or similar) and `ID="amzn"`.
+
+3. Install Docker from Amazon Linux repos, start the daemon, and add `ec2-user` to the docker group:
 
 ```bash
-sudo yum update -y
-sudo amazon-linux-extras install docker -y
-sudo service docker start
+sudo dnf update -y
+sudo dnf install -y docker
+sudo systemctl start docker
 sudo systemctl enable docker
-sudo usermod -a -G docker ec2-user
+sudo usermod -aG docker ec2-user
 ```
 
 4. Apply the docker group, then confirm the install:
@@ -64,7 +68,7 @@ docker run hello-world
 6. Clone the training repo if it is not already on the instance:
 
 ```bash
-sudo yum install -y git
+sudo dnf install -y git
 git clone <REPO_URL> ~/ncc-training
 cd ~/ncc-training/05-Docker/new-style/01-setup-docker-on-ec2
 ls
@@ -74,7 +78,7 @@ You should see `guide.md`, `index.html`, and `Dockerfile` in this folder.
 
 ## Task
 
-SSH to your Amazon Linux 2 EC2 instance, install Docker with `amazon-linux-extras`, add `ec2-user` to the `docker` group, and run `docker run hello-world` without sudo.
+SSH to your Amazon Linux 2023 EC2 instance, install Docker with `dnf`, add `ec2-user` to the `docker` group, and run `docker run hello-world` without sudo.
 
 ## Checkpoint
 Why do we install Docker on the EC2 instance instead of only on a laptop?

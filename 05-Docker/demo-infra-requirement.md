@@ -2,7 +2,7 @@
 
 ## Infra Needed
 
-- Amazon Linux 2 EC2 instance with SSH access (port 22)
+- Amazon Linux 2023 EC2 instance with SSH access (port 22)
 - SSH as `ec2-user`
 - Security group allowing SSH; port **8080** if students open the Aether Launch page in a browser
 - Internet access on the instance to pull base images and talk to ECR
@@ -36,4 +36,4 @@ cd ~/ncc-training/05-Docker/new-style/helpers
 bash run-ecr-lab.sh
 ```
 
-The script asks only for the ECR image URI (region is us-east-1). It uses the EC2 IAM role, serves the Aether Launch HTML from disk, bakes `aether-launch:1.0`, curls the company page, pushes, then pulls and runs again. Exit code 0 means the lab is ready to teach.
+The script asks only for the ECR image URI (region is us-east-1). It uses the EC2 IAM role, builds and serves the Aether Launch HTML, bakes `aether-launch:1.0`, curls the company page, pushes, then pulls and runs again. Exit code 0 means the lab is ready to teach.

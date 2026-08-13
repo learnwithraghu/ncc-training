@@ -3,7 +3,7 @@
 **Time:** ~20 minutes
 
 ## Goal
-Turn the Aether Launch page into a Docker image: install a package in the Dockerfile, copy `index.html` in, build, and run without a bind mount.
+Slow down on a fuller Dockerfile: install a package, `COPY` `index.html` in, rebuild, and run without a bind mount.
 
 Work only in this folder. It has its own `index.html` and `Dockerfile`.
 

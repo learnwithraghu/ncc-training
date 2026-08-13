@@ -8,6 +8,7 @@ readonly IMAGE="learnwithraghu/ncc-workshop"
 readonly SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 readonly V1_DIR="${SCRIPT_DIR}/images/v1"
 readonly V2_DIR="${SCRIPT_DIR}/images/v2"
+readonly BUILDER_NAME="ncc-builder"
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -21,7 +22,7 @@ wait_for_mark() {
     local url="$1"
     local mark="$2"
     local i
-    for i in $(seq 1 25); do
+    for i in $(seq 1 30); do
         if curl -fsS "$url" 2>/dev/null | grep -q "$mark"; then
             return 0
         fi
@@ -38,7 +39,7 @@ build_and_check() {
     local name="ncc-workshop-${tag//./-}"
 
     echo -e "${CYAN}[build] ${IMAGE}:${tag}${NC}"
-    docker build --platform linux/amd64 -t "${IMAGE}:${tag}" "$dir"
+    docker build -t "${IMAGE}:${tag}" "$dir"
     docker rm -f "$name" >/dev/null 2>&1 || true
     docker run -d --name "$name" -p "${port}:80" "${IMAGE}:${tag}" >/dev/null
     if wait_for_mark "http://127.0.0.1:${port}" "$mark"; then
@@ -51,6 +52,21 @@ build_and_check() {
     docker rm -f "$name" >/dev/null
 }
 
+push_tag() {
+    local tag="$1"
+    local dir="$2"
+
+    if docker buildx inspect "$BUILDER_NAME" >/dev/null 2>&1; then
+        docker buildx use "$BUILDER_NAME" >/dev/null
+    else
+        docker buildx create --name "$BUILDER_NAME" --driver docker-container --use >/dev/null
+    fi
+    docker buildx inspect --bootstrap >/dev/null
+
+    docker buildx build --platform linux/amd64,linux/arm64 \
+        -t "${IMAGE}:${tag}" --push "$dir"
+}
+
 echo "NCC Kubernetes — build and push ${IMAGE}"
 echo
 
@@ -61,14 +77,11 @@ build_and_check "2.0" "$V2_DIR" "Night Pass v2" 18081
 
 echo
 echo -e "${CYAN}[push] ${IMAGE}:1.0 and :2.0${NC}"
-echo "Log in as learnwithraghu if docker push asks for credentials."
 echo
 
 if docker buildx version >/dev/null 2>&1; then
-    docker buildx build --platform linux/amd64,linux/arm64 \
-        -t "${IMAGE}:1.0" --push "$V1_DIR"
-    docker buildx build --platform linux/amd64,linux/arm64 \
-        -t "${IMAGE}:2.0" --push "$V2_DIR"
+    push_tag "1.0" "$V1_DIR"
+    push_tag "2.0" "$V2_DIR"
 else
     docker push "${IMAGE}:1.0"
     docker push "${IMAGE}:2.0"

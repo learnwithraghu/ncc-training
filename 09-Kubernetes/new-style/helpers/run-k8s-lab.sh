@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Instructor helper: apply every Orbital Relay topic's manifests into a
-# scratch namespace, exercise each topic's core scenario end to end, then
-# clean up. Requires kubectl already configured against the target cluster.
+# Instructor helper: install Docker / AWS CLI if missing, build and push
+# Orbital Relay images to ECR, then apply every Kubernetes topic's
+# manifests into a scratch namespace and exercise each core scenario.
 set -uo pipefail
 
 readonly SCRIPT_NAME="NCC Kubernetes Training - Orbital Relay Lab Runner"
@@ -10,6 +10,16 @@ readonly SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 readonly NEW_STYLE_DIR=$(cd "${SCRIPT_DIR}/.." && pwd)
 readonly NS="orbital-relay-lab"
 readonly PAGE_MARK="Orbital Relay"
+readonly REGION="us-east-1"
+readonly LOCAL_TAG="orbital-relay:1.0"
+readonly LOCAL_TAG_V2="orbital-relay:2.0"
+readonly TOPIC03="${NEW_STYLE_DIR}/03-build-docker-image"
+readonly TOPIC07="${NEW_STYLE_DIR}/07-rolling-update-and-rollback"
+
+ECR_IMAGE_URI=""
+ECR_REGISTRY=""
+ECR_REPOSITORY_NAME=""
+ECR_IMAGE_URI_V2=""
 
 PASS=0
 WARN=0
@@ -21,11 +31,83 @@ RED='\033[0;31m'
 CYAN='\033[0;36m'
 NC='\033[0m'
 
+usage() {
+    cat <<EOF
+Usage: $0
+       $0 --ecr-image-uri <uri>
+
+Validates the new-style Kubernetes lab on Amazon Linux 2023 EC2:
+install Docker and AWS CLI v2 if missing, build/push orbital-relay
+images to ECR, then apply topics 04-10 into a scratch namespace.
+
+Region is us-east-1 (N. Virginia).
+
+Example URI:
+  123456789012.dkr.ecr.us-east-1.amazonaws.com/orbital-relay:1.0
+EOF
+}
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --ecr-image-uri)
+            ECR_IMAGE_URI="${2:-}"
+            shift 2
+            ;;
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        *)
+            echo "Unknown argument: $1" >&2
+            echo "Only --ecr-image-uri is accepted. Region is us-east-1." >&2
+            usage
+            exit 2
+            ;;
+    esac
+done
+
+if [[ -z "$ECR_IMAGE_URI" ]]; then
+    echo "ECR image URI (us-east-1), for example:"
+    echo "  123456789012.dkr.ecr.us-east-1.amazonaws.com/orbital-relay:1.0"
+    printf "ECR image URI: "
+    read -r ECR_IMAGE_URI
+fi
+
+if [[ -z "$ECR_IMAGE_URI" ]]; then
+    echo "ECR image URI is required." >&2
+    exit 2
+fi
+
+if [[ "$ECR_IMAGE_URI" != *:* ]]; then
+    ECR_IMAGE_URI="${ECR_IMAGE_URI}:1.0"
+fi
+
+ECR_REGISTRY=$(echo "$ECR_IMAGE_URI" | cut -d/ -f1)
+ECR_REPOSITORY_NAME=$(echo "$ECR_IMAGE_URI" | cut -d/ -f2- | cut -d: -f1)
+ECR_IMAGE_URI_V2="${ECR_REGISTRY}/${ECR_REPOSITORY_NAME}:2.0"
+
 pass() { echo -e "  ${GREEN}[PASS]${NC} $1"; PASS=$((PASS + 1)); }
 warn() { echo -e "  ${YELLOW}[WARN]${NC} $1"; WARN=$((WARN + 1)); }
 fail() { echo -e "  ${RED}[FAIL]${NC} $1"; FAIL=$((FAIL + 1)); }
 
+docker_bin() {
+    if docker info &>/dev/null; then
+        docker "$@"
+    else
+        sudo docker "$@"
+    fi
+}
+
 kc() { kubectl -n "$NS" "$@"; }
+
+# Write YAML with <ECR_REGISTRY> substituted into a temp file; prints path.
+subst_yaml() {
+    local src="$1"
+    local dest
+    dest=$(mktemp)
+    sed "s|<ECR_REGISTRY>|${ECR_REGISTRY}|g" "$src" > "$dest"
+    echo "$dest"
+}
 
 PF_PID=""
 stop_portforward() {
@@ -36,8 +118,7 @@ stop_portforward() {
     PF_PID=""
 }
 
-# curl_via_portforward <target ref, e.g. svc/orbital-relay or pod/orbital-relay> <local-port>
-# Prints the page body on stdout, returns curl's exit code.
+# curl_via_portforward <target ref> <local-port>
 curl_via_portforward() {
     local target="$1" local_port="$2"
     stop_portforward
@@ -67,13 +148,202 @@ trap cleanup EXIT
 echo -e "${CYAN}${SEP}${NC}"
 echo -e "${CYAN}  ${SCRIPT_NAME}${NC}"
 echo -e "${CYAN}${SEP}${NC}"
-echo "  Context   : $(kubectl config current-context 2>/dev/null || echo unknown)"
+echo "  Host      : $(hostname 2>/dev/null || echo unknown)"
+echo "  User      : $(whoami 2>/dev/null || echo unknown)"
+echo "  Region    : ${REGION}"
+echo "  ECR URI   : ${ECR_IMAGE_URI}"
 echo "  Namespace : ${NS}"
 echo ""
 
-# ── 1. Cluster connectivity ───────────────────────────────────────
+# ── 1. Amazon Linux 2023 ──────────────────────────────────────────
 
-echo -e "${CYAN}[ 1] Cluster connectivity${NC}"
+echo -e "${CYAN}[ 1] Operating system${NC}"
+if [[ "$(uname -s)" != "Linux" ]]; then
+    fail "This lab runner is for Amazon Linux 2023 EC2 (found $(uname -s))"
+    echo ""
+    echo "Aborting: run this script on the Amazon Linux 2023 EC2 instance, not a laptop."
+    exit 1
+fi
+pass "Linux host"
+
+if [[ -f /etc/os-release ]]; then
+    # shellcheck disable=SC1091
+    . /etc/os-release
+    echo "  Distro    : ${PRETTY_NAME:-unknown}"
+    if [[ "${ID:-}" == "amzn" && "${VERSION_ID:-}" == "2023" ]]; then
+        pass "Amazon Linux 2023 detected"
+    elif [[ "${ID:-}" == "amzn" ]]; then
+        fail "Expected Amazon Linux 2023 (found ${PRETTY_NAME:-unknown}). This lab is Amazon Linux only."
+        exit 1
+    else
+        fail "Expected Amazon Linux 2023 (found ${PRETTY_NAME:-unknown}). Do not run this on Ubuntu or other distros."
+        exit 1
+    fi
+else
+    fail "/etc/os-release not found"
+    exit 1
+fi
+echo ""
+
+# ── 2. Install Docker Engine ──────────────────────────────────────
+
+echo -e "${CYAN}[ 2] Install Docker Engine${NC}"
+if docker_bin info &>/dev/null; then
+    pass "Docker daemon already running ($(docker_bin --version 2>/dev/null | head -n1))"
+else
+    echo "  Installing Docker with dnf from Amazon Linux repos..."
+    if sudo dnf update -y && sudo dnf install -y docker; then
+        sudo systemctl start docker
+        sudo systemctl enable docker || true
+        sudo usermod -aG docker "$USER" || true
+        pass "Docker installed via dnf"
+    else
+        fail "Docker install failed"
+        exit 1
+    fi
+fi
+
+if docker_bin info &>/dev/null; then
+    pass "docker info succeeds"
+else
+    fail "docker info failed after install (log out/in if you just joined the docker group)"
+    exit 1
+fi
+echo ""
+
+# ── 3. AWS CLI v2 ─────────────────────────────────────────────────
+
+echo -e "${CYAN}[ 3] AWS CLI${NC}"
+if command -v aws &>/dev/null; then
+    pass "aws CLI present ($(aws --version 2>&1 | head -n1))"
+else
+    echo "  Installing AWS CLI v2 with the official installer..."
+    if sudo dnf install -y unzip && \
+        cd /tmp && \
+        curl -fsS "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
+        unzip -qo awscliv2.zip && \
+        sudo ./aws/install; then
+        pass "AWS CLI v2 installed"
+        rm -rf /tmp/aws /tmp/awscliv2.zip
+    else
+        fail "AWS CLI v2 install failed"
+        exit 1
+    fi
+fi
+
+if ! command -v aws &>/dev/null; then
+    fail "aws not on PATH after install"
+    exit 1
+fi
+echo ""
+
+# ── 4. AWS credentials ────────────────────────────────────────────
+
+echo -e "${CYAN}[ 4] AWS credentials${NC}"
+echo "  This lab uses ~/.aws/credentials from topic 02 (aws configure)."
+
+IDENTITY_JSON=$(aws sts get-caller-identity --region "$REGION" 2>&1) || IDENTITY_JSON=""
+if echo "$IDENTITY_JSON" | grep -q '"Account"'; then
+    ARN=$(echo "$IDENTITY_JSON" | grep -o '"Arn": "[^"]*"' | cut -d'"' -f4)
+    ACCOUNT=$(echo "$IDENTITY_JSON" | grep -o '"Account": "[^"]*"' | cut -d'"' -f4)
+    echo "  Arn       : ${ARN}"
+    echo "  Account   : ${ACCOUNT}"
+    pass "aws sts get-caller-identity succeeds"
+else
+    fail "aws sts get-caller-identity failed — run topic 02 aws configure first"
+    echo "  Detail    : ${IDENTITY_JSON}"
+    exit 1
+fi
+echo ""
+
+# ── 5. ECR repository ─────────────────────────────────────────────
+
+echo -e "${CYAN}[ 5] ECR repository${NC}"
+if aws ecr describe-repositories \
+    --repository-names "$ECR_REPOSITORY_NAME" \
+    --region "$REGION" &>/dev/null; then
+    pass "ECR repository exists: ${ECR_REPOSITORY_NAME}"
+else
+    fail "ECR repository not found: ${ECR_REPOSITORY_NAME} in ${REGION}"
+    exit 1
+fi
+echo ""
+
+# ── 6. Build and push images ──────────────────────────────────────
+
+echo -e "${CYAN}[ 6] Build and push Orbital Relay images${NC}"
+if [[ ! -f "${TOPIC03}/Dockerfile" || ! -f "${TOPIC03}/index.html" ]]; then
+    fail "topic 03 assets missing in ${TOPIC03}"
+    exit 1
+fi
+if [[ ! -f "${TOPIC07}/Dockerfile.v2" || ! -f "${TOPIC07}/index-v2.html" ]]; then
+    fail "topic 07 v2 assets missing in ${TOPIC07}"
+    exit 1
+fi
+
+if (cd "$TOPIC03" && docker_bin build -t "$LOCAL_TAG" .); then
+    pass "built ${LOCAL_TAG}"
+else
+    fail "docker build for :1.0 failed"
+    exit 1
+fi
+
+if (cd "$TOPIC07" && docker_bin build -f Dockerfile.v2 -t "$LOCAL_TAG_V2" .); then
+    pass "built ${LOCAL_TAG_V2}"
+else
+    fail "docker build for :2.0 failed"
+    exit 1
+fi
+
+if aws ecr get-login-password --region "$REGION" | \
+    docker_bin login --username AWS --password-stdin "$ECR_REGISTRY" &>/dev/null; then
+    pass "docker login to ${ECR_REGISTRY}"
+else
+    fail "ECR docker login failed"
+    exit 1
+fi
+
+docker_bin tag "$LOCAL_TAG" "$ECR_IMAGE_URI"
+docker_bin tag "$LOCAL_TAG_V2" "$ECR_IMAGE_URI_V2"
+
+if docker_bin push "$ECR_IMAGE_URI"; then
+    pass "pushed ${ECR_IMAGE_URI}"
+else
+    fail "push failed for :1.0"
+    exit 1
+fi
+
+if docker_bin push "$ECR_IMAGE_URI_V2"; then
+    pass "pushed ${ECR_IMAGE_URI_V2}"
+else
+    fail "push failed for :2.0"
+    exit 1
+fi
+
+if aws ecr describe-images \
+    --repository-name "$ECR_REPOSITORY_NAME" \
+    --region "$REGION" \
+    --image-ids imageTag=1.0 &>/dev/null; then
+    pass "ECR has orbital-relay:1.0"
+else
+    fail "ECR missing imageTag=1.0"
+    exit 1
+fi
+
+if aws ecr describe-images \
+    --repository-name "$ECR_REPOSITORY_NAME" \
+    --region "$REGION" \
+    --image-ids imageTag=2.0 &>/dev/null; then
+    pass "ECR has orbital-relay:2.0"
+else
+    fail "ECR missing imageTag=2.0"
+    exit 1
+fi
+echo ""
+
+# ── 7. Cluster connectivity ───────────────────────────────────────
+
+echo -e "${CYAN}[ 7] Cluster connectivity${NC}"
 if kubectl cluster-info &>/dev/null; then
     pass "kubectl cluster-info succeeds"
 else
@@ -95,11 +365,12 @@ else
     fail "insufficient permissions to create deployments"
     exit 1
 fi
+echo "  Context   : $(kubectl config current-context 2>/dev/null || echo unknown)"
 echo ""
 
-# ── 2. Scratch namespace ──────────────────────────────────────────
+# ── 8. Scratch namespace ──────────────────────────────────────────
 
-echo -e "${CYAN}[ 2] Scratch namespace${NC}"
+echo -e "${CYAN}[ 8] Scratch namespace${NC}"
 kubectl delete namespace "$NS" --ignore-not-found --wait=true &>/dev/null || true
 if kubectl create namespace "$NS" &>/dev/null; then
     pass "created namespace ${NS}"
@@ -109,18 +380,21 @@ else
 fi
 echo ""
 
-# ── 3. Topic 02: run a Pod ────────────────────────────────────────
+# ── 9. Topic 04: run a Pod ────────────────────────────────────────
 
-echo -e "${CYAN}[ 3] Topic 02 - run a Pod${NC}"
-TOPIC02="${NEW_STYLE_DIR}/02-run-a-pod"
-if kc apply -f "${TOPIC02}/configmap.yaml" -f "${TOPIC02}/pod.yaml" &>/dev/null; then
-    pass "applied configmap.yaml and pod.yaml"
+echo -e "${CYAN}[ 9] Topic 04 - run a Pod${NC}"
+TOPIC04="${NEW_STYLE_DIR}/04-run-a-pod"
+POD_YAML=$(subst_yaml "${TOPIC04}/pod.yaml")
+if kc apply -f "$POD_YAML" &>/dev/null; then
+    pass "applied pod.yaml"
 else
-    fail "apply failed for topic 02"
+    fail "apply failed for topic 04"
+    rm -f "$POD_YAML"
     exit 1
 fi
+rm -f "$POD_YAML"
 
-if kc wait --for=condition=Ready pod/orbital-relay --timeout=90s &>/dev/null; then
+if kc wait --for=condition=Ready pod/orbital-relay --timeout=120s &>/dev/null; then
     pass "pod/orbital-relay is Ready"
 else
     fail "pod/orbital-relay never became Ready"
@@ -134,21 +408,24 @@ else
     fail "page did not return ${PAGE_MARK}"
 fi
 
-kc delete -f "${TOPIC02}/pod.yaml" --ignore-not-found &>/dev/null || true
+kc delete pod orbital-relay --ignore-not-found &>/dev/null || true
 echo ""
 
-# ── 4. Topic 03: Deployment and scaling ───────────────────────────
+# ── 10. Topic 05: Deployment and scaling ──────────────────────────
 
-echo -e "${CYAN}[ 4] Topic 03 - Deployment and scaling${NC}"
-TOPIC03="${NEW_STYLE_DIR}/03-deployment-and-scaling"
-if kc apply -f "${TOPIC03}/configmap.yaml" -f "${TOPIC03}/deployment.yaml" &>/dev/null; then
-    pass "applied configmap.yaml and deployment.yaml"
+echo -e "${CYAN}[10] Topic 05 - Deployment and scaling${NC}"
+TOPIC05="${NEW_STYLE_DIR}/05-deployment-and-scaling"
+DEP_YAML=$(subst_yaml "${TOPIC05}/deployment.yaml")
+if kc apply -f "$DEP_YAML" &>/dev/null; then
+    pass "applied deployment.yaml"
 else
-    fail "apply failed for topic 03"
+    fail "apply failed for topic 05"
+    rm -f "$DEP_YAML"
     exit 1
 fi
+rm -f "$DEP_YAML"
 
-if kc rollout status deployment/orbital-relay --timeout=90s &>/dev/null; then
+if kc rollout status deployment/orbital-relay --timeout=120s &>/dev/null; then
     pass "initial rollout completed (2 replicas)"
 else
     fail "initial rollout did not complete"
@@ -166,17 +443,20 @@ fi
 kc scale deployment/orbital-relay --replicas=2 &>/dev/null
 echo ""
 
-# ── 5. Topic 04: expose with a Service ────────────────────────────
+# ── 11. Topic 06: expose with a Service ───────────────────────────
 
-echo -e "${CYAN}[ 5] Topic 04 - expose with a Service${NC}"
-TOPIC04="${NEW_STYLE_DIR}/04-expose-with-service"
-if kc apply -f "${TOPIC04}/configmap.yaml" -f "${TOPIC04}/deployment.yaml" -f "${TOPIC04}/service.yaml" &>/dev/null; then
-    pass "applied configmap.yaml, deployment.yaml, service.yaml"
+echo -e "${CYAN}[11] Topic 06 - expose with a Service${NC}"
+TOPIC06="${NEW_STYLE_DIR}/06-expose-with-service"
+DEP_YAML=$(subst_yaml "${TOPIC06}/deployment.yaml")
+if kc apply -f "$DEP_YAML" -f "${TOPIC06}/service.yaml" &>/dev/null; then
+    pass "applied deployment.yaml, service.yaml"
 else
-    fail "apply failed for topic 04"
+    fail "apply failed for topic 06"
+    rm -f "$DEP_YAML"
     exit 1
 fi
-kc rollout status deployment/orbital-relay --timeout=90s &>/dev/null || true
+rm -f "$DEP_YAML"
+kc rollout status deployment/orbital-relay --timeout=120s &>/dev/null || true
 
 if curl_via_portforward svc/orbital-relay 18081 | grep -q "$PAGE_MARK"; then
     pass "curl through the Service returns ${PAGE_MARK}"
@@ -185,12 +465,13 @@ else
 fi
 echo ""
 
-# ── 6. Topic 05: rolling update and rollback ──────────────────────
+# ── 12. Topic 07: rolling update and rollback ─────────────────────
 
-echo -e "${CYAN}[ 6] Topic 05 - rolling update and rollback${NC}"
-TOPIC05="${NEW_STYLE_DIR}/05-rolling-update-and-rollback"
-kc apply -f "${TOPIC05}/configmap.yaml" -f "${TOPIC05}/deployment.yaml" -f "${TOPIC05}/service.yaml" &>/dev/null
-kc rollout status deployment/orbital-relay --timeout=90s &>/dev/null || true
+echo -e "${CYAN}[12] Topic 07 - rolling update and rollback${NC}"
+DEP_YAML=$(subst_yaml "${TOPIC07}/deployment.yaml")
+kc apply -f "$DEP_YAML" -f "${TOPIC07}/service.yaml" &>/dev/null
+rm -f "$DEP_YAML"
+kc rollout status deployment/orbital-relay --timeout=120s &>/dev/null || true
 
 if curl_via_portforward svc/orbital-relay 18082 | grep -q "Ground link v1"; then
     pass "site is on v1 before update"
@@ -198,9 +479,8 @@ else
     warn "expected v1 marker before update, not found"
 fi
 
-kc apply -f "${TOPIC05}/configmap-v2.yaml" &>/dev/null
-kc rollout restart deployment/orbital-relay &>/dev/null
-if kc rollout status deployment/orbital-relay --timeout=90s &>/dev/null; then
+kc set image deployment/orbital-relay "web=${ECR_IMAGE_URI_V2}" &>/dev/null
+if kc rollout status deployment/orbital-relay --timeout=120s &>/dev/null; then
     pass "rollout to v2 completed"
 else
     fail "rollout to v2 did not complete"
@@ -213,7 +493,7 @@ else
 fi
 
 kc rollout undo deployment/orbital-relay &>/dev/null
-if kc rollout status deployment/orbital-relay --timeout=90s &>/dev/null; then
+if kc rollout status deployment/orbital-relay --timeout=120s &>/dev/null; then
     pass "rollback completed"
 else
     fail "rollback did not complete"
@@ -226,19 +506,21 @@ else
 fi
 echo ""
 
-# ── 7. Topic 06: ConfigMap and Secret ─────────────────────────────
+# ── 13. Topic 08: ConfigMap and Secret ────────────────────────────
 
-echo -e "${CYAN}[ 7] Topic 06 - ConfigMap and Secret${NC}"
-TOPIC06="${NEW_STYLE_DIR}/06-configmap-and-secret"
-if kc apply -f "${TOPIC06}/configmap.yaml" -f "${TOPIC06}/station-config.yaml" \
-    -f "${TOPIC06}/station-secret.yaml" -f "${TOPIC06}/deployment.yaml" \
-    -f "${TOPIC06}/service.yaml" &>/dev/null; then
-    pass "applied site config, station config/secret, deployment, service"
+echo -e "${CYAN}[13] Topic 08 - ConfigMap and Secret${NC}"
+TOPIC08="${NEW_STYLE_DIR}/08-configmap-and-secret"
+DEP_YAML=$(subst_yaml "${TOPIC08}/deployment.yaml")
+if kc apply -f "${TOPIC08}/station-config.yaml" -f "${TOPIC08}/station-secret.yaml" \
+    -f "$DEP_YAML" -f "${TOPIC08}/service.yaml" &>/dev/null; then
+    pass "applied station config/secret, deployment, service"
 else
-    fail "apply failed for topic 06"
+    fail "apply failed for topic 08"
+    rm -f "$DEP_YAML"
     exit 1
 fi
-kc rollout status deployment/orbital-relay --timeout=90s &>/dev/null || true
+rm -f "$DEP_YAML"
+kc rollout status deployment/orbital-relay --timeout=120s &>/dev/null || true
 
 ENV_OUT=$(kc exec deploy/orbital-relay -- env 2>/dev/null || true)
 if echo "$ENV_OUT" | grep -q "STATION_NAME=Svalbard-2"; then
@@ -253,12 +535,14 @@ else
 fi
 echo ""
 
-# ── 8. Topic 07: logs and exec ────────────────────────────────────
+# ── 14. Topic 09: logs and exec ───────────────────────────────────
 
-echo -e "${CYAN}[ 8] Topic 07 - logs and exec${NC}"
-TOPIC07="${NEW_STYLE_DIR}/07-logs-and-exec"
-kc apply -f "${TOPIC07}/configmap.yaml" -f "${TOPIC07}/deployment.yaml" -f "${TOPIC07}/service.yaml" &>/dev/null
-kc rollout status deployment/orbital-relay --timeout=90s &>/dev/null || true
+echo -e "${CYAN}[14] Topic 09 - logs and exec${NC}"
+TOPIC09="${NEW_STYLE_DIR}/09-logs-and-exec"
+DEP_YAML=$(subst_yaml "${TOPIC09}/deployment.yaml")
+kc apply -f "$DEP_YAML" -f "${TOPIC09}/service.yaml" &>/dev/null
+rm -f "$DEP_YAML"
+kc rollout status deployment/orbital-relay --timeout=120s &>/dev/null || true
 
 if kc logs deploy/orbital-relay --tail=5 &>/dev/null; then
     pass "kubectl logs works against the Deployment"
@@ -267,18 +551,20 @@ else
 fi
 
 if kc exec deploy/orbital-relay -- ls /usr/share/nginx/html 2>/dev/null | grep -q index.html; then
-    pass "kubectl exec confirms index.html is mounted"
+    pass "kubectl exec confirms baked index.html is present"
 else
     fail "index.html not found via kubectl exec"
 fi
 echo ""
 
-# ── 9. Topic 08: health checks and limits ─────────────────────────
+# ── 15. Topic 10: health checks and limits ────────────────────────
 
-echo -e "${CYAN}[ 9] Topic 08 - health checks and limits${NC}"
-TOPIC08="${NEW_STYLE_DIR}/08-health-checks-and-limits"
-kc apply -f "${TOPIC08}/configmap.yaml" -f "${TOPIC08}/deployment.yaml" -f "${TOPIC08}/service.yaml" &>/dev/null
-kc rollout status deployment/orbital-relay --timeout=90s &>/dev/null || true
+echo -e "${CYAN}[15] Topic 10 - health checks and limits${NC}"
+TOPIC10="${NEW_STYLE_DIR}/10-health-checks-and-limits"
+DEP_YAML=$(subst_yaml "${TOPIC10}/deployment.yaml")
+kc apply -f "$DEP_YAML" -f "${TOPIC10}/service.yaml" &>/dev/null
+rm -f "$DEP_YAML"
+kc rollout status deployment/orbital-relay --timeout=120s &>/dev/null || true
 
 if kc get deployment orbital-relay -o jsonpath='{.spec.template.spec.containers[0].readinessProbe}' 2>/dev/null | grep -q httpGet; then
     pass "readinessProbe is set"
@@ -294,7 +580,7 @@ fi
 # Break readiness on purpose, confirm endpoints drop, then restore.
 kc patch deployment orbital-relay --type=json \
     -p='[{"op":"replace","path":"/spec/template/spec/containers/0/readinessProbe/httpGet/port","value":81}]' &>/dev/null
-kc rollout status deployment/orbital-relay --timeout=90s &>/dev/null || true
+kc rollout status deployment/orbital-relay --timeout=120s &>/dev/null || true
 sleep 5
 EP_COUNT=$(kc get endpoints orbital-relay -o jsonpath='{.subsets[*].addresses}' 2>/dev/null | grep -o '"ip"' | wc -l | tr -d ' ')
 if [[ "$EP_COUNT" -eq 0 ]]; then
@@ -303,8 +589,10 @@ else
     warn "expected 0 endpoints with a broken readiness probe, saw ${EP_COUNT}"
 fi
 
-kc apply -f "${TOPIC08}/deployment.yaml" &>/dev/null
-kc rollout status deployment/orbital-relay --timeout=90s &>/dev/null || true
+DEP_YAML=$(subst_yaml "${TOPIC10}/deployment.yaml")
+kc apply -f "$DEP_YAML" &>/dev/null
+rm -f "$DEP_YAML"
+kc rollout status deployment/orbital-relay --timeout=120s &>/dev/null || true
 sleep 5
 EP_COUNT=$(kc get endpoints orbital-relay -o jsonpath='{.subsets[*].addresses}' 2>/dev/null | grep -o '"ip"' | wc -l | tr -d ' ')
 if [[ "$EP_COUNT" -ge 1 ]]; then
@@ -326,5 +614,5 @@ if [[ "$FAIL" -gt 0 ]]; then
     exit 1
 fi
 
-echo "Lab validation passed. You can teach Pod -> Deployment -> Service -> rollout -> config -> logs -> health checks."
+echo "Lab validation passed. You can teach AWS CLI -> Docker/ECR -> Pod -> Deployment -> Service -> rollout -> config -> logs -> health checks."
 exit 0

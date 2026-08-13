@@ -1,0 +1,4 @@
+guide.md
+*.md
+*.sh
+.git

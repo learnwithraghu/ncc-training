@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: daypack
+  namespace: daypack
+  labels:
+    app: daypack
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: daypack
+  template:
+    metadata:
+      labels:
+        app: daypack
+    spec:
+      containers:
+        - name: daypack
+          image: learnwithraghu/ai-k8-workshop:1.0
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8501
+          env:
+            - name: STREAMLIT_SERVER_FILE_WATCHER_TYPE
+              value: "none"
+          livenessProbe:
+            httpGet:
+              path: /_stcore/health
+              port: 8501
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /_stcore/health
+              port: 8501
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 250m
+              memory: 512Mi
+            limits:
+              cpu: 500m
+              memory: 1Gi

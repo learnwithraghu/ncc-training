@@ -51,6 +51,7 @@ ncc-training/
 ├── 11-Capstone-Document-Search/  Day 5 — End-to-end project
 ├── 12-AWS-Cloud/            AWS cloud notes and EC2 practice
 ├── 14-Ansible/              Infrastructure automation with Ansible
+├── 15-ai-k8-full-project/   AI trip planner (Docker + Kubernetes)
 ├── 99-quiz-challenge/       MCQ quiz across all topics
 ├── COURSE_PLAN.md           Implementation progress tracker
 └── README.md                This file

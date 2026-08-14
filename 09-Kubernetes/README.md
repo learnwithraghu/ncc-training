@@ -12,14 +12,16 @@ push images in class.
 - Configure with ConfigMaps and Secrets
 - Diagnose with `kubectl logs` / `exec`
 - Add probes and resource limits
+- Scale on CPU with a Horizontal Pod Autoscaler
 
 ## Time Estimate
 
-About **2.5 hours**, seven topics at ~20 minutes each.
+About **2 hours 50 minutes**, eight topics at ~20 minutes each.
 
 ## Prerequisites
 
 - Kubernetes cluster access and `kubectl`
+- metrics-server on the cluster (`kubectl top pods` must work) for Topic 8
 - Instructor has already pushed the two public images (see below)
 
 Students pull:
@@ -62,9 +64,9 @@ bash 09-Kubernetes/new-style/helpers/command-helper.sh
 ```
 
 Exit code 0 means every topic command ran (Pod, Deployment, Service,
-rollout `:1.0`→`:2.0`→undo, ConfigMap/Secret, logs/exec, probes). The
-script uses scratch namespace `orbital-relay-lab` and deletes it when
-it finishes.
+rollout `:1.0`→`:2.0`→undo, ConfigMap/Secret, logs/exec, probes, HPA).
+The script uses scratch namespace `orbital-relay-lab` and deletes it
+when it finishes.
 
 ## Guided Learning Topics
 
@@ -79,6 +81,7 @@ Work through [new-style/](new-style/) in order.
 | 5 | [new-style/05-configmap-and-secret/](new-style/05-configmap-and-secret/) | ConfigMap + Secret |
 | 6 | [new-style/06-logs-and-exec/](new-style/06-logs-and-exec/) | logs, exec, break-and-fix |
 | 7 | [new-style/07-health-checks-and-limits/](new-style/07-health-checks-and-limits/) | probes + requests/limits |
+| 8 | [new-style/08-horizontal-pod-autoscaler/](new-style/08-horizontal-pod-autoscaler/) | HPA on CPU |
 
 Each folder is self-contained. Run commands from the topic folder.
 The image is already in the YAML — do not replace a registry placeholder.

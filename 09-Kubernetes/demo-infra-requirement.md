@@ -7,8 +7,11 @@
 - Cluster nodes able to pull public Docker Hub images
   (`learnwithraghu/ncc-workshop:1.0` and `:2.0`)
 - Permission to create namespaces, pods, deployments, services,
-  configmaps, and secrets
-- No Ingress, storage class, or metrics-server required
+  configmaps, secrets, and horizontalpodautoscalers
+- metrics-server installed so `kubectl top nodes` and `kubectl top pods`
+  work (required for Topic 8). Do not put a cluster-specific install
+  into the student guide; kind, k3s, and EKS differ.
+- No Ingress or storage class required
 
 ## Instructor laptop (before class only)
 
@@ -48,5 +51,7 @@ kubectl cluster-info
 kubectl get nodes
 kubectl auth can-i create deployments
 kubectl auth can-i create secrets
+kubectl auth can-i create horizontalpodautoscalers.autoscaling
+kubectl top nodes
 bash 09-Kubernetes/new-style/helpers/command-helper.sh
 ```

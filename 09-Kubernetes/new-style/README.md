@@ -28,7 +28,7 @@ cd ncc-training
 bash 09-Kubernetes/new-style/helpers/command-helper.sh
 ```
 
-That script runs every command from topics 01–07 in namespace
+That script runs every command from topics 01–08 in namespace
 `orbital-relay-lab`, then deletes the namespace.
 
 Three teams that need to **push** their own images: see
@@ -54,9 +54,11 @@ Three teams that need to **push** their own images: see
 | [05-configmap-and-secret/](05-configmap-and-secret/) | ConfigMap + Secret env vars |
 | [06-logs-and-exec/](06-logs-and-exec/) | logs, exec, break with stock nginx |
 | [07-health-checks-and-limits/](07-health-checks-and-limits/) | probes + requests/limits |
+| [08-horizontal-pod-autoscaler/](08-horizontal-pod-autoscaler/) | HPA on CPU, scale 1→4→1 |
 
 ## Scope
 
-Pods, Deployments, Services, rollouts, ConfigMaps/Secrets, logs/exec, and
-health checks. No Ingress, NetworkPolicies, volumes, StatefulSets, or
-Jobs. Helm is [10-Helm](../../10-Helm/README.md).
+Pods, Deployments, Services, rollouts, ConfigMaps/Secrets, logs/exec,
+health checks, and HPA. The cluster needs metrics-server for Topic 8.
+No Ingress, NetworkPolicies, volumes, StatefulSets, or Jobs. Helm is
+[10-Helm](../../10-Helm/README.md).

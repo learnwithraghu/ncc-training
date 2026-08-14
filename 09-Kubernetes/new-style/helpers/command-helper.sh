@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Instructor command helper: run every kubectl command from topics 01–07
+# Instructor command helper: run every kubectl command from topics 01–08
 # against the teaching cluster. Uses a scratch namespace and deletes it
 # at the end. Does not need Docker on this machine.
 set -uo pipefail
@@ -13,6 +13,7 @@ readonly ROOT=$(cd "${SCRIPT_DIR}/.." && pwd)
 PASS=0
 FAIL=0
 PF_PID=""
+BURN_PID=""
 PREV_NS=""
 
 GREEN='\033[0;32m'
@@ -30,7 +31,7 @@ Usage: bash command-helper.sh
 Clone the repo on the teaching cluster host, point kubectl at that
 cluster, then run this script. It applies every topic folder and runs
 the kubectl commands from each guide (Pod, Deployment, Service,
-rollout, ConfigMap/Secret, logs/exec, probes).
+rollout, ConfigMap/Secret, logs/exec, probes, HPA).
 
   git clone https://github.com/learnwithraghu/ncc-training.git
   cd ncc-training
@@ -57,6 +58,14 @@ stop_pf() {
     sleep 1
 }
 
+stop_burn() {
+    if [[ -n "$BURN_PID" ]]; then
+        kill "$BURN_PID" >/dev/null 2>&1 || true
+        wait "$BURN_PID" >/dev/null 2>&1 || true
+        BURN_PID=""
+    fi
+}
+
 restore_ns() {
     stop_pf
     if [[ -n "$PREV_NS" ]]; then
@@ -65,6 +74,7 @@ restore_ns() {
 }
 
 cleanup() {
+    stop_burn
     restore_ns
     kubectl delete namespace "$NS" --wait=false >/dev/null 2>&1 || true
 }
@@ -137,12 +147,45 @@ curl_pf() {
 }
 
 wipe_workloads() {
-    kubectl delete pod,deploy,svc,cm,secret -l app=orbital-relay --wait=true --timeout=60s >/dev/null 2>&1 || true
+    kubectl delete hpa,pod,deploy,svc,cm,secret -l app=orbital-relay --wait=true --timeout=60s >/dev/null 2>&1 || true
     kubectl delete pod orbital-relay --wait=true --timeout=60s >/dev/null 2>&1 || true
 }
 
+wait_hpa_metric() {
+    local i
+    for i in $(seq 1 45); do
+        local util
+        util=$(kubectl get hpa orbital-relay -o jsonpath='{.status.currentMetrics[0].resource.current.averageUtilization}' 2>/dev/null || true)
+        if [[ -n "$util" ]]; then
+            return 0
+        fi
+        sleep 2
+    done
+    kubectl get hpa orbital-relay || true
+    return 1
+}
+
+wait_ready_pods_eq() {
+    local want="$1"
+    local i
+    for i in $(seq 1 90); do
+        local ready total
+        ready=$(kubectl get pods -l app=orbital-relay \
+            --no-headers 2>/dev/null | awk '$2 ~ /1\/1/ && $3=="Running" {c++} END {print c+0}')
+        total=$(kubectl get pods -l app=orbital-relay \
+            --no-headers 2>/dev/null | awk '$3 != "Terminating" && NF {c++} END {print c+0}')
+        if [[ "$ready" -eq "$want" && "$total" -eq "$want" ]]; then
+            return 0
+        fi
+        sleep 2
+    done
+    kubectl get pods -l app=orbital-relay
+    kubectl get hpa orbital-relay
+    return 1
+}
+
 echo "NCC Kubernetes — command helper"
-echo "Cluster commands from topics 01–07, namespace ${NS}"
+echo "Cluster commands from topics 01–08, namespace ${NS}"
 echo
 
 echo -e "${CYAN}[pre] cluster${NC}"
@@ -167,13 +210,21 @@ else
     exit 1
 fi
 
+if kubectl top nodes >/dev/null 2>&1; then
+    pass "kubectl top nodes (metrics-server)"
+else
+    fail "kubectl top nodes (metrics-server required for Topic 8)"
+    exit 1
+fi
+
 for verb_res in \
     "create namespaces" \
     "create pods" \
     "create deployments" \
     "create services" \
     "create configmaps" \
-    "create secrets"; do
+    "create secrets" \
+    "create horizontalpodautoscalers.autoscaling"; do
     if kubectl auth can-i $verb_res >/dev/null 2>&1; then
         pass "can-i ${verb_res}"
     else
@@ -361,6 +412,37 @@ if wait_ready_pods 2; then
     pass "restored probes, pods 1/1 READY"
 else
     fail "restore after readiness break failed"
+fi
+
+echo
+echo -e "${CYAN}[08] horizontal pod autoscaler${NC}"
+wipe_workloads
+kubectl apply -f "${ROOT}/08-horizontal-pod-autoscaler/deployment.yaml" \
+    -f "${ROOT}/08-horizontal-pod-autoscaler/hpa.yaml"
+if wait_ready_pods 1; then
+    pass "topic 8 deployment at 1 Ready replica"
+else
+    fail "topic 8 pod not Ready"
+fi
+kubectl get hpa orbital-relay >/dev/null && pass "kubectl get hpa orbital-relay" || fail "kubectl get hpa"
+if kubectl top pods >/dev/null 2>&1 && wait_hpa_metric; then
+    pass "HPA current CPU metric is a number"
+else
+    fail "HPA CPU stayed unknown (metrics-server?)"
+fi
+
+kubectl exec deploy/orbital-relay -- sh -c 'dd if=/dev/zero of=/dev/null' >/dev/null 2>&1 &
+BURN_PID=$!
+if wait_ready_pods 2; then
+    pass "HPA scaled up under CPU burn (replicas > 1)"
+else
+    fail "HPA did not scale up while dd was running"
+fi
+stop_burn
+if wait_ready_pods_eq 1; then
+    pass "HPA scaled back to 1 after CPU burn stopped"
+else
+    fail "HPA did not scale down to 1"
 fi
 
 echo

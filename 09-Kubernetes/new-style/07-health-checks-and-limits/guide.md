@@ -12,8 +12,6 @@
 Add probes and resource limits, then break readiness on purpose. Pods
 stay `Running` but drop out of the Service until you restore the probe.
 
-This is the last Kubernetes topic.
-
 ## Commands
 
 ```bash
@@ -63,4 +61,5 @@ readiness probe does not?
 
 ## What's Next?
 
-Packaging many YAML files as one installable unit is **[10-Helm](../../10-Helm/README.md)**.
+CPU requests are in place. Next we let the cluster add Pods when CPU
+spikes. **Topic 8: Horizontal Pod Autoscaler.**

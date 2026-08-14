@@ -102,6 +102,7 @@ topic depends on another one having run first).
 
 ### Guided Learning
 - [guided-learning/](guided-learning/) - 12 self-contained Jenkins topics
+- [images/](images/) - instructor diagrams (overview, components, job types, Git/Jenkinsfile tests)
 
 ### Next Steps After This Module
 - **CI/CD on GitHub**: [08-GitHub-Actions](../08-GitHub-Actions/)

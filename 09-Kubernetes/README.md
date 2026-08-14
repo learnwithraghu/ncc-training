@@ -85,3 +85,7 @@ Work through [new-style/](new-style/) in order.
 
 Each folder is self-contained. Run commands from the topic folder.
 The image is already in the YAML — do not replace a registry placeholder.
+
+## Instructor diagrams
+
+Classroom diagrams live in [images/](images/) (why Kubernetes, architecture, workloads and services).

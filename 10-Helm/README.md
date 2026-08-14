@@ -54,6 +54,10 @@ Work through topics in [new-style/](new-style/) in order — see
 | 07 Template and Dry-Run | [new-style/07-template-and-dry-run/](new-style/07-template-and-dry-run/) | template, dry-run, lint |
 | 08 Uninstall and Cleanup | [new-style/08-uninstall-and-cleanup/](new-style/08-uninstall-and-cleanup/) | uninstall and tidy the cluster |
 
+## Instructor diagrams
+
+Classroom diagrams live in [images/](images/) (`helm-overview.png`, `why-helm.png`).
+
 ## Lab Defaults
 
 - Namespace / release: `signal-forge`

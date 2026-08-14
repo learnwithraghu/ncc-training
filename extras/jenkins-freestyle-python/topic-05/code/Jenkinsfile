@@ -1,0 +1,16 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Syntax Check') {
+            steps {
+                sh 'python3 -m py_compile app.py'
+            }
+        }
+        stage('Lint') {
+            steps {
+                sh 'flake8 app.py'
+            }
+        }
+    }
+}

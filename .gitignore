@@ -34,6 +34,7 @@ Thumbs.db
 *~
 .idea/
 .vscode/
+.claude/
 *.sublime-*
 
 # Logs and temp

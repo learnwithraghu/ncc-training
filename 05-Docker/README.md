@@ -110,6 +110,10 @@ docker run --help
 docker build --help
 ```
 
+## Instructor diagrams
+
+Classroom diagrams live in [images/](images/) (`dockerfile-to-container.png`, `docker-internals.excalidraw`).
+
 ## Guided Learning Focus
 
 Each topic is self-contained and designed to take about 20 minutes. Teach a few commands, then complete the Task before moving on.

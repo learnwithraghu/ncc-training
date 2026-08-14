@@ -42,6 +42,7 @@ ncc-training/
 ├── 13-Python-Boto3/                  Optional — AWS automation with Python
 ├── 14-Ansible/                       Optional — infrastructure automation
 ├── 15-ai-k8-full-project/            Optional — AI trip planner on K8s
+├── devops-roadmap/                   Optional — cert flow + skills map (HTML)
 ├── 99-quiz-challenge/                Optional — MCQ quiz across all topics
 └── extras/                           Optional — extra Jenkins tracks
 ```
@@ -68,6 +69,7 @@ These are not required for the 5-day bootcamp:
 | [13-Python-Boto3](13-Python-Boto3/README.md) | Automate AWS from CloudShell with Boto3 |
 | [14-Ansible](14-Ansible/README.md) | Inventory, playbooks, roles on web1/web2 |
 | [15-ai-k8-full-project](15-ai-k8-full-project/README.md) | Daypack AI trip planner on Docker + Kubernetes |
+| [devops-roadmap/](devops-roadmap/README.md) | Certification flow + skills map (single HTML page) |
 | [99-quiz-challenge](99-quiz-challenge/README.md) | PIN-protected MCQ quiz |
 | [extras/](extras/README.md) | Extra Jenkins tracks (KodeKloud PHP, Freestyle Python) |
 

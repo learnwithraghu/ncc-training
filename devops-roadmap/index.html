@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>devops roadmap.</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --paper: #f6f1e8;
+      --ink: #111111;
+      --muted: #5c564c;
+      --lime: #c8ff3f;
+      --magenta: #ff4d8d;
+      --violet: #7c5cff;
+      --card: #fffdf8;
+      --line: #111111;
+      --ghost: #ece6db;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Outfit, system-ui, sans-serif;
+      min-height: 100vh;
+      background-image:
+        radial-gradient(circle at 12% 8%, rgba(200, 255, 63, 0.35), transparent 32%),
+        radial-gradient(circle at 92% 4%, rgba(124, 92, 255, 0.22), transparent 28%),
+        radial-gradient(circle at 80% 80%, rgba(255, 77, 141, 0.16), transparent 30%);
+    }
+
+    a { color: inherit; }
+
+    .wrap {
+      width: min(1120px, calc(100% - 40px));
+      margin: 0 auto;
+    }
+
+    header.nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      backdrop-filter: blur(12px);
+      background: rgba(246, 241, 232, 0.86);
+      border-bottom: 2px solid var(--ink);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 0;
+    }
+
+    .brand {
+      font-family: Syne, sans-serif;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      font-size: 1.05rem;
+    }
+
+    .pills {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .pills::-webkit-scrollbar { display: none; }
+
+    .pills a {
+      flex: 0 0 auto;
+      text-decoration: none;
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      background: var(--card);
+    }
+
+    .pills a:hover { background: var(--lime); }
+
+    .hero {
+      padding: 72px 0 40px;
+      display: grid;
+      grid-template-columns: 1.4fr 0.8fr;
+      gap: 32px;
+      align-items: end;
+    }
+
+    h1 {
+      font-family: Syne, sans-serif;
+      font-size: clamp(3.2rem, 9vw, 6.4rem);
+      line-height: 0.86;
+      letter-spacing: -0.07em;
+      font-weight: 800;
+    }
+
+    .lede {
+      margin-top: 18px;
+      max-width: 42ch;
+      font-size: 1.15rem;
+      color: var(--muted);
+    }
+
+    .price-sticker {
+      background: var(--lime);
+      border: 3px solid var(--ink);
+      border-radius: 28px;
+      padding: 22px 24px;
+      box-shadow: 8px 8px 0 var(--ink);
+      transform: rotate(2deg);
+    }
+
+    .price-sticker span {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .price-sticker strong {
+      font-family: Syne, sans-serif;
+      font-size: 2.4rem;
+      letter-spacing: -0.05em;
+    }
+
+    .skills {
+      padding: 12px 0 48px;
+    }
+
+    .kicker {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .skill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .skill {
+      border: 2px solid var(--ink);
+      background: var(--card);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .skill:hover { background: var(--violet); color: #fff; }
+
+    section.stage {
+      padding: 28px 0 18px;
+    }
+
+    .stage-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .stage-head h2 {
+      font-family: Syne, sans-serif;
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      letter-spacing: -0.05em;
+    }
+
+    .tag {
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      background: var(--magenta);
+      color: #fff;
+    }
+
+    .tag.alt { background: var(--ghost); color: var(--ink); }
+    .tag.opt { background: var(--violet); color: #fff; }
+
+    .rail {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: minmax(240px, 1fr);
+      gap: 16px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      padding: 8px 2px 24px;
+    }
+
+    .card {
+      scroll-snap-align: start;
+      background: var(--card);
+      border: 3px solid var(--ink);
+      border-radius: 26px;
+      padding: 18px 16px 16px;
+      min-height: 320px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 6px 6px 0 var(--ink);
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .card:nth-child(odd) { transform: rotate(-1.1deg); }
+    .card:nth-child(even) { transform: rotate(1.1deg); }
+    .card:hover {
+      transform: translate(-3px, -3px) rotate(0);
+      box-shadow: 10px 10px 0 var(--ink);
+    }
+
+    .card.alt {
+      background: var(--ghost);
+      box-shadow: 6px 6px 0 var(--violet);
+    }
+
+    .badge {
+      width: 92px;
+      height: 92px;
+      margin: 0 auto 14px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      border: 3px solid var(--ink);
+      background: #fff;
+      overflow: hidden;
+    }
+
+    .badge.photo { border: 0; background: transparent; overflow: visible; }
+
+    .badge img {
+      width: 72px;
+      height: 72px;
+      object-fit: contain;
+    }
+
+    .badge.photo img {
+      width: 92px;
+      height: 92px;
+    }
+
+    .badge-fallback {
+      width: 92px;
+      height: 92px;
+      border-radius: 50%;
+      border: 3px solid var(--ink);
+      display: grid;
+      place-items: center;
+      font-family: Syne, sans-serif;
+      font-weight: 800;
+      font-size: 0.85rem;
+      text-align: center;
+      line-height: 1.05;
+      padding: 8px;
+    }
+
+    .card h3 {
+      font-family: Syne, sans-serif;
+      font-size: 1.12rem;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 8px;
+    }
+
+    .issuer {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .why {
+      font-size: 0.9rem;
+      color: var(--muted);
+      flex: 1;
+    }
+
+    .meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 14px;
+    }
+
+    .dollars {
+      font-family: Syne, sans-serif;
+      font-weight: 800;
+      background: var(--lime);
+      border: 2px solid var(--ink);
+      border-radius: 999px;
+      padding: 4px 10px;
+    }
+
+    .kind {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    footer {
+      border-top: 2px solid var(--ink);
+      margin-top: 40px;
+      padding: 28px 0 48px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+      .hero { grid-template-columns: 1fr; padding-top: 40px; }
+      .price-sticker { transform: none; }
+      .rail {
+        grid-auto-flow: row;
+        grid-auto-columns: 1fr;
+      }
+      .card:nth-child(odd),
+      .card:nth-child(even) { transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <div class="brand">ncc · devops</div>
+      <nav class="pills" aria-label="Certification stages">
+        <a href="#foundations">Foundations</a>
+        <a href="#containers">Containers</a>
+        <a href="#cloud">Cloud</a>
+        <a href="#k8s">K8s</a>
+        <a href="#pro">Pro</a>
+        <a href="#security">Security</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div>
+        <h1>devops<br />roadmap.</h1>
+        <p class="lede">A clean cert flow for this bootcamp. Pick the lime path. Azure is the alt track. Skills first, then exams.</p>
+      </div>
+      <aside class="price-sticker">
+        <span>Recommended exam fees</span>
+        <strong id="path-total">$1,907.50</strong>
+        <span>USD · Aug 2026 list prices</span>
+      </aside>
+    </section>
+
+    <section class="skills" id="skills">
+      <p class="kicker">Skills path</p>
+      <div class="skill-row">
+        <a class="skill" href="#foundations">Linux</a>
+        <a class="skill" href="#foundations">Bash</a>
+        <a class="skill" href="#foundations">Python</a>
+        <a class="skill" href="#foundations">Git</a>
+        <a class="skill" href="#containers">Docker</a>
+        <a class="skill" href="#containers">Compose</a>
+        <a class="skill" href="#pro">Jenkins</a>
+        <a class="skill" href="#pro">GitHub Actions</a>
+        <a class="skill" href="#k8s">Kubernetes</a>
+        <a class="skill" href="#k8s">Helm</a>
+        <a class="skill" href="#cloud">AWS</a>
+        <a class="skill" href="#containers">Terraform</a>
+        <a class="skill" href="#cloud">Ansible</a>
+        <a class="skill" href="#security">Observability</a>
+        <a class="skill" href="#security">Security</a>
+      </div>
+    </section>
+
+    <section class="stage" id="foundations">
+      <div class="stage-head">
+        <h2>00 · foundations</h2>
+        <span class="tag">start here</span>
+      </div>
+      <div class="rail">
+        <a class="card rec" data-price="99" href="https://learn.github.com/certifications" target="_blank" rel="noopener">
+          <div class="badge photo">
+            <img src="https://learn.microsoft.com/en-us/media/learn/certification/badges/github-foundations.svg" alt="GitHub Foundations badge" onerror="this.style.display='none';this.nextElementSibling.hidden=false" />
+            <div class="badge-fallback" hidden style="background:#c8ff3f">GH</div>
+          </div>
+          <h3>GitHub Foundations</h3>
+          <p class="issuer">GitHub · GH-900</p>
+          <p class="why">Locks in repos, PRs, and collaboration before cloud jargon hits.</p>
+          <div class="meta"><span class="dollars">$99</span><span class="kind">recommended</span></div>
+        </a>
+        <a class="card rec" data-price="100" href="https://aws.amazon.com/certification/certified-cloud-practitioner/" target="_blank" rel="noopener">
+          <div class="badge">
+            <img src="https://www.vectorlogo.zone/logos/amazon_aws/amazon_aws-icon.svg" alt="AWS Cloud Practitioner badge" onerror="this.style.display='none';this.nextElementSibling.hidden=false" />
+            <div class="badge-fallback" hidden style="background:#ff9900">CLF</div>
+          </div>
+          <h3>AWS Cloud Practitioner</h3>
+          <p class="issuer">AWS · CLF-C02</p>
+          <p class="why">Cheap cloud literacy. Billing, IAM, and the map of AWS services.</p>
+          <div class="meta"><span class="dollars">$100</span><span class="kind">recommended</span></div>
+        </a>
+        <a class="card alt" href="https://www.comptia.org/certifications/linux" target="_blank" rel="noopener">
+          <div class="badge">
+            <img src="https://cdn.jsdelivr.net/npm/simple-icons@11.15.0/icons/comptia.svg" alt="CompTIA Linux+ badge" onerror="this.style.display='none';this.nextElementSibling.hidden=false" />
+            <div class="badge-fallback" hidden style="background:#c41230;color:#fff">L+</div>
+          </div>
+          <h3>CompTIA Linux+</h3>
+          <p class="issuer">CompTIA · XK0-006</p>
+          <p class="why">Optional if Linux still feels shaky. Skip it if the bootcamp labs already click.</p>
+          <div class="meta"><span class="dollars">$369</span><span class="kind">optional</span></div>
+        </a>
+      </div>
+    </section>
+
+    <section class="stage" id="containers">
+      <div class="stage-head">
+        <h2>01 · containers + iac</h2>
+        <span class="tag">best roi</span>
+      </div>
+      <div class="rail">
+        <a class="card rec" data-price="199" href="https://training.mirantis.com/certification/dca-certification-exam/" target="_blank" rel="noopener">
+          <div class="badge">
+            <img src="https://www.docker.com/wp-content/uploads/2022/03/Moby-logo.png" alt="Docker logo" onerror="this.style.display='none';this.nextElementSibling.hidden=false" />
+            <div class="badge-fallback" hidden style="background:#2496ed;color:#fff">DCA</div>
+          </div>
+          <h3>Docker Certified Associate</h3>
+          <p class="issuer">Mirantis · DCA</p>
+          <p class="why">Images, registries, and runtime. The floor for every later Kubernetes exam.</p>
+          <div class="meta"><span class="dollars">$199</span><span class="kind">recommended</span></div>
+        </a>
+        <a class="card rec" data-price="70.5" href="https://developer.hashicorp.com/certifications/infrastructure-automation" target="_blank" rel="noopener">
+          <div class="badge">
+            <img src="https://cdn.simpleicons.org/terraform/844FBA" alt="Terraform Associate badge" onerror="this.style.display='none';this.nextElementSibling.hidden=false" />
+            <div class="badge-fallback" hidden style="background:#7b42bc;color:#fff">TF</div>
+          </div>
+          <h3>Terraform Associate</h3>
+          <p class="issuer">HashiCorp · 004</p>
+          <p class="why">Highest ROI on this page. State, modules, and the workflow every job wants.</p>
+          <div class="meta"><span class="dollars">$70.50</span><span class="kind">recommended</span></div>
+        </a>
+      </div>
+    </section>
+
+    <section class="stage" id="cloud">
+      <div class="stage-head">
+        <h2>02 · cloud associate</h2>
+        <span class="tag alt">aws default · azure alt</span>
+      </div>
+      <div class="rail">
+        <a class="card rec" data-price="150" href="https://aws.amazon.com/certification/certified-solutions-architect-associate/" target="_blank" rel="noopener">
+          <div class="badge">
+            <img src="https://cdn.jsdelivr.net/npm/simple-icons@11.15.0/icons/amazonaws.svg" alt="AWS Solutions Architect Associate badge" onerror="this.style.display='none';this.nextElementSibling.hidden=false" />
+            <div class="badge-fallback" hidden style="background:#232f3e;color:#fff">SAA</div>
+          </div>
+          <h3>AWS Solutions Architect Associate</h3>
+          <p class="issuer">AWS · SAA-C03</p>
+          <p class="why">The most scanned cloud cert. VPC, compute, storage, and how pieces connect.</p>
+          <div class="meta"><span class="dollars">$150</span><span class="kind">recommended</span></div>
+        </a>
+        <a class="card alt" href="https://learn.microsoft.com/credentials/certifications/azure-administrator/" target="_blank" rel="noopener">
+          <div class="badge">
+            <img src="https://cdn.jsdelivr.net/npm/simple-icons@11.15.0/icons/microsoftazure.svg" alt="Azure Administrator badge" onerror="this.style.display='none';this.nextElementSibling.hidden=false" />
+            <div class="badge-fallback" hidden style="background:#0078d4;color:#fff">104</div>
+          </div>
+          <h3>Azure Administrator</h3>
+          <p class="issuer">Microsoft · AZ-104</p>
+          <p class="why">Alt track. Take this instead of SAA if your shops run Microsoft.</p>
+          <div class="meta"><span class="dollars">$165</span><span class="kind">azure alt</span></div>
+        </a>
+      </div>
+    </section>
+
+    <section class="stage" id="k8s">
+      <div class="stage-head">
+        <h2>03 · kubernetes</h2>
+        <span class="tag">hands-on exams</span>
+      </div>
+      <div class="rail">
+        <a class="card rec" data-price="445" href="https://training.linuxfoundation.org/certification/certified-kubernetes-administrator-cka/" target="_blank" rel="noopener">
+          <div class="badge photo">
+            <img src="https://images.credly.com/images/8b8ed108-e77d-4396-ac59-2504583b9d54/cka_from_cncfsite__281_29.png" alt="CKA badge" onerror="this.style.display='none';this.nextElementSibling.hidden=false" />
+            <div class="badge-fallback" hidden style="background:#326ce5;color:#fff">CKA</div>
+          </div>
+          <h3>Certified Kubernetes Administrator</h3>
+          <p class="issuer">CNCF · CKA</p>
+          <p class="why">Terminal, real cluster, no multiple choice. The industry Kubernetes bar.</p>
+          <div class="meta"><span class="dollars">$445</span><span class="kind">recommended</span></div>
+        </a>
+        <a class="card alt" href="https://training.linuxfoundation.org/certification/certified-kubernetes-application-developer-ckad/" target="_blank" rel="noopener">
+          <div class="badge">
+            <img src="https://raw.githubusercontent.com/cncf/artwork/main/projects/kubernetes/icon/color/kubernetes-icon-color.svg" alt="CKAD badge" onerror="this.style.display='none';this.nextElementSibling.hidden=false" />
+            <div class="badge-fallback" hidden style="background:#3d4785;color:#fff">CKAD</div>
+          </div>
+          <h3>Certified Kubernetes Application Developer</h3>
+          <p class="issuer">CNCF · CKAD</p>
+          <p class="why">Optional if you ship apps more than you run clusters. CKA still comes first for ops.</p>
+          <div class="meta"><span class="dollars">$445</span><span class="kind">optional</span></div>
+        </a>
+      </div>
+    </section>
+
+    <section class="stage" id="pro">
+      <div class="stage-head">
+        <h2>04 · devops professional</h2>
+        <span class="tag">pipelines</span>
+      </div>
+      <div class="rail">
+        <a class="card rec" data-price="99" href="https://learn.github.com/certifications" target="_blank" rel="noopener">
+          <div class="badge">
+            <img src="https://cdn.simpleicons.org/githubactions/2088FF" alt="GitHub Actions badge" onerror="this.style.display='none';this.nextElementSibling.hidden=false" />
+            <div class="badge-fallback" hidden style="background:#2088ff;color:#fff">GHA</div>
+          </div>
+          <h3>GitHub Actions</h3>
+          <p class="issuer">GitHub</p>
+          <p class="why">CI/CD in the repo you already use. Pairs with this bootcamp’s Actions labs.</p>
+          <div class="meta"><span class="dollars">$99</span><span class="kind">recommended</span></div>
+        </a>
+        <a class="card rec" data-price="300" href="https://aws.amazon.com/certification/certified-devops-engineer-professional/" target="_blank" rel="noopener">
+          <div class="badge">
+            <img src="https://cdn.jsdelivr.net/npm/simple-icons@11.15.0/icons/amazonaws.svg" alt="AWS DevOps Engineer Professional badge" onerror="this.style.display='none';this.nextElementSibling.hidden=false" />
+            <div class="badge-fallback" hidden style="background:#232f3e;color:#fff">DOP</div>
+          </div>
+          <h3>AWS DevOps Engineer Professional</h3>
+          <p class="issuer">AWS · DOP-C02</p>
+          <p class="why">Senior AWS bar: pipelines, IaC, monitoring, and blast-radius thinking.</p>
+          <div class="meta"><span class="dollars">$300</span><span class="kind">recommended</span></div>
+        </a>
+        <a class="card alt" href="https://learn.microsoft.com/credentials/certifications/devops-engineer/" target="_blank" rel="noopener">
+          <div class="badge">
+            <img src="https://cdn.jsdelivr.net/npm/simple-icons@11.15.0/icons/azuredevops.svg" alt="Azure DevOps Engineer Expert badge" onerror="this.style.display='none';this.nextElementSibling.hidden=false" />
+            <div class="badge-fallback" hidden style="background:#0078d4;color:#fff">400</div>
+          </div>
+          <h3>Azure DevOps Engineer Expert</h3>
+          <p class="issuer">Microsoft · AZ-400</p>
+          <p class="why">Alt track. Needs AZ-104 or AZ-204 first. Same $165 as most Azure exams.</p>
+          <div class="meta"><span class="dollars">$165</span><span class="kind">azure alt</span></div>
+        </a>
+      </div>
+    </section>
+
+    <section class="stage" id="security">
+      <div class="stage-head">
+        <h2>05 · security</h2>
+        <span class="tag opt">cka required</span>
+      </div>
+      <div class="rail">
+        <a class="card rec" data-price="445" href="https://training.linuxfoundation.org/certification/certified-kubernetes-security-specialist/" target="_blank" rel="noopener">
+          <div class="badge">
+            <img src="https://cdn.simpleicons.org/cncf/231F20" alt="CKS badge" onerror="this.style.display='none';this.nextElementSibling.hidden=false" />
+            <div class="badge-fallback" hidden style="background:#111;color:#c8ff3f">CKS</div>
+          </div>
+          <h3>Certified Kubernetes Security Specialist</h3>
+          <p class="issuer">CNCF · CKS</p>
+          <p class="why">Harden a live cluster. Network policies, runtime, and supply chain. After CKA only.</p>
+          <div class="meta"><span class="dollars">$445</span><span class="kind">recommended</span></div>
+        </a>
+      </div>
+    </section>
+
+    <footer>
+      Exam fees are USD list prices as of August 2026, one attempt, before tax or training bundles.
+      Confirm on the vendor site before you book. This page is a study map for NCC training — not affiliated with AWS, Microsoft, CNCF, HashiCorp, Mirantis, GitHub, or CompTIA.
+    </footer>
+  </main>
+
+  <script>
+    (function () {
+      var total = 0;
+      document.querySelectorAll(".card.rec[data-price]").forEach(function (card) {
+        total += parseFloat(card.getAttribute("data-price"));
+      });
+      var el = document.getElementById("path-total");
+      if (el) {
+        el.textContent = "$" + total.toLocaleString("en-US", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

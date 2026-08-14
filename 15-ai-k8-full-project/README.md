@@ -81,6 +81,17 @@ Work through [new-style/](new-style/) in order.
 
 Each folder is self-contained. Run commands from the topic folder.
 
+## Architecture
+
+Build on EC2, ship to Docker Hub, run on Kubernetes. Dashed box is
+**not** in today's lab (AWS Secrets Manager). Today's lab still
+`COPY .env` at image build.
+
+![Daypack architecture](images/architecture.png)
+
+To regenerate the PNG, follow [diagrams/guide.md](diagrams/guide.md)
+(Graphviz + a local `.venv`; do not commit the venv).
+
 ## Secrets
 
 - Never commit a real `.env` (gitignored). Commit `.env_example` only.

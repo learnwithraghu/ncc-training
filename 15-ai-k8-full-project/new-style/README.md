@@ -29,7 +29,8 @@ bash 15-ai-k8-full-project/new-style/helpers/deploy-k8s.sh
 
 That script applies topics 05–06 in namespace `daypack`, waits for Ready,
 validates health via a short port-forward, then prints the command to open
-the UI.
+the UI. On a teaching host, that command uses `--address 0.0.0.0` so the
+lab proxy can reach port 8501.
 
 ## Recommended Flow
 

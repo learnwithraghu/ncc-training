@@ -10,7 +10,8 @@
 
 ## Goal
 
-Browse Daypack at `http://localhost:8501` through the Service.
+Browse Daypack through the Service: laptop `http://localhost:8501`, or
+remote teaching host **View Port 8501**.
 
 ## Commands
 
@@ -18,7 +19,7 @@ Browse Daypack at `http://localhost:8501` through the Service.
 kubectl apply -f deployment.yaml
 kubectl apply -f service.yaml
 kubectl get svc,endpoints -n daypack
-kubectl port-forward svc/daypack 8501:8501 -n daypack
+kubectl port-forward --address 0.0.0.0 svc/daypack 8501:8501 -n daypack
 ```
 
 ## Guided Steps
@@ -34,14 +35,22 @@ kubectl get svc,endpoints -n daypack
 
 2. Confirm endpoints list a Pod IP on port 8501.
 
-3. Forward the Service to your laptop and leave the command running:
+3. Forward the Service on the machine that has `kubectl` (laptop or
+   teaching host) and leave the command running. `--address 0.0.0.0`
+   lets a remote lab proxy reach the tunnel; on a laptop,
+   `http://localhost:8501` still works.
 
 ```bash
-kubectl port-forward svc/daypack 8501:8501 -n daypack
+kubectl port-forward --address 0.0.0.0 svc/daypack 8501:8501 -n daypack
 ```
 
-4. Open `http://localhost:8501`. Plan a short trip. Stop the forward
-   with Ctrl+C when finished.
+4. Open the UI, plan a short trip, then stop the forward with Ctrl+C:
+   - Laptop: `http://localhost:8501`
+   - Remote teaching host (KodeKloud student-node): **View Port 8501**,
+     not 80. Host port 80 is Ubuntu nginx, not Daypack. A `502` from
+     `nginx/1.27.x` means the lab proxy reached the jump host but
+     nothing was listening on 8501 — usually the forward is missing or
+     bound to `127.0.0.1` only.
 
 Instructor one-shot (applies 05 + 06, checks health, prints the same
 port-forward command):

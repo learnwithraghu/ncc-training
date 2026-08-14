@@ -57,11 +57,13 @@ kubectl get nodes
 bash 15-ai-k8-full-project/new-style/helpers/deploy-k8s.sh
 ```
 
-Then open the UI:
+Then open the UI. Bind `0.0.0.0` so a remote teaching host (KodeKloud
+View Port) can reach the tunnel. Open port **8501**, not 80.
 
 ```bash
-kubectl port-forward svc/daypack 8501:8501 -n daypack
-# http://localhost:8501
+kubectl port-forward --address 0.0.0.0 svc/daypack 8501:8501 -n daypack
+# laptop: http://localhost:8501
+# remote host: View Port 8501
 ```
 
 ## Guided Learning Topics

@@ -112,9 +112,10 @@ echo
 echo "=============================================="
 echo " Open the UI (leave this running):"
 echo
-echo "   kubectl port-forward svc/daypack 8501:8501 -n daypack"
+echo "   kubectl port-forward --address 0.0.0.0 svc/daypack 8501:8501 -n daypack"
 echo
 echo " Then browse: http://localhost:8501"
+echo " Remote teaching host: View Port 8501 (not 80)"
 echo "=============================================="
 echo
 

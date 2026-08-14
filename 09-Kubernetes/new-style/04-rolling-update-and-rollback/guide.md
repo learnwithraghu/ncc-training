@@ -38,10 +38,10 @@ kubectl rollout undo deployment/orbital-relay
 cd ~/ncc-training/09-Kubernetes/new-style/04-rolling-update-and-rollback
 kubectl apply -f deployment.yaml
 kubectl apply -f service.yaml
-kubectl port-forward svc/orbital-relay 8080:80
+kubectl port-forward svc/orbital-relay 18090:80
 ```
 
-`curl -s http://localhost:8080 | grep -o "Ground link v1"` — dark page,
+`curl -s http://localhost:18090 | grep -o "Ground link v1"` — dark page,
 VERSION 1.0.
 
 2. Keep port-forward running. In another terminal, roll to 2.0:
@@ -52,7 +52,7 @@ kubectl rollout status deployment/orbital-relay
 ```
 
 Refresh the browser — cream night board, giant **2.0**, **Night Pass v2**.
-Or: `curl -s http://localhost:8080 | grep -o "Night Pass v2"`.
+Or: `curl -s http://localhost:18090 | grep -o "Night Pass v2"`.
 
 3. `kubectl rollout history deployment/orbital-relay`
 

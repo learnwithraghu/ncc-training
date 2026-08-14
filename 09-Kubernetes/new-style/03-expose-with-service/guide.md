@@ -19,7 +19,7 @@ kubectl apply -f deployment.yaml
 kubectl apply -f service.yaml
 kubectl get svc orbital-relay
 kubectl get endpoints orbital-relay
-kubectl port-forward svc/orbital-relay 8080:80
+kubectl port-forward svc/orbital-relay 18090:80
 ```
 
 - `service.yaml` — NodePort Service, selector `app: orbital-relay`.
@@ -38,8 +38,8 @@ kubectl apply -f service.yaml
 
 2. `kubectl get endpoints orbital-relay` — two IP:port rows, one per Pod.
 3. `kubectl get svc orbital-relay` — note ClusterIP and NodePort `30080`.
-4. Reach it: `kubectl port-forward svc/orbital-relay 8080:80` then
-   `curl -s http://localhost:8080 | grep -o "Ground link v1"`.
+4. Reach it: `kubectl port-forward svc/orbital-relay 18090:80` then
+   `curl -s http://localhost:18090 | grep -o "Ground link v1"`.
    If node IPs are reachable, you can also try `http://<node-ip>:30080`.
 5. Delete one Pod. `kubectl get endpoints orbital-relay` updates on its
    own.

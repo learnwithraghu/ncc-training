@@ -34,10 +34,10 @@ kubectl describe pod -l app=orbital-relay
 ```bash
 cd ~/ncc-training/09-Kubernetes/new-style/06-logs-and-exec
 kubectl apply -f deployment.yaml -f service.yaml
-kubectl port-forward svc/orbital-relay 8080:80
+kubectl port-forward svc/orbital-relay 18090:80
 ```
 
-`curl -s http://localhost:8080 | grep -o "Ground link v1"`
+`curl -s http://localhost:18090 | grep -o "Ground link v1"`
 
 2. `kubectl exec -it deploy/orbital-relay -- sh`, then
    `ls /usr/share/nginx/html` and `exit`.
